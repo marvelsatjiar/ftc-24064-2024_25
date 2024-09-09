@@ -98,6 +98,7 @@ public class AprilTagSensor {
         return estimate;
     }
 
+    // This method shouldn't have to be changed for non-CenterStage games
     public Pose2d getPoseEstimate(double heading) {
         if (loops >= STEP_SIZE) {
             loops = 0;

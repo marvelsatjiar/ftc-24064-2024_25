@@ -29,7 +29,7 @@ public final class TestExpansionHubIMU extends LinearOpMode {
         while (opModeIsActive()) {
             bulkReader.bulkRead();
 
-            imu.update();
+            imu.update(1);
 
             mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
             mTelemetry.addData("Heading", Math.toDegrees(imu.getHeading()));
