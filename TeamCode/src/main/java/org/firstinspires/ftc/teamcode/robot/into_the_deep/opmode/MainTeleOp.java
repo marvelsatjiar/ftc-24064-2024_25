@@ -1,12 +1,12 @@
-package org.firstinspires.ftc.teamcode.robot.centerstage.opmode;
+package org.firstinspires.ftc.teamcode.robot.into_the_deep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.LEFT_TRIGGER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.RIGHT_TRIGGER;
-
+import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.AbstractAuto.BACKWARD;
+import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.AbstractAuto.FORWARD;
 import static java.lang.Math.atan2;
 import static java.lang.Math.hypot;
+import static java.lang.Math.pow;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -18,45 +18,42 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.OLD_Robot;
 import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Memory;
-import org.firstinspires.ftc.teamcode.util.LoopUtil;
+import org.firstinspires.ftc.teamcode.robot.into_the_deep.subsystem.Robot;
 
 @Disabled
 public final class MainTeleOp extends LinearOpMode {
-    static OLD_Robot OLDRobot;
+    // Gamepads and the 'robot' class is imported to save lines and to import controls
     public static GamepadEx gamepadEx1;
+    static Robot robot;
     public static GamepadEx gamepadEx2;
     public static MultipleTelemetry mTelemetry;
 
+    // Quick method that is used for better handling the controller
     public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
         return (gamepad == 2 ? gamepadEx2 : gamepadEx1).wasJustPressed(button);
     }
 
     @Override
     public void runOpMode() {
-        boolean isHanging = false;
-
         mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         gamepadEx1 = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
 
-        OLDRobot = new OLD_Robot(hardwareMap);
+        robot = new Robot(hardwareMap);
 
         Pose2d endPose = Memory.AUTO_END_POSE;
         if (endPose != null) {
-            OLDRobot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Memory.IS_RED ? AbstractAuto.FORWARD : AbstractAuto.BACKWARD));
+            robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Memory.IS_RED ? FORWARD : BACKWARD));
         }
-
-        OLDRobot.purplePixel.setActivated(true);
 
         waitForStart();
 
         while (opModeIsActive()) {
             // Read sensors + gamepads:
-            OLDRobot.readSensors();
-            OLDRobot.drivetrain.updatePoseEstimate();
+            robot.readSensors();
+            robot.drivetrain.updatePoseEstimate();
             gamepadEx1.readButtons();
             gamepadEx2.readButtons();
 
@@ -65,13 +62,13 @@ public final class MainTeleOp extends LinearOpMode {
             double x = gamepadEx1.getRightX();
             if (gamepadEx1.isDown(LEFT_BUMPER)) {
                 double y = gamepadEx1.getRightY();
-                if (hypot(x, y) >= 0.8) OLDRobot.drivetrain.setCurrentHeading(atan2(y, x));
+                if (hypot(x, y) >= 0.8) robot.drivetrain.setCurrentHeading(atan2(y, x));
                 x = 0;
             }
 
             double slowMult = gamepadEx1.isDown(RIGHT_BUMPER) ? 0.2 : 1;
-            OLDRobot.drivetrain.setFieldCentricPowers(
-                    
+            robot.drivetrain.setFieldCentricPowers(
+
                     new PoseVelocity2d(
                             new Vector2d(
                                     gamepadEx1.getLeftY() * slowMult,
@@ -81,24 +78,8 @@ public final class MainTeleOp extends LinearOpMode {
                     )
             );
 
-//            if (keyPressed(1, B)) robot.deployableRoller.toggle();
-
-            // Gamepad 2
-
-            // Shared
-            // The intake power takes precedent to the first player
-            double trigger1 = gamepadEx1.getTrigger(RIGHT_TRIGGER) - gamepadEx1.getTrigger(LEFT_TRIGGER);
-            double trigger2 = gamepadEx2.getTrigger(RIGHT_TRIGGER) - gamepadEx2.getTrigger(LEFT_TRIGGER);
-            double intake = trigger1 != 0 ? trigger1 : trigger2;
-            OLDRobot.rollers.setIntake(intake);
-            OLDRobot.rollers.setDeployableWithTrigger(intake);
-
-            if (!isHanging) OLDRobot.run();
-            else OLDRobot.hang(trigger1);
-
-            OLDRobot.printTelemetry();
-            mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
-            mTelemetry.update();
+            double stick = pow(gamepadEx2.getRightY(), 3);
+            if (stick != 0) robot.extendo.setWithStick(stick);
         }
     }
 }

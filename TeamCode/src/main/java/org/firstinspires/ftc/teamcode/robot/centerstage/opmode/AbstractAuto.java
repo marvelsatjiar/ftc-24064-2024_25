@@ -7,25 +7,25 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.mTelemetry;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.robot;
+import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.OLDRobot;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.OLD_Robot;
 import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Memory;
-import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.sensor.vision.PropSensor;
 import org.firstinspires.ftc.teamcode.util.LoopUtil;
 
-@Config
+@Disabled
 public abstract class AbstractAuto extends LinearOpMode {
     protected PropSensor propSensor;
 
@@ -80,15 +80,15 @@ public abstract class AbstractAuto extends LinearOpMode {
     }
 
     protected final void update() {
-        robot.readSensors();
-        robot.run();
+        OLDRobot.readSensors();
+        OLDRobot.run();
         mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
         mTelemetry.update();
     }
 
     @Override
     public final void runOpMode() {
-        robot = new Robot(hardwareMap);
+        OLDRobot = new OLD_Robot(hardwareMap);
         mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         onInit();
@@ -98,7 +98,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         if (isStopRequested()) return;
 
         resetRuntime();
-        robot.drivetrain.pose = getStartPose();
+        OLDRobot.drivetrain.pose = getStartPose();
 
         Actions.runBlocking(
                 new ParallelAction(
@@ -110,7 +110,7 @@ public abstract class AbstractAuto extends LinearOpMode {
                 )
         );
 
-        Memory.AUTO_END_POSE = robot.drivetrain.pose;
+        Memory.AUTO_END_POSE = OLDRobot.drivetrain.pose;
     }
 
     protected void onInit() {}

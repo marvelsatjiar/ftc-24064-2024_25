@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.centerstage.subsystem;
 
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.mTelemetry;
 import static org.firstinspires.ftc.teamcode.util.SimpleServoPivot.getGoBildaServo;
 import static org.firstinspires.ftc.teamcode.util.SimpleServoPivot.getReversedServo;
 
@@ -8,6 +7,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp;
 import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 @Config
@@ -77,7 +77,7 @@ public final class Arm {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("Flap is", (flap.isActivated() ? "closed" : "open"));
-        mTelemetry.addData("Arm is", "running to " + (armPivot.isActivated() ? "deposit" : "collect"));
+        MainTeleOp.mTelemetry.addData("Flap is", (flap.isActivated() ? "closed" : "open"));
+        MainTeleOp.mTelemetry.addData("Arm is", "running to " + (armPivot.isActivated() ? "deposit" : "collect"));
     }
 }
