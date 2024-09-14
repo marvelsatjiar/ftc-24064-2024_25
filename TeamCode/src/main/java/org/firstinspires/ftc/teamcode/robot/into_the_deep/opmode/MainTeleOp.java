@@ -17,11 +17,12 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Memory;
 import org.firstinspires.ftc.teamcode.robot.into_the_deep.subsystem.Robot;
 
-@Disabled
+@TeleOp(group = "24064 main")
 public final class MainTeleOp extends LinearOpMode {
     // Gamepads and the 'robot' class is imported to save lines and to import controls
     public static GamepadEx gamepadEx1;
@@ -80,6 +81,12 @@ public final class MainTeleOp extends LinearOpMode {
 
             double stick = pow(gamepadEx2.getRightY(), 3);
             if (stick != 0) robot.extendo.setWithStick(stick);
+
+            double right_trig_pow = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+            double left_trig_pow = gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+
+            if (right_trig_pow > 0) robot.intake.set(right_trig_pow);
+            if (left_trig_pow > 0) robot.intake.set(-left_trig_pow);
         }
     }
 }

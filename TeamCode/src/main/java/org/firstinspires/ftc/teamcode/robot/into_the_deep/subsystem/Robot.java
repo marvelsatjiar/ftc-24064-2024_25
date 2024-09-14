@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.robot.into_the_deep.subsystem;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
@@ -15,6 +16,7 @@ public class Robot {
     public final MecanumDrive drivetrain;
     public final Extendo extendo;
     public final BulkReader bulkReader;
+    public MotorEx intake;
 
     /**
      * Constructor used in teleOp classes that makes the current pose2d, 0
@@ -33,6 +35,8 @@ public class Robot {
         drivetrain = new MecanumDrive(hardwareMap, pose2d);
         extendo = new Extendo(hardwareMap);
         bulkReader = new BulkReader(hardwareMap);
+
+        intake = new MotorEx(hardwareMap, "intake");
     }
 
     // Reads all the necessary sensors (including battery volt.) in one bulk read
