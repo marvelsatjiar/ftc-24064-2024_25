@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.util;
 
-public class LoopUtil {
+public final class LoopUtil {
     private static long lastTime = 0;
 
     /**

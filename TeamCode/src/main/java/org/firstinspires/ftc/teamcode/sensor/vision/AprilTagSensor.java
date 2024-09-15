@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Config
-public class AprilTagSensor {
+public final class AprilTagSensor {
     public static final int STEP_SIZE = 100;
     public static final AprilTagLibrary library = getCenterStageTagLibrary();
 

@@ -13,7 +13,7 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-public class PropSensor {
+public final class PropSensor {
     private final OpenCvCamera camera;
     private final PropSensorPipeline pipeline;
     private boolean isOpened = false;

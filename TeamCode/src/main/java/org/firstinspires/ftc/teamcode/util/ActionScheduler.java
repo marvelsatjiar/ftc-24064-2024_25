@@ -11,7 +11,7 @@ import java.util.Queue;
 // Inspired by QC 21229
 // An alternative to Actions.runBlocking() that doesn't block. Main use-case is for tele-op.
 // Call run() in every loop and add actions as needed.
-public class ActionScheduler {
+public final class ActionScheduler {
     final Queue<Action> actions = new LinkedList<>();
     final FtcDashboard dash = FtcDashboard.getInstance();
     final Canvas canvas = new Canvas();
