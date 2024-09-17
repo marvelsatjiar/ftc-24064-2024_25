@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.into_the_deep.opmode;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.AbstractAuto.BACKWARD;
@@ -15,11 +18,11 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Memory;
+import org.firstinspires.ftc.teamcode.robot.into_the_deep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.into_the_deep.subsystem.Robot;
 
 @TeleOp(group = "24064 main")
@@ -54,9 +57,12 @@ public final class MainTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             // Read sensors + gamepads:
             robot.readSensors();
+            robot.printTelemetry();
             robot.drivetrain.updatePoseEstimate();
             gamepadEx1.readButtons();
             gamepadEx2.readButtons();
+
+            mTelemetry.update();
 
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
@@ -79,14 +85,18 @@ public final class MainTeleOp extends LinearOpMode {
                     )
             );
 
-            double stick = pow(gamepadEx2.getRightY(), 3);
+            double stick = gamepadEx2.getRightY();
             if (stick != 0) robot.extendo.setWithStick(stick);
+
+            if (gamepadEx2.wasJustPressed(DPAD_UP)) robot.intake.setTargetPoint(1);
+            if (gamepadEx2.wasJustPressed(DPAD_DOWN)) robot.intake.setTargetPoint(2);
+            if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) robot.intake.setTargetPoint(3);
 
             double right_trig_pow = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
             double left_trig_pow = gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
 
-            if (right_trig_pow > 0) robot.intake.set(right_trig_pow);
-            if (left_trig_pow > 0) robot.intake.set(-left_trig_pow);
+            if (right_trig_pow > 0) robot.intake.setServoPower(right_trig_pow);
+            if (left_trig_pow > 0) robot.intake.setServoPower(-left_trig_pow);
         }
     }
 }

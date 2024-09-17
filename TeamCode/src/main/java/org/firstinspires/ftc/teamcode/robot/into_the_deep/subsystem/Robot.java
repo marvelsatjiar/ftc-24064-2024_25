@@ -15,8 +15,8 @@ public class Robot {
 
     public final MecanumDrive drivetrain;
     public final Extendo extendo;
+    public final Intake intake;
     public final BulkReader bulkReader;
-    public MotorEx intake;
 
     /**
      * Constructor used in teleOp classes that makes the current pose2d, 0
@@ -35,8 +35,7 @@ public class Robot {
         drivetrain = new MecanumDrive(hardwareMap, pose2d);
         extendo = new Extendo(hardwareMap);
         bulkReader = new BulkReader(hardwareMap);
-
-        intake = new MotorEx(hardwareMap, "intake");
+        intake = new Intake(hardwareMap);
     }
 
     // Reads all the necessary sensors (including battery volt.) in one bulk read
@@ -45,6 +44,7 @@ public class Robot {
     // Runs all the necessary mechanisms
     public void run() {
         extendo.run();
+        intake.run();
     }
 
     // Prints data on the driver hub for debugging and other uses
