@@ -97,8 +97,10 @@ public final class MainTeleOp extends LinearOpMode {
             double trigger1 = gamepadEx1.getTrigger(RIGHT_TRIGGER) - gamepadEx1.getTrigger(LEFT_TRIGGER);
             double trigger2 = gamepadEx2.getTrigger(RIGHT_TRIGGER) - gamepadEx2.getTrigger(LEFT_TRIGGER);
             double intake = trigger1 != 0 ? trigger1 : trigger2;
-
+          
             robot.intake.setServoPower(intake);
+
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) robot.claw.toggleClaw();
         }
     }
 }

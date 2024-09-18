@@ -17,6 +17,7 @@ public class Robot {
     public final Extendo extendo;
     public final Intake intake;
     public final BulkReader bulkReader;
+    public final Claw claw;
 
     /**
      * Constructor used in teleOp classes that makes the current pose2d, 0
@@ -36,6 +37,7 @@ public class Robot {
         extendo = new Extendo(hardwareMap);
         bulkReader = new BulkReader(hardwareMap);
         intake = new Intake(hardwareMap);
+        claw = new Claw(hardwareMap);
     }
 
     // Reads all the necessary sensors (including battery volt.) in one bulk read
@@ -45,6 +47,7 @@ public class Robot {
     public void run() {
         extendo.run();
         intake.run();
+        claw.run();
     }
 
     // Prints data on the driver hub for debugging and other uses
