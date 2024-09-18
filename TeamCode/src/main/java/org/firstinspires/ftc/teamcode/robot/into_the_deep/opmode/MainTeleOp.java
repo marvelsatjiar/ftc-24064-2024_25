@@ -5,6 +5,8 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.LEFT_TRIGGER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.RIGHT_TRIGGER;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.AbstractAuto.BACKWARD;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.AbstractAuto.FORWARD;
 import static java.lang.Math.atan2;
@@ -92,11 +94,11 @@ public final class MainTeleOp extends LinearOpMode {
             if (gamepadEx2.wasJustPressed(DPAD_DOWN)) robot.intake.setTargetPoint(2);
             if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) robot.intake.setTargetPoint(3);
 
-            double right_trig_pow = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
-            double left_trig_pow = gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+            double trigger1 = gamepadEx1.getTrigger(RIGHT_TRIGGER) - gamepadEx1.getTrigger(LEFT_TRIGGER);
+            double trigger2 = gamepadEx2.getTrigger(RIGHT_TRIGGER) - gamepadEx2.getTrigger(LEFT_TRIGGER);
+            double intake = trigger1 != 0 ? trigger1 : trigger2;
 
-            if (right_trig_pow > 0) robot.intake.setServoPower(right_trig_pow);
-            if (left_trig_pow > 0) robot.intake.setServoPower(-left_trig_pow);
+            robot.intake.setServoPower(intake);
         }
     }
 }
