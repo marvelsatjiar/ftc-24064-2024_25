@@ -4,23 +4,36 @@ import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 public final class Intake {
     private int targetAngle;
     private final CRServo[] intakeGroup;
     private final ServoEx[] intakeLinkGroup;
 
+    private final CRServo
+        intakeFollower,
+        intakeMaster;
+
+    private final ServoEx
+            intakeLinkFollower,
+            intakeLinkMaster;
+
     public enum IntakeAngles {
-        DOWN,
-        CLEARING,
-        UP
+        DOWN(75),
+        CLEARING(45),
+        UP(115);
+
+        public final int angles;
+        IntakeAngles(int angles) {
+            this.angles = angles;
+        }
     }
-    private IntakeAngles targetState;
     Intake(HardwareMap hardwareMap) {
-        CRServo intakeFollower = new CRServo(hardwareMap, "intakeFollower");
-        CRServo intakeMaster = new CRServo(hardwareMap, "intakeMaster");
-        ServoEx intakeLinkFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", 0, 180);
-        ServoEx intakeLinkMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", 0, 180);
+        intakeFollower = new CRServo(hardwareMap, "intakeFollower");
+        intakeMaster = new CRServo(hardwareMap, "intakeMaster");
+        intakeLinkFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", 0, 180);
+        intakeLinkMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", 0, 180);
 
         intakeFollower.setInverted(true);
         intakeLinkFollower.setInverted(true);
@@ -29,41 +42,30 @@ public final class Intake {
         intakeLinkGroup = new ServoEx[] {intakeLinkFollower, intakeLinkMaster};
     }
 
-    public void setAngle() {
-        switch (targetState) {
-            case DOWN:
-                targetAngle = 75;
-                break;
-            case UP:
-                targetAngle = 115;
-                break;
-            case CLEARING:
-                targetAngle = 45;
-                break;
-        }
-    }
-
-    public Intake.IntakeAngles getSetPoint() {
-        return targetState;
+    public int getSetPoint() {
+        return targetAngle;
     }
 
     public void setTargetPoint(int i) {
         switch (i) {
             case 1:
-                targetState = IntakeAngles.CLEARING;
+                targetAngle = IntakeAngles.CLEARING.angles;
                 break;
             case 2:
-                targetState = IntakeAngles.UP;
+                targetAngle = IntakeAngles.UP.angles;
                 break;
             case 3:
-                targetState = IntakeAngles.DOWN;
+                targetAngle = IntakeAngles.DOWN.angles;
                 break;
         }
     }
 
-    public void setServoPower(double power) {for (CRServo servos : intakeGroup) servos.set(power);}
+    public void setServoPower(double power) {
+        for (CRServo servos : intakeGroup)
+            servos.set(power);
+    }
     public void run() {
-        setAngle();
-        for (ServoEx servos : intakeLinkGroup) servos.turnToAngle(targetAngle);
+        for (ServoEx servos : intakeLinkGroup)
+            servos.turnToAngle(targetAngle);
     }
 }
