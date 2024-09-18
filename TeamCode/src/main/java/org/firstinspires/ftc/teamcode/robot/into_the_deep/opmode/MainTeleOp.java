@@ -97,6 +97,9 @@ public final class MainTeleOp extends LinearOpMode {
 
             if (right_trig_pow > 0) robot.intake.setServoPower(right_trig_pow);
             if (left_trig_pow > 0) robot.intake.setServoPower(-left_trig_pow);
+
+            if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) robot.claw.toggleClaw();
+
         }
     }
 }
