@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robot.centerstage.subsystem;
 
 import static com.arcrobotics.ftclib.hardware.motors.Motor.GoBILDA.RPM_435;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.mTelemetry;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.OLD_Robot.MAX_VOLTAGE;
+import static org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.CSRobot.MAX_VOLTAGE;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 

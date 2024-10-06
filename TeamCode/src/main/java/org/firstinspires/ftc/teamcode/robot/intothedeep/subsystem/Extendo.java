@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.robot.into_the_deep.subsystem;
+package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
-import static org.firstinspires.ftc.teamcode.robot.into_the_deep.opmode.MainTeleOp.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.MainTeleOp.mTelemetry;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -23,9 +23,9 @@ public final class Extendo {
     public enum ExtendoState {
         RETRACTED,
         RUNNING
-    };
+    }
 
-    private ExtendoState currentState;
+    private ExtendoState state;
 
     /**
      * Instantiates a new 'extendo' class that holds the extendo mechanisms (methods and functions)
@@ -46,14 +46,14 @@ public final class Extendo {
      */
     public void setWithStick(double stick) {
         linkageTargetAngle = min(LINKAGE_MIN_ANGLE, max(LINKAGE_MAX_ANGLE, linkageTargetAngle + stick * STICK_MULT));
-        currentState = linkageTargetAngle == LINKAGE_MIN_ANGLE ?
+        state = linkageTargetAngle == LINKAGE_MIN_ANGLE ?
                 ExtendoState.RETRACTED :
                 ExtendoState.RUNNING;
     }
 
     // Returns the state of the extendo
-    public ExtendoState getSetPoint() {
-        return currentState;
+    public ExtendoState getState() {
+        return state;
     }
 
     // Runs each servo inside of the group to a certain angle base on what was given
@@ -63,7 +63,7 @@ public final class Extendo {
 
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
-        mTelemetry.addData("Extendo is: ", currentState);
+        mTelemetry.addData("Extendo is: ", state);
         mTelemetry.addData("Servo angle is: ", linkageTargetAngle);
     }
 }

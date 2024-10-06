@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
  * Gets all the classes for the robot and calls them with their right parameters
  */
 @Config
-public final class OLD_Robot {
+public final class CSRobot {
     public static final double MAX_VOLTAGE = 13;
 
     public static double
@@ -36,7 +36,7 @@ public final class OLD_Robot {
     public final SimpleServoPivot purplePixel;
     private final BulkReader bulkReader;
 
-    public OLD_Robot(HardwareMap hardwareMap) {
+    public CSRobot(HardwareMap hardwareMap) {
         this(hardwareMap, new Pose2d(0.0, 0.0, 0.0));
     }
 
@@ -44,7 +44,7 @@ public final class OLD_Robot {
      * Instantiates a new robot.
      * @param hardwareMap A constant map that holds all the parts for config in code
      */
-    public OLD_Robot(HardwareMap hardwareMap, Pose2d pose) {
+    public CSRobot(HardwareMap hardwareMap, Pose2d pose) {
         bulkReader = new BulkReader(hardwareMap);
 
         drivetrain = new MecanumDrive(hardwareMap, pose);

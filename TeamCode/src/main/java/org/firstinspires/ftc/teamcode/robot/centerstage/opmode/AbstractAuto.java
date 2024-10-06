@@ -7,7 +7,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.mTelemetry;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.OLDRobot;
+import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.csRobot;
 import static java.lang.Math.toRadians;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -20,7 +20,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.OLD_Robot;
+import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.CSRobot;
 import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Memory;
 import org.firstinspires.ftc.teamcode.sensor.vision.PropSensor;
 import org.firstinspires.ftc.teamcode.util.LoopUtil;
@@ -80,15 +80,15 @@ public abstract class AbstractAuto extends LinearOpMode {
     }
 
     protected final void update() {
-        OLDRobot.readSensors();
-        OLDRobot.run();
+        csRobot.readSensors();
+        csRobot.run();
         mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
         mTelemetry.update();
     }
 
     @Override
     public final void runOpMode() {
-        OLDRobot = new OLD_Robot(hardwareMap);
+        csRobot = new CSRobot(hardwareMap);
         mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         onInit();
@@ -98,7 +98,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         if (isStopRequested()) return;
 
         resetRuntime();
-        OLDRobot.drivetrain.pose = getStartPose();
+        csRobot.drivetrain.pose = getStartPose();
 
         Actions.runBlocking(
                 new ParallelAction(
@@ -110,7 +110,7 @@ public abstract class AbstractAuto extends LinearOpMode {
                 )
         );
 
-        Memory.AUTO_END_POSE = OLDRobot.drivetrain.pose;
+        Memory.AUTO_END_POSE = csRobot.drivetrain.pose;
     }
 
     protected void onInit() {}

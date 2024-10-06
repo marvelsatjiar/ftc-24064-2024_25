@@ -1,15 +1,14 @@
-package org.firstinspires.ftc.teamcode.robot.into_the_deep.subsystem;
+package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
 
 @Config
-public class Robot {
+public class ITDRobot {
     // Constants & classes needed to run for this robot, initialized and/or associated w/ a value
     public final static double MAX_VOLTAGE = 13;
 
@@ -23,7 +22,7 @@ public class Robot {
      * Constructor used in teleOp classes that makes the current pose2d, 0
      * @param hardwareMap A constant map that holds all the parts for config in code
      */
-    public Robot(HardwareMap hardwareMap) {
+    public ITDRobot(HardwareMap hardwareMap) {
         this(hardwareMap, new Pose2d(0.0, 0.0, 0.0));
     }
 
@@ -32,7 +31,7 @@ public class Robot {
      * @param hardwareMap: A constant map that holds all the parts for config in code
      * @param pose2d: The current pose for the robot, which is currently zero at start of teleOp
      */
-    public Robot(HardwareMap hardwareMap, Pose2d pose2d) {
+    public ITDRobot(HardwareMap hardwareMap, Pose2d pose2d) {
         drivetrain = new MecanumDrive(hardwareMap, pose2d);
         extendo = new Extendo(hardwareMap);
         bulkReader = new BulkReader(hardwareMap);

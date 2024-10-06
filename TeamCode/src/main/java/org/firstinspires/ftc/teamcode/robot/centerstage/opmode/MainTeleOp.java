@@ -18,15 +18,16 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.OLD_Robot;
+import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.CSRobot;
 import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Memory;
 import org.firstinspires.ftc.teamcode.util.LoopUtil;
 
 @Disabled
 public final class MainTeleOp extends LinearOpMode {
-    static OLD_Robot OLDRobot;
+    static CSRobot csRobot;
     public static GamepadEx gamepadEx1;
     public static GamepadEx gamepadEx2;
+
     public static MultipleTelemetry mTelemetry;
 
     public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
@@ -42,21 +43,21 @@ public final class MainTeleOp extends LinearOpMode {
         gamepadEx1 = new GamepadEx(gamepad1);
         gamepadEx2 = new GamepadEx(gamepad2);
 
-        OLDRobot = new OLD_Robot(hardwareMap);
+        csRobot = new CSRobot(hardwareMap);
 
         Pose2d endPose = Memory.AUTO_END_POSE;
         if (endPose != null) {
-            OLDRobot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Memory.IS_RED ? AbstractAuto.FORWARD : AbstractAuto.BACKWARD));
+            csRobot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Memory.IS_RED ? AbstractAuto.FORWARD : AbstractAuto.BACKWARD));
         }
 
-        OLDRobot.purplePixel.setActivated(true);
+        csRobot.purplePixel.setActivated(true);
 
         waitForStart();
 
         while (opModeIsActive()) {
             // Read sensors + gamepads:
-            OLDRobot.readSensors();
-            OLDRobot.drivetrain.updatePoseEstimate();
+            csRobot.readSensors();
+            csRobot.drivetrain.updatePoseEstimate();
             gamepadEx1.readButtons();
             gamepadEx2.readButtons();
 
@@ -65,12 +66,12 @@ public final class MainTeleOp extends LinearOpMode {
             double x = gamepadEx1.getRightX();
             if (gamepadEx1.isDown(LEFT_BUMPER)) {
                 double y = gamepadEx1.getRightY();
-                if (hypot(x, y) >= 0.8) OLDRobot.drivetrain.setCurrentHeading(atan2(y, x));
+                if (hypot(x, y) >= 0.8) csRobot.drivetrain.setCurrentHeading(atan2(y, x));
                 x = 0;
             }
 
             double slowMult = gamepadEx1.isDown(RIGHT_BUMPER) ? 0.2 : 1;
-            OLDRobot.drivetrain.setFieldCentricPowers(
+            csRobot.drivetrain.setFieldCentricPowers(
                     
                     new PoseVelocity2d(
                             new Vector2d(
@@ -90,13 +91,13 @@ public final class MainTeleOp extends LinearOpMode {
             double trigger1 = gamepadEx1.getTrigger(RIGHT_TRIGGER) - gamepadEx1.getTrigger(LEFT_TRIGGER);
             double trigger2 = gamepadEx2.getTrigger(RIGHT_TRIGGER) - gamepadEx2.getTrigger(LEFT_TRIGGER);
             double intake = trigger1 != 0 ? trigger1 : trigger2;
-            OLDRobot.rollers.setIntake(intake);
-            OLDRobot.rollers.setDeployableWithTrigger(intake);
+            csRobot.rollers.setIntake(intake);
+            csRobot.rollers.setDeployableWithTrigger(intake);
 
-            if (!isHanging) OLDRobot.run();
-            else OLDRobot.hang(trigger1);
+            if (!isHanging) csRobot.run();
+            else csRobot.hang(trigger1);
 
-            OLDRobot.printTelemetry();
+            csRobot.printTelemetry();
             mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
             mTelemetry.update();
         }
