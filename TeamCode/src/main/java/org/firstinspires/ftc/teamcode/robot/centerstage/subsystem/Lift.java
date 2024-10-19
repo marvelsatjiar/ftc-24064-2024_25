@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robot.centerstage.subsystem;
 
 import static com.arcrobotics.ftclib.hardware.motors.Motor.GoBILDA.RPM_435;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.mTelemetry;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Robot.MAX_VOLTAGE;
+import static org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.CSRobot.MAX_VOLTAGE;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -51,7 +51,7 @@ public final class Lift {
             MIN_MOTOR_TICKS = -5,
             kG = 0.011065,
             PERCENT_OVERSHOOT = 0,
-            JOYSTICK_MULTIPLIER = 40;
+            JOYSTICK_MULTIPLIER = 40; // 1 = 40 ticks
 
     private final MotorEx[] motors;
 

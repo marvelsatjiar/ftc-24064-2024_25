@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.centerstage.subsystem;
 
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.mTelemetry;
 import static org.firstinspires.ftc.teamcode.util.SimpleServoPivot.getGoBildaServo;
 import static java.lang.Math.max;
 
@@ -9,6 +8,8 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp;
 
 @Config
 public final class Rollers {
@@ -52,6 +53,6 @@ public final class Rollers {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("Roller angle (degrees)", setPoint);
+        MainTeleOp.mTelemetry.addData("Roller angle (degrees)", setPoint);
     }
 }

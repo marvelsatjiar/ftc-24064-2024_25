@@ -1,11 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot.centerstage.opmode;
 
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.robot;
+import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.csRobot;
 
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 
@@ -24,7 +24,7 @@ public final class TestTrajectoryStalling extends AbstractAuto {
 
     // Example
     private Action waitForPress() {
-        return robot.drivetrain.actionBuilder(getStartPose())
+        return csRobot.drivetrain.actionBuilder(getStartPose())
                 .lineToX(10)
                 .stopAndAdd(new Actions.RunnableAction(() -> {
                     MainTeleOp.gamepadEx1.readButtons();
