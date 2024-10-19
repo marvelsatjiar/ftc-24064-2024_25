@@ -11,7 +11,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import java.net.InetAddress;
 import java.util.List;
 
-public class LimelightEx extends Limelight3A {
+public final class LimelightEx extends Limelight3A {
     LLResult result;
 
     public LimelightEx(SerialNumber serialNumber, String name, InetAddress ipAddress) {
