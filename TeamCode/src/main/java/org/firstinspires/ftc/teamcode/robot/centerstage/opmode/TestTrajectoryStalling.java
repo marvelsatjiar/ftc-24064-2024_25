@@ -10,8 +10,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import org.firstinspires.ftc.teamcode.auto.Actions;
 
 // CenterStage
-@Disabled
-public class TestTrajectoryStalling extends AbstractAuto {
+@Autonomous(name = "Test Trajectory Stalling", group = "Mechanism Test")
+public final class TestTrajectoryStalling extends AbstractAuto {
     @Override
     protected Pose2d getStartPose() {
         return new Pose2d(0, 0, 0);

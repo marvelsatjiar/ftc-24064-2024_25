@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.Action;
 
 import java.util.concurrent.Callable;
 
-public class Actions {
+public final class Actions {
     public static class RunnableAction implements Action {
         Callable<Boolean> action;
 
