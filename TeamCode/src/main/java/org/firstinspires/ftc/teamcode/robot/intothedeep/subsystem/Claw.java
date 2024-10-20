@@ -4,10 +4,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
-public class Claw {
+public final class Claw {
     private final double
         CLAMP_ANGLE = 0,
-        DEPOSIT_ANGLE = 60;
+        DEPOSIT_ANGLE = 30;
     SimpleServoPivot claw;
 
     public Claw(HardwareMap hardwareMap) {

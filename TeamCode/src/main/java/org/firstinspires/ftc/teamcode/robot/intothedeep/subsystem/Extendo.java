@@ -25,7 +25,7 @@ public final class Extendo {
         RUNNING
     }
 
-    private ExtendoState state;
+    private ExtendoState state = ExtendoState.RETRACTED;
 
     /**
      * Instantiates a new 'extendo' class that holds the extendo mechanisms (methods and functions)
@@ -45,7 +45,7 @@ public final class Extendo {
      * @param stick The value the joystick is giving to the code which allows us to control it with ease
      */
     public void setWithStick(double stick) {
-        linkageTargetAngle = min(LINKAGE_MIN_ANGLE, max(LINKAGE_MAX_ANGLE, linkageTargetAngle + stick * STICK_MULT));
+        linkageTargetAngle = min(LINKAGE_MAX_ANGLE, max(LINKAGE_MIN_ANGLE, linkageTargetAngle + stick * STICK_MULT));
         state = linkageTargetAngle == LINKAGE_MIN_ANGLE ?
                 ExtendoState.RETRACTED :
                 ExtendoState.RUNNING;
@@ -54,6 +54,13 @@ public final class Extendo {
     // Returns the state of the extendo
     public ExtendoState getState() {
         return state;
+    }
+
+    public void setAngle(double angle) {
+        linkageTargetAngle = min(LINKAGE_MAX_ANGLE, max(LINKAGE_MIN_ANGLE, angle));
+        state = linkageTargetAngle == LINKAGE_MIN_ANGLE ?
+                ExtendoState.RETRACTED :
+                ExtendoState.RUNNING;
     }
 
     // Runs each servo inside of the group to a certain angle base on what was given

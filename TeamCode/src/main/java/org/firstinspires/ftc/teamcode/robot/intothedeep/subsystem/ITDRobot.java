@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
 
 @Config
-public class ITDRobot {
+public final class ITDRobot {
     // Constants & classes needed to run for this robot, initialized and/or associated w/ a value
     public final static double MAX_VOLTAGE = 13;
 
@@ -17,6 +17,21 @@ public class ITDRobot {
     public final Intake intake;
     public final BulkReader bulkReader;
     public final Claw claw;
+    public final Lift lift;
+    public final Arm arm;
+    private enum RobotFSM {
+        NEUTRAL,
+        SCORE_BAR_1,
+        SCORE_BAR_2,
+        SCORE_LOW_BUCKET,
+        SCORE_HIGH_BUCKET,
+        INTAKE,
+        HANG_SETUP,
+        HANG_BAR_1,
+        HANG_BAR_2
+    }
+
+    RobotFSM currentState = RobotFSM.NEUTRAL;
 
     /**
      * Constructor used in teleOp classes that makes the current pose2d, 0
@@ -37,20 +52,28 @@ public class ITDRobot {
         bulkReader = new BulkReader(hardwareMap);
         intake = new Intake(hardwareMap);
         claw = new Claw(hardwareMap);
+        lift = new Lift(hardwareMap);
+        arm = new Arm(hardwareMap);
     }
 
     // Reads all the necessary sensors (including battery volt.) in one bulk read
-    public void readSensors() {bulkReader.bulkRead();}
+    public void readSensors() {
+        bulkReader.bulkRead();
+        drivetrain.updatePoseEstimate();
+    }
 
     // Runs all the necessary mechanisms
     public void run() {
         extendo.run();
         intake.run();
+        lift.run();
         claw.run();
+        arm.run();
     }
 
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
         extendo.printTelemetry();
+        lift.printTelemetry();
     }
 }

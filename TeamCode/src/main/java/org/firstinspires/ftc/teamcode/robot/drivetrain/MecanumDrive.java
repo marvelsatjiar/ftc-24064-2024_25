@@ -46,12 +46,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.auto.Drawing;
 import org.firstinspires.ftc.teamcode.auto.estimator.AprilTagEstimator;
 import org.firstinspires.ftc.teamcode.auto.estimator.Estimator;
+import org.firstinspires.ftc.teamcode.auto.estimator.LimelightEstimator;
 import org.firstinspires.ftc.teamcode.auto.localizer.Localizer;
 import org.firstinspires.ftc.teamcode.auto.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.auto.message.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.auto.message.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.auto.message.MecanumLocalizerInputsMessage;
 import org.firstinspires.ftc.teamcode.auto.message.PoseMessage;
+import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 
 import java.lang.Math;
 import java.util.Arrays;
@@ -118,6 +120,7 @@ public final class MecanumDrive {
     public final VoltageSensor voltageSensor;
 
     public final LazyImu lazyImu;
+    public final LimelightEx limelight;
 
     public final Localizer localizer;
     public final Estimator estimator;
@@ -244,11 +247,12 @@ public final class MecanumDrive {
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+        limelight = hardwareMap.get(LimelightEx.class, "limelight");
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
-        estimator = new AprilTagEstimator(hardwareMap);
+        estimator = new LimelightEstimator(limelight);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
