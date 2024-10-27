@@ -59,7 +59,7 @@ public final class Arm {
 
     public Arm(HardwareMap hardwareMap) {
         wrist = new SimpleServo(hardwareMap, "wrist", 0, 180);
-        armServos = new ServoEx[]{
+        armServos = new ServoEx[] {
                 new SimpleServo(hardwareMap, "arm master", 0, 240),
                 new SimpleServo(hardwareMap, "arm follower", 0, 240)
         };

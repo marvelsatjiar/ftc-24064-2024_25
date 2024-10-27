@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
+package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.LEFT_TRIGGER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.RIGHT_TRIGGER;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.itdRobot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -13,12 +12,10 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
-import org.firstinspires.ftc.teamcode.util.BulkReader;
-import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 @Config
-@TeleOp(name = "intake prototype",  group = "Mechanism Test")
-public class IntakePrototype extends LinearOpMode {
+@TeleOp(name = "Intake Prototype",  group = "Prototype")
+public final class IntakePrototype extends LinearOpMode {
     Intake intake;
     @Override
     public void runOpMode() throws InterruptedException {

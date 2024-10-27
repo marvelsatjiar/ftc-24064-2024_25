@@ -8,20 +8,20 @@ public final class Claw {
     private final double
             CLAMP_ANGLE = 0,
             DEPOSIT_ANGLE = 30;
-    private SimpleServoPivot claw;
+
+    private final SimpleServoPivot claw;
 
     public Claw(HardwareMap hardwareMap) {
         claw = new SimpleServoPivot(DEPOSIT_ANGLE, CLAMP_ANGLE, SimpleServoPivot.getGoBildaServo(hardwareMap, "claw"));
     }
 
-    public void setClaw(boolean isPushed) {
-        claw.setActivated(isPushed);
+    public void setClamped(boolean isActivated) {
+        claw.setActivated(isActivated);
     }
 
-    public void toggleClaw(){
+    public void toggle(){
         claw.toggle();
     }
-
 
     public void run(){
         claw.updateAngles(DEPOSIT_ANGLE, CLAMP_ANGLE);

@@ -4,8 +4,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.gamepadEx1;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.keyPressed;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.MainTeleOp.keyPressed;
 import static org.firstinspires.ftc.teamcode.util.LEDIndicator.State.AMBER;
 import static org.firstinspires.ftc.teamcode.util.LEDIndicator.State.GREEN;
 import static org.firstinspires.ftc.teamcode.util.LEDIndicator.State.OFF;
@@ -24,7 +23,7 @@ public final class TestIndicators extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        gamepadEx1 = new GamepadEx(gamepad1);
+        GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
 
         BulkReader bulkReader = new BulkReader(hardwareMap);
         LEDIndicator[] indicators = {

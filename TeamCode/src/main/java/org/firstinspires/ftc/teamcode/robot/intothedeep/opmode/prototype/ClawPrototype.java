@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
+package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -10,8 +10,8 @@ import org.firstinspires.ftc.teamcode.util.BulkReader;
 import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 @Config
-@TeleOp(name = "Claw Prototype", group = "Mechanism Test")
-public class ClawPrototype extends LinearOpMode {
+@TeleOp(name = "Claw Prototype", group = "Prototype")
+public final class ClawPrototype extends LinearOpMode {
     SimpleServoPivot claw;
     public static double
             CLAMP_ANGLE = 0,
@@ -23,12 +23,9 @@ public class ClawPrototype extends LinearOpMode {
 
         SimpleServoPivot claw = new SimpleServoPivot(DEPOSIT_ANGLE, CLAMP_ANGLE, SimpleServoPivot.getGoBildaServo(hardwareMap, "claw"));
 
-        BulkReader bulkReader = new BulkReader(hardwareMap);
-
         waitForStart();
 
         while (opModeIsActive()) {
-            bulkReader.bulkRead();
             gamepadEx1.readButtons();
 
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) claw.toggle();

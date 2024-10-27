@@ -1,16 +1,12 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static com.arcrobotics.ftclib.hardware.motors.Motor.GoBILDA.RPM_435;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.MainTeleOp.mTelemetry;
-import static org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.CSRobot.MAX_VOLTAGE;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.MAX_VOLTAGE;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.ftc.RawEncoder;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -59,7 +55,7 @@ public final class Lift {
 
     private final MotorEx[] motors;
 
-    private Motor.Encoder encoder;
+    private final Motor.Encoder encoder;
 
     private final FIRLowPassFilter derivFilter = new FIRLowPassFilter(filterGains);
     private final PIDController controller = new PIDController(derivFilter);

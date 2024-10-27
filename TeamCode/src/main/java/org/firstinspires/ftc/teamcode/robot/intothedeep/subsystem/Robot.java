@@ -10,10 +10,7 @@ import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
 
 @Config
-public final class ITDRobot {
-    // Constants & classes needed to run for this robot, initialized and/or associated w/ a value
-    public final static double MAX_VOLTAGE = 13;
-
+public final class Robot {
     public final MecanumDrive drivetrain;
     public final Extendo extendo;
     public final Intake intake;
@@ -21,6 +18,7 @@ public final class ITDRobot {
     public final Claw claw;
     public final Lift lift;
     public final Arm arm;
+
     private enum RobotFSM {
         NEUTRAL,
         SCORE_BAR_1,
@@ -39,7 +37,7 @@ public final class ITDRobot {
      * Constructor used in teleOp classes that makes the current pose2d, 0
      * @param hardwareMap A constant map that holds all the parts for config in code
      */
-    public ITDRobot(HardwareMap hardwareMap) {
+    public Robot(HardwareMap hardwareMap) {
         this(hardwareMap, new Pose2d(0.0, 0.0, 0.0));
     }
 
@@ -48,7 +46,7 @@ public final class ITDRobot {
      * @param hardwareMap: A constant map that holds all the parts for config in code
      * @param pose2d: The current pose for the robot, which is currently zero at start of teleOp
      */
-    public ITDRobot(HardwareMap hardwareMap, Pose2d pose2d) {
+    public Robot(HardwareMap hardwareMap, Pose2d pose2d) {
         drivetrain = new MecanumDrive(hardwareMap, pose2d);
         extendo = new Extendo(hardwareMap);
         bulkReader = new BulkReader(hardwareMap);

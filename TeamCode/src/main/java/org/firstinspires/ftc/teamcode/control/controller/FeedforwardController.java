@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.control.controller;
 
-import static org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.CSRobot.MAX_VOLTAGE;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.MAX_VOLTAGE;
 
-import org.firstinspires.ftc.teamcode.control.motion.State;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.FeedforwardGains;
+import org.firstinspires.ftc.teamcode.control.motion.State;
 
 public class FeedforwardController implements Controller {
 
