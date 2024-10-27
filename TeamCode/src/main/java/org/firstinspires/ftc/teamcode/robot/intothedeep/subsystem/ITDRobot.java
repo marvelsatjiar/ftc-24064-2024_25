@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -68,12 +70,13 @@ public final class ITDRobot {
         intake.run();
         lift.run();
         claw.run();
-        arm.run();
+        arm.run(lift.getSetPoint().isArmUnsafe());
     }
 
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
         extendo.printTelemetry();
         lift.printTelemetry();
+        mTelemetry.update();
     }
 }

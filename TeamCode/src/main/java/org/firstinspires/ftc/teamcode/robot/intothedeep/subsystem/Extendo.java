@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.MainTeleOp.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 

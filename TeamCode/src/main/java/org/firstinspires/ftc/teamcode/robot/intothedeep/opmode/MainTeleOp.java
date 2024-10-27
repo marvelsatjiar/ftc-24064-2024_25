@@ -5,21 +5,20 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.LEFT_TRIGGER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.RIGHT_TRIGGER;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.AbstractAuto.BACKWARD;
 import static org.firstinspires.ftc.teamcode.robot.centerstage.opmode.AbstractAuto.FORWARD;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.itdRobot;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static java.lang.Math.atan2;
 import static java.lang.Math.hypot;
+import static java.lang.Math.round;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -27,6 +26,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.centerstage.subsystem.Memory;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.ITDRobot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.util.ActionScheduler;
@@ -34,11 +34,8 @@ import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 @TeleOp(group = "24064 main")
 public final class MainTeleOp extends LinearOpMode {
     // Gamepads and the 'robot' class is imported to save lines and to import controls
-    public static GamepadEx gamepadEx1;
+    public static GamepadEx gamepadEx1, gamepadEx2;
     static ActionScheduler actionScheduler;
-    static ITDRobot itdRobot;
-    public static GamepadEx gamepadEx2;
-    public static MultipleTelemetry mTelemetry;
 
     // Quick method that is used for better handling the controller
     public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
@@ -71,8 +68,6 @@ public final class MainTeleOp extends LinearOpMode {
             gamepadEx1.readButtons();
             gamepadEx2.readButtons();
 
-            mTelemetry.update();
-
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
             double x = gamepadEx1.getRightX();
@@ -94,12 +89,14 @@ public final class MainTeleOp extends LinearOpMode {
                     )
             );
 
-            double stick = gamepadEx2.getRightY();
-            if (stick != 0) itdRobot.extendo.setWithStick(stick);
+            double leftStick = gamepadEx2.getLeftY();
+            if (leftStick != 0) itdRobot.extendo.setWithStick(leftStick);
 
-            if (gamepadEx2.wasJustPressed(DPAD_UP)) itdRobot.intake.setTarget(Intake.V4BAngles.UP);
-            if (gamepadEx2.wasJustPressed(DPAD_DOWN)) itdRobot.intake.setTarget(Intake.V4BAngles.DOWN);
-            if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) itdRobot.intake.setTarget(Intake.V4BAngles.CLEARING);
+            double rightStick = gamepadEx2.getRightY();
+
+            if (gamepadEx1.wasJustPressed(DPAD_UP)) itdRobot.intake.setTarget(Intake.V4BAngles.UP);
+            if (gamepadEx1.wasJustPressed(DPAD_DOWN)) itdRobot.intake.setTarget(Intake.V4BAngles.DOWN);
+            if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) itdRobot.intake.setTarget(Intake.V4BAngles.CLEARING);
 
             double trigger1 = gamepadEx1.getTrigger(RIGHT_TRIGGER) - gamepadEx1.getTrigger(LEFT_TRIGGER);
             double trigger2 = gamepadEx2.getTrigger(RIGHT_TRIGGER) - gamepadEx2.getTrigger(LEFT_TRIGGER);
@@ -107,16 +104,11 @@ public final class MainTeleOp extends LinearOpMode {
 
             itdRobot.intake.setServoPower(intake);
 
-            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) itdRobot.claw.toggleClaw();
+            if (gamepadEx2.wasJustPressed(DPAD_UP)) itdRobot.arm.setTarget(Arm.Position.COLLECTING);
+            if (gamepadEx2.wasJustPressed(DPAD_DOWN)) itdRobot.arm.setTarget(Arm.Position.HIGH_BASKET);
+            if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) itdRobot.arm.setTarget(Arm.Position.HIGH_CHAMBER_UPWARDS);
 
-//            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.B)) {
-//                actionScheduler.addAction(new SequentialAction(
-//                        itdRobot.lift.setHeight(isHighChamber ? 700 : 400),
-//                        new SleepAction(0.3),
-//
-//
-//                ));
-//            }
+            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) itdRobot.claw.toggleClaw();
         }
     }
 }

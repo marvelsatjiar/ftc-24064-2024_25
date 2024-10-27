@@ -6,9 +6,9 @@ import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 public final class Claw {
     private final double
-        CLAMP_ANGLE = 0,
-        DEPOSIT_ANGLE = 30;
-    SimpleServoPivot claw;
+            CLAMP_ANGLE = 0,
+            DEPOSIT_ANGLE = 30;
+    private SimpleServoPivot claw;
 
     public Claw(HardwareMap hardwareMap) {
         claw = new SimpleServoPivot(DEPOSIT_ANGLE, CLAMP_ANGLE, SimpleServoPivot.getGoBildaServo(hardwareMap, "claw"));

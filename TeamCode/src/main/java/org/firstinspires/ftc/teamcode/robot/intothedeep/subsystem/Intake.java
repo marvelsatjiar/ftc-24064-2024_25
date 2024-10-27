@@ -1,10 +1,12 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+@Config
 public final class Intake {
     private final CRServo[] intakeGroup;
     private final ServoEx[] intakeLinkGroup;
@@ -30,7 +32,7 @@ public final class Intake {
             this.angle = angle;
         }
     }
-    Intake(HardwareMap hardwareMap) {
+    public Intake(HardwareMap hardwareMap) {
         intakeFollower = new CRServo(hardwareMap, "intakeFollower");
         intakeMaster = new CRServo(hardwareMap, "intakeMaster");
         intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", 0, 180);

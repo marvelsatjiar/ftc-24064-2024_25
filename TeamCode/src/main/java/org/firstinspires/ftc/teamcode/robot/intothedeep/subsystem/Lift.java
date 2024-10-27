@@ -7,7 +7,10 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.ftc.RawEncoder;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
@@ -43,13 +46,20 @@ public final class Lift {
      * Sets the constants for the positions, conversions, etc
      * Remember to set these constants correctly! (in ticks)
      */
-    public static double
+    public static int
             MAX_MOTOR_TICKS = 2350,
             MIN_MOTOR_TICKS = -5,
+            BASKET_TICKS = 800,
+            CHAMBER_TICKS = 1000,
+            CLIMB_TICKS = 1200,
+            UNSAFE_THRESHOLD_TICKS = 50;
+    public static double
             kG = 0.011065,
             JOYSTICK_MULTIPLIER = 40; // 1 = 40 ticks
 
     private final MotorEx[] motors;
+
+    private Motor.Encoder encoder;
 
     private final FIRLowPassFilter derivFilter = new FIRLowPassFilter(filterGains);
     private final PIDController controller = new PIDController(derivFilter);
@@ -58,8 +68,34 @@ public final class Lift {
 
     private State currentState = new State();
 
-    private double targetTicks = 0;
-    private int setPoint = -1;
+    enum SlideTicks {
+        RETRACTED,
+        BASKET,
+        CHAMBER,
+        CLIMB,
+        EXTENDED;
+
+        private int getTicks() {
+            switch (this) {
+                case BASKET:
+                    return BASKET_TICKS;
+                case CHAMBER:
+                    return CHAMBER_TICKS;
+                case CLIMB:
+                    return CLIMB_TICKS;
+                case EXTENDED:
+                    return MAX_MOTOR_TICKS;
+                default:
+                    return MIN_MOTOR_TICKS;
+            }
+        }
+
+        public boolean isArmUnsafe() {
+            return getTicks() <= UNSAFE_THRESHOLD_TICKS;
+        }
+    }
+
+    private SlideTicks setPoint;
 
     /**
      * Constructor of Lift class; Sets variables with hw (hardwareMap)
@@ -69,34 +105,23 @@ public final class Lift {
         MotorEx leader = new MotorEx(hardwareMap, "leader", RPM_435);
         MotorEx follower = new MotorEx(hardwareMap, "follower", RPM_435);
 
-        leader.encoder.reset();
-        follower.encoder.reset();
+        encoder = new MotorEx(hardwareMap, "right back", RPM_435).encoder;
+        encoder.reset();
 
-        leader.setInverted(false);
-        follower.setInverted(false);
+        follower.setInverted(true);
 
-        motors = new MotorEx[]{leader, follower};
+        motors = new MotorEx[] {leader, follower};
+
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
-    public void setWithStick(double stick) {
-        targetTicks = min(MAX_MOTOR_TICKS, max(MIN_MOTOR_TICKS, targetTicks + stick * JOYSTICK_MULTIPLIER));
-        setPoint = targetTicks == MIN_MOTOR_TICKS ? -1 : 0;
-        controller.setTarget(new State(targetTicks));
-    }
-
-    public int getSetPoint() {
+    public SlideTicks getSetPoint() {
         return setPoint;
     }
 
-    public void setHeight(double offset) {
-        setPoint = 0;
-        controller.setTarget(new State(min(MAX_MOTOR_TICKS, max(MIN_MOTOR_TICKS, offset))));
-    }
-
-    public void retract() {
-        setPoint = -1;
-        controller.setTarget(new State(MIN_MOTOR_TICKS));
+    public void setPosition(SlideTicks slideTicks) {
+        setPoint = slideTicks;
+        controller.setTarget(new State(getSetPoint().getTicks()));
     }
 
     /**
@@ -104,7 +129,7 @@ public final class Lift {
      * Calls another run() method that calculates the motor output proportionally and doesn't compensate for power
      */
     public void run() {
-        currentState = new State(0.5 * (-motors[0].encoder.getPosition() + motors[1].encoder.getPosition()));
+        currentState = new State(encoder.getPosition());
         controller.setGains(pidGains);
         derivFilter.setGains(filterGains);
 
@@ -129,7 +154,8 @@ public final class Lift {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("Target position (ticks)", targetTicks);
+        mTelemetry.addData("Target position (ticks)", getSetPoint().getTicks());
+        mTelemetry.addData("Current state (name)", getSetPoint().name());
     }
 
     public void printNumericalTelemetry() {
