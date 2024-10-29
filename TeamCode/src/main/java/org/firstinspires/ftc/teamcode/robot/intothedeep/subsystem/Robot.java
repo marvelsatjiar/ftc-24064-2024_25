@@ -64,7 +64,7 @@ public final class Robot {
 
     // Runs all the necessary mechanisms
     public void run() {
-        extendo.run();
+        extendo.run(intake.getTargetAngle().isV4BUnsafe());
         intake.run();
         lift.run();
         claw.run();

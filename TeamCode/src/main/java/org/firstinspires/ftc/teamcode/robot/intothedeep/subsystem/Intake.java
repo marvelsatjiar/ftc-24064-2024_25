@@ -11,32 +11,38 @@ public final class Intake {
     private final CRServo[] intakeGroup;
     private final ServoEx[] intakeLinkGroup;
 
-    private final CRServo
-        intakeFollower,
-        intakeMaster;
+    public static int
+            V4B_DOWN_ANGLE = 130,
+            V4B_CLEARING_ANGLE = 115,
+            V4B_UP_ANGLE = 110,
+            V4B_UNSAFE_THRESHOLD_ANGLE = 111;
 
-    private final ServoEx
-            intakeGearFollower,
-            intakeGearMaster;
-
-    private V4BAngles targetAngle;
+    private V4BAngles targetAngle = V4BAngles.UP;
 
     public enum V4BAngles {
-        DOWN(75),
-        CLEARING(45),
-        UP(115);
+        DOWN,
+        CLEARING,
+        UP,
+        UNSAFE;
 
-        public final int angle;
+        private int getAngle() {
+            switch (this) {
+                case DOWN: return  V4B_DOWN_ANGLE;
+                case CLEARING: return V4B_CLEARING_ANGLE;
+                case UNSAFE: return V4B_UNSAFE_THRESHOLD_ANGLE;
+                default: return V4B_UP_ANGLE;
+            }
+        }
 
-        V4BAngles(int angle) {
-            this.angle = angle;
+        public boolean isV4BUnsafe() {
+            return getAngle() >= V4B_UNSAFE_THRESHOLD_ANGLE;
         }
     }
     public Intake(HardwareMap hardwareMap) {
-        intakeFollower = new CRServo(hardwareMap, "intakeFollower");
-        intakeMaster = new CRServo(hardwareMap, "intakeMaster");
-        intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", 0, 180);
-        intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", 0, 180);
+        CRServo intakeFollower = new CRServo(hardwareMap, "intakeFollower");
+        CRServo intakeMaster = new CRServo(hardwareMap, "intakeMaster");
+        ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", 0, 180);
+        ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", 0, 180);
 
         intakeFollower.setInverted(true);
         intakeGearFollower.setInverted(true);
@@ -45,12 +51,12 @@ public final class Intake {
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
     }
 
-    public V4BAngles getTargetAngle() {
-        return targetAngle;
-    }
-
     public void setTarget(V4BAngles angle) {
         targetAngle = angle;
+    }
+
+    public Intake.V4BAngles getTargetAngle() {
+        return targetAngle;
     }
 
     public void setServoPower(double power) {
@@ -59,6 +65,6 @@ public final class Intake {
     }
     public void run() {
         for (ServoEx servos : intakeLinkGroup)
-            servos.turnToAngle(targetAngle.angle);
+            servos.turnToAngle(targetAngle.getAngle());
     }
 }

@@ -71,7 +71,7 @@ public final class Arm {
         targetPosition = angle;
     }
 
-     void run(boolean liftBelowSafety) {
+     public void run(boolean liftBelowSafety) {
          boolean isArmDown = targetPosition == Position.HIGH_CHAMBER_DOWNWARDS;
          if (liftBelowSafety && isArmDown) targetPosition = Position.COLLECTING;
 

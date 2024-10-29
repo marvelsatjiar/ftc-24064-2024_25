@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 
-@Autonomous(name = "Test Trajectory Stalling", group = "Prototype")
+//@Autonomous(name = "Test Trajectory Stalling", group = "Prototype")
 public final class TestTrajectoryStalling /*extends AbstractAuto*/ {
 //    @Override
 //    protected Pose2d getStartPose() {

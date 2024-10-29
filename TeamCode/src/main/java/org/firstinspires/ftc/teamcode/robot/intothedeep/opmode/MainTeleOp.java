@@ -89,8 +89,6 @@ public final class MainTeleOp extends LinearOpMode {
             double leftStick = gamepadEx2.getLeftY();
             if (leftStick != 0) robot.extendo.setWithStick(leftStick);
 
-            double rightStick = gamepadEx2.getRightY();
-
             if (gamepadEx1.wasJustPressed(DPAD_UP)) robot.intake.setTarget(Intake.V4BAngles.UP);
             if (gamepadEx1.wasJustPressed(DPAD_DOWN)) robot.intake.setTarget(Intake.V4BAngles.DOWN);
             if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) robot.intake.setTarget(Intake.V4BAngles.CLEARING);

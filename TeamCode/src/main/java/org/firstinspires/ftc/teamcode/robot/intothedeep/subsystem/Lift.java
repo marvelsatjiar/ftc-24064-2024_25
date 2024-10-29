@@ -46,7 +46,8 @@ public final class Lift {
             MAX_MOTOR_TICKS = 2350,
             MIN_MOTOR_TICKS = -5,
             BASKET_TICKS = 800,
-            CHAMBER_TICKS = 1000,
+            CHAMBER1_TICKS = 600,
+            CHAMBER2_TICKS = 1000,
             CLIMB_TICKS = 1200,
             UNSAFE_THRESHOLD_TICKS = 50;
     public static double
@@ -64,10 +65,11 @@ public final class Lift {
 
     private State currentState = new State();
 
-    enum SlideTicks {
+    public enum SlideTicks {
         RETRACTED,
         BASKET,
-        CHAMBER,
+        CHAMBER1,
+        CHAMBER2,
         CLIMB,
         EXTENDED;
 
@@ -75,8 +77,10 @@ public final class Lift {
             switch (this) {
                 case BASKET:
                     return BASKET_TICKS;
-                case CHAMBER:
-                    return CHAMBER_TICKS;
+                case CHAMBER1:
+                    return CHAMBER1_TICKS;
+                case CHAMBER2:
+                    return CHAMBER2_TICKS;
                 case CLIMB:
                     return CLIMB_TICKS;
                 case EXTENDED:
@@ -91,7 +95,7 @@ public final class Lift {
         }
     }
 
-    private SlideTicks setPoint;
+    private SlideTicks setPoint = SlideTicks.RETRACTED;
 
     /**
      * Constructor of Lift class; Sets variables with hw (hardwareMap)

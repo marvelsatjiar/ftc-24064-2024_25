@@ -14,11 +14,11 @@ public final class Extendo {
     SimpleServo[] linkageServos;
 
     public static double
-        LINKAGE_MIN_ANGLE = 2,
-        LINKAGE_MAX_ANGLE = 90,
-        STICK_MULT = 2;
+        LINKAGE_MIN_ANGLE = 330,
+        LINKAGE_MAX_ANGLE = 350,
+        STICK_MULT = 0.2;
 
-    private double linkageTargetAngle = 0;
+    private double linkageTargetAngle = LINKAGE_MIN_ANGLE;
 
     public enum ExtendoState {
         RETRACTED,
@@ -35,6 +35,8 @@ public final class Extendo {
         SimpleServo masterLinkage = new SimpleServo(hw, "extendoLinkageMain", LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE);
         SimpleServo followerLinkage = new SimpleServo(hw, "extendoLinkageFollower", LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE);
 
+        masterLinkage.setInverted(true);
+
         linkageServos = new SimpleServo[]{masterLinkage, followerLinkage};
     }
 
@@ -45,10 +47,7 @@ public final class Extendo {
      * @param stick The value the joystick is giving to the code which allows us to control it with ease
      */
     public void setWithStick(double stick) {
-        linkageTargetAngle = min(LINKAGE_MAX_ANGLE, max(LINKAGE_MIN_ANGLE, linkageTargetAngle + stick * STICK_MULT));
-        state = linkageTargetAngle == LINKAGE_MIN_ANGLE ?
-                ExtendoState.RETRACTED :
-                ExtendoState.RUNNING;
+        this.setAngle(linkageTargetAngle + stick * STICK_MULT);
     }
 
     // Returns the state of the extendo
@@ -64,8 +63,13 @@ public final class Extendo {
     }
 
     // Runs each servo inside of the group to a certain angle base on what was given
-    public void run() {
-        for (SimpleServo servos : linkageServos) {servos.turnToAngle(linkageTargetAngle);}
+    public boolean run(boolean isV4BUnsafe) {
+        if (isV4BUnsafe) return false;
+        for (SimpleServo servos : linkageServos) {
+            servos.turnToAngle(linkageTargetAngle);
+        }
+
+        return true;
     }
 
     // Prints data on the driver hub for debugging and other uses
