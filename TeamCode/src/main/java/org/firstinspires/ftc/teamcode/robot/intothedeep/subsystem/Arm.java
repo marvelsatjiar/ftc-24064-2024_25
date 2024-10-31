@@ -30,7 +30,7 @@ public final class Arm {
         HIGH_CHAMBER_UPWARDS,
         HIGH_CHAMBER_DOWNWARDS;
 
-        double getArmAngle() {
+        public double getArmAngle() {
             switch (this) {
                 case HIGH_BASKET: return HIGH_BASKET_ARM_ANGLE;
                 case LOW_BASKET: return LOW_BASKET_ARM_ANGLE;
@@ -42,7 +42,7 @@ public final class Arm {
             }
         }
 
-        double getWristAngle() {
+        public double getWristAngle() {
             switch (this) {
                 case HIGH_BASKET: return HIGH_BASKET_WRIST_ANGLE;
                 case LOW_BASKET: return LOW_BASKET_WRIST_ANGLE;
@@ -57,6 +57,8 @@ public final class Arm {
 
     private Position targetPosition;
 
+    public boolean isLocked = false;
+
     public Arm(HardwareMap hardwareMap) {
         wrist = new SimpleServo(hardwareMap, "wrist", 0, 180);
         armServos = new ServoEx[] {
@@ -67,17 +69,28 @@ public final class Arm {
         armServos[1].setInverted(true);
     }
 
-    public void setTarget(Position angle) {
+    public boolean setTarget(Position angle, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
         targetPosition = angle;
+
+        return true;
+    }
+
+    public Position getTargetPosition() {
+        return targetPosition;
+    }
+
+    public boolean setTarget(Position angle) {
+        return setTarget(angle, false);
     }
 
      public void run(boolean liftBelowSafety) {
-         boolean isArmDown = targetPosition == Position.HIGH_CHAMBER_DOWNWARDS;
+         boolean isArmDown = getTargetPosition() == Position.HIGH_CHAMBER_DOWNWARDS;
          if (liftBelowSafety && isArmDown) targetPosition = Position.COLLECTING;
 
         for (ServoEx servos : armServos) {
-            servos.turnToAngle(targetPosition.getArmAngle());
+            servos.turnToAngle(getTargetPosition().getArmAngle());
         }
-        wrist.turnToAngle(targetPosition.getWristAngle());
+        wrist.turnToAngle(getTargetPosition().getWristAngle());
     }
 }

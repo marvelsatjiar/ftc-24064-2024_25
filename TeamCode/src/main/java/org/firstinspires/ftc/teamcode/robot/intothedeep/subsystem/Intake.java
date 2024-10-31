@@ -38,6 +38,11 @@ public final class Intake {
             return getAngle() >= V4B_UNSAFE_THRESHOLD_ANGLE;
         }
     }
+
+    public boolean isLocked = false;
+
+    public boolean isRollerLocked = false;
+
     public Intake(HardwareMap hardwareMap) {
         CRServo intakeFollower = new CRServo(hardwareMap, "intakeFollower");
         CRServo intakeMaster = new CRServo(hardwareMap, "intakeMaster");
@@ -51,18 +56,34 @@ public final class Intake {
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
     }
 
-    public void setTarget(V4BAngles angle) {
+    public boolean setTarget(V4BAngles angle, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
         targetAngle = angle;
+
+        return true;
+    }
+
+    public boolean setTarget(V4BAngles angle) {
+        return setTarget(angle, false);
     }
 
     public Intake.V4BAngles getTargetAngle() {
         return targetAngle;
     }
 
-    public void setServoPower(double power) {
+    public boolean setServoPower(double power, boolean isOverride) {
+        if (isRollerLocked && !isOverride) return false;
+
         for (CRServo servos : intakeGroup)
             servos.set(power);
+
+        return true;
     }
+
+    public boolean setServoPower(double power) {
+        return setServoPower(power, false);
+    }
+
     public void run() {
         for (ServoEx servos : intakeLinkGroup)
             servos.turnToAngle(targetAngle.getAngle());

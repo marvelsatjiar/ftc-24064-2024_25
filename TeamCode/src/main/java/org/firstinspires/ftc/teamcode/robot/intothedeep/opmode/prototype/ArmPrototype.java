@@ -66,16 +66,16 @@ public final class ArmPrototype extends LinearOpMode {
                     if (isDPADUpPressed) targetTicks = Lift.SlideTicks.BASKET;
                     break;
                 case BASKET:
-                    if (isDPADUpPressed) targetTicks = Lift.SlideTicks.CHAMBER;
+                    if (isDPADUpPressed) targetTicks = Lift.SlideTicks.CHAMBER1;
                     if (isDPADDownPressed) targetTicks = Lift.SlideTicks.RETRACTED;
                     break;
-                case CHAMBER:
+                case CHAMBER1:
                     if (isDPADUpPressed) targetTicks = Lift.SlideTicks.CLIMB;
                     if (isDPADDownPressed) targetTicks = Lift.SlideTicks.BASKET;
                     break;
                 case CLIMB:
                     if (isDPADUpPressed) targetTicks = Lift.SlideTicks.EXTENDED;
-                    if (isDPADDownPressed) targetTicks = Lift.SlideTicks.CHAMBER;
+                    if (isDPADDownPressed) targetTicks = Lift.SlideTicks.CHAMBER1;
                     break;
                 case EXTENDED:
                     if (isDPADDownPressed) targetTicks = Lift.SlideTicks.CLIMB;

@@ -103,7 +103,6 @@ public final class MainTeleOp extends LinearOpMode {
             if (gamepadEx2.wasJustPressed(DPAD_DOWN)) robot.arm.setTarget(Arm.Position.HIGH_BASKET);
             if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) robot.arm.setTarget(Arm.Position.HIGH_CHAMBER_UPWARDS);
 
-            if (gamepadEx2.wasJustPressed(GamepadKeys.Button.A)) robot.claw.toggle();
         }
     }
 }
