@@ -21,11 +21,15 @@ public final class Robot {
 
     private enum RobotFSM {
         NEUTRAL,
+        SUBMERSIBLE_INTAKE_TO_TRANSFER,
+        SAMPLE_TO_BE_TRANSFERRED,
         SCORE_BAR_1,
         SCORE_BAR_2,
         SCORE_LOW_BUCKET,
         SCORE_HIGH_BUCKET,
-        INTAKE,
+        WALL_SPECIMEN,
+        INTAKE_INSIDE_SUBMERSIBLE,
+        INTAKE_OUTSIDE_SUBMERSIBLE,
         HANG_SETUP,
         HANG_BAR_1,
         HANG_BAR_2

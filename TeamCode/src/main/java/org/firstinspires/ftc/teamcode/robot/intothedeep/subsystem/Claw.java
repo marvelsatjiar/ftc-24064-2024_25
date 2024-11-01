@@ -11,16 +11,21 @@ public final class Claw {
 
     private final SimpleServoPivot claw;
 
+    public boolean isLocked = false;
+
     public Claw(HardwareMap hardwareMap) {
         claw = new SimpleServoPivot(DEPOSIT_ANGLE, CLAMP_ANGLE, SimpleServoPivot.getGoBildaServo(hardwareMap, "claw"));
     }
 
-    public void setClamped(boolean isActivated) {
+    public boolean setClamped(boolean isActivated, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
+
         claw.setActivated(isActivated);
+        return true;
     }
 
-    public void toggle(){
-        claw.toggle();
+    public boolean setClamped(boolean isActivated) {
+        return setClamped(isActivated, false);
     }
 
     public void run(){

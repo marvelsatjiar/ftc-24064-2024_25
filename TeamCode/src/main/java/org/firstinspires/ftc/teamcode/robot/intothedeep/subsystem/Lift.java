@@ -97,6 +97,8 @@ public final class Lift {
 
     private SlideTicks setPoint = SlideTicks.RETRACTED;
 
+    public boolean isLocked = false;
+
     /**
      * Constructor of Lift class; Sets variables with hw (hardwareMap)
      * @param hardwareMap; A constant map that holds all the parts for config in code
@@ -119,9 +121,16 @@ public final class Lift {
         return setPoint;
     }
 
-    public void setPosition(SlideTicks slideTicks) {
+    public boolean setPosition(SlideTicks slideTicks, boolean isOverride ) {
+        if (isLocked && !isOverride) return false;
         setPoint = slideTicks;
         controller.setTarget(new State(getSetPoint().getTicks()));
+
+        return true;
+    }
+
+    public boolean setPosition(SlideTicks slideTicks) {
+        return setPosition(slideTicks, false);
     }
 
     /**

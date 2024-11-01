@@ -27,6 +27,8 @@ public final class Extendo {
 
     private ExtendoState state = ExtendoState.RETRACTED;
 
+    public boolean isLocked = false;
+
     /**
      * Instantiates a new 'extendo' class that holds the extendo mechanisms (methods and functions)
      * @param hw A constant map that holds all the parts for config in code
@@ -40,6 +42,10 @@ public final class Extendo {
         linkageServos = new SimpleServo[]{masterLinkage, followerLinkage};
     }
 
+    public double getLinkageTargetAngle() {
+        return linkageTargetAngle;
+    }
+
     /**
      * Allows for the driver to set the extendo's height with the joystick
      * It uses the min and max methods w/ some set minimums and maximums for how far the servo can go
@@ -47,7 +53,7 @@ public final class Extendo {
      * @param stick The value the joystick is giving to the code which allows us to control it with ease
      */
     public void setWithStick(double stick) {
-        this.setAngle(linkageTargetAngle + stick * STICK_MULT);
+        this.setAngle(getLinkageTargetAngle() + stick * STICK_MULT);
     }
 
     // Returns the state of the extendo
@@ -55,18 +61,25 @@ public final class Extendo {
         return state;
     }
 
-    public void setAngle(double angle) {
+    public boolean setAngle(double angle, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
         linkageTargetAngle = min(LINKAGE_MAX_ANGLE, max(LINKAGE_MIN_ANGLE, angle));
-        state = linkageTargetAngle == LINKAGE_MIN_ANGLE ?
+        state = getLinkageTargetAngle() == LINKAGE_MIN_ANGLE ?
                 ExtendoState.RETRACTED :
                 ExtendoState.RUNNING;
+
+        return true;
+    }
+
+    public boolean setAngle(double angle) {
+        return setAngle(angle, false);
     }
 
     // Runs each servo inside of the group to a certain angle base on what was given
     public boolean run(boolean isV4BUnsafe) {
         if (isV4BUnsafe) return false;
         for (SimpleServo servos : linkageServos) {
-            servos.turnToAngle(linkageTargetAngle);
+            servos.turnToAngle(getLinkageTargetAngle());
         }
 
         return true;
@@ -75,6 +88,6 @@ public final class Extendo {
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
         mTelemetry.addData("Extendo is: ", state);
-        mTelemetry.addData("Servo angle is: ", linkageTargetAngle);
+        mTelemetry.addData("Servo angle is: ", getLinkageTargetAngle());
     }
 }
