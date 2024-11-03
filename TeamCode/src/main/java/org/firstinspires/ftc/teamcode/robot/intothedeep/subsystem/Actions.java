@@ -15,10 +15,10 @@ public class Actions {
                 lockSubsytems(),
                 new ParallelAction(
                         new SequentialAction(
-                                setV4B(Intake.V4BAngles.UP),
+                                setV4B(Intake.V4BAngle.UP),
                                 setExtendo(Extendo.LINKAGE_MIN_ANGLE)
                         ),
-                        setLift(Lift.SlideTicks.RETRACTED),
+                        setLift(Lift.Ticks.RETRACTED),
                         setArm(Arm.Position.COLLECTING),
                         setClaw(false)
                 ),
@@ -42,7 +42,7 @@ public class Actions {
 
     private Action lockSubsytems() {
         return new InstantAction(() -> {
-            robot.intake.isLocked = true;
+            robot.intake.isV4BLocked = true;
             robot.extendo.isLocked = true;
             robot.lift.isLocked = true;
             robot.arm.isLocked = true;
@@ -53,7 +53,7 @@ public class Actions {
 
     private Action unlockSubsytems() {
         return new InstantAction(() -> {
-            robot.intake.isLocked = false;
+            robot.intake.isV4BLocked = false;
             robot.extendo.isLocked = false;
             robot.lift.isLocked = false;
             robot.arm.isLocked = false;
@@ -62,34 +62,34 @@ public class Actions {
         });
     }
 
-    private Action setV4B(Intake.V4BAngles angles) {
-        if (robot.intake.getTargetAngle() == angles) return new NullAction();
+    private Action setV4B(Intake.V4BAngle angle) {
+        if (robot.intake.getTargetV4BAngle() == angle) return new NullAction();
 
         return new ParallelAction(
-                new InstantAction(() -> robot.intake.setTarget(angles, true)),
+                new InstantAction(() -> robot.intake.setTargetV4BAngle(angle, true)),
                 new SleepAction(0.5)
         );
     }
 
     private Action setExtendo(double angle) {
-        if (robot.extendo.getLinkageTargetAngle() == angle) return new NullAction();
+        if (robot.extendo.getTargetAngle() == angle) return new NullAction();
 
         return new ParallelAction(
-                new InstantAction(() -> robot.extendo.setAngle(angle, true)),
+                new InstantAction(() -> robot.extendo.setTargetAngle(angle, true)),
                 new SleepAction(0.5)
         );
     }
 
-    private Action setLift(Lift.SlideTicks slideState) {
-        if (robot.lift.getSetPoint() == slideState) return new NullAction();
+    private Action setLift(Lift.Ticks ticks) {
+        if (robot.lift.getTargetTicks() == ticks) return new NullAction();
 
-        return new InstantAction(() -> robot.lift.setPosition(slideState, true));
+        return new InstantAction(() -> robot.lift.setTargetTicks(ticks, true));
     }
 
-    private Action setArm(Arm.Position armPos) {
-        if (robot.arm.getTargetPosition() == armPos) return new NullAction();
+    private Action setArm(Arm.Position position) {
+        if (robot.arm.getTargetPosition() == position) return new NullAction();
 
-        return new InstantAction(() -> robot.arm.setTarget(armPos, true));
+        return new InstantAction(() -> robot.arm.setTargetPosition(position, true));
     }
 
     private Action setClaw(boolean isClosed) {
@@ -97,6 +97,6 @@ public class Actions {
     }
 
     private Action setRollers(double power) {
-        return new InstantAction(() -> robot.intake.setServoPower(power, true));
+        return new InstantAction(() -> robot.intake.setRollerPower(power, true));
     }
 }

@@ -1,12 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.LEFT_TRIGGER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.RIGHT_TRIGGER;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -15,21 +10,17 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 
 @Config
 @TeleOp(name = "Arm Prototype",  group = "Prototype")
 public final class ArmPrototype extends LinearOpMode {
-    Lift lift;
-    Arm arm;
     @Override
     public void runOpMode() throws InterruptedException {
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
 
-        lift = new Lift(hardwareMap);
-        arm = new Arm(hardwareMap);
+        Lift lift = new Lift(hardwareMap);
+        Arm arm = new Arm(hardwareMap);
 
         waitForStart();
 
@@ -37,7 +28,7 @@ public final class ArmPrototype extends LinearOpMode {
             gamepadEx1.readButtons();
 
             Arm.Position targetPosition = Arm.Position.COLLECTING;
-            Lift.SlideTicks targetTicks = Lift.SlideTicks.RETRACTED;
+            Lift.Ticks targetTicks = Lift.Ticks.RETRACTED;
 
             boolean isAPressed = gamepadEx1.wasJustPressed(GamepadKeys.Button.A);
             boolean isDPADUpPressed = gamepadEx1.wasJustPressed(DPAD_UP);
@@ -63,28 +54,28 @@ public final class ArmPrototype extends LinearOpMode {
 
             switch (targetTicks) {
                 case RETRACTED:
-                    if (isDPADUpPressed) targetTicks = Lift.SlideTicks.BASKET;
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.BASKET;
                     break;
                 case BASKET:
-                    if (isDPADUpPressed) targetTicks = Lift.SlideTicks.CHAMBER1;
-                    if (isDPADDownPressed) targetTicks = Lift.SlideTicks.RETRACTED;
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.CHAMBER1;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.RETRACTED;
                     break;
                 case CHAMBER1:
-                    if (isDPADUpPressed) targetTicks = Lift.SlideTicks.CLIMB;
-                    if (isDPADDownPressed) targetTicks = Lift.SlideTicks.BASKET;
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.CLIMB;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.BASKET;
                     break;
                 case CLIMB:
-                    if (isDPADUpPressed) targetTicks = Lift.SlideTicks.EXTENDED;
-                    if (isDPADDownPressed) targetTicks = Lift.SlideTicks.CHAMBER1;
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.EXTENDED;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.CHAMBER1;
                     break;
                 case EXTENDED:
-                    if (isDPADDownPressed) targetTicks = Lift.SlideTicks.CLIMB;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.CLIMB;
                     break;
             }
-            arm.setTarget(targetPosition);
-            lift.setPosition(targetTicks);
+            arm.setTargetPosition(targetPosition);
+            lift.setTargetTicks(targetTicks);
 
-            arm.run(lift.getSetPoint().isArmUnsafe());
+            arm.run(lift.getTargetTicks().isArmUnsafe());
             lift.run();
         }
     }

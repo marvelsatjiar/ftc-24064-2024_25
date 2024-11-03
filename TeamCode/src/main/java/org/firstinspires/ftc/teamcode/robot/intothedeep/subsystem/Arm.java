@@ -69,7 +69,7 @@ public final class Arm {
         armServos[1].setInverted(true);
     }
 
-    public boolean setTarget(Position angle, boolean isOverride) {
+    public boolean setTargetPosition(Position angle, boolean isOverride) {
         if (isLocked && !isOverride) return false;
         targetPosition = angle;
 
@@ -80,8 +80,8 @@ public final class Arm {
         return targetPosition;
     }
 
-    public boolean setTarget(Position angle) {
-        return setTarget(angle, false);
+    public boolean setTargetPosition(Position angle) {
+        return setTargetPosition(angle, false);
     }
 
      public void run(boolean liftBelowSafety) {

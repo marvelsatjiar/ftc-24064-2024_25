@@ -89,19 +89,19 @@ public final class MainTeleOp extends LinearOpMode {
             double leftStick = gamepadEx2.getLeftY();
             if (leftStick != 0) robot.extendo.setWithStick(leftStick);
 
-            if (gamepadEx1.wasJustPressed(DPAD_UP)) robot.intake.setTarget(Intake.V4BAngles.UP);
-            if (gamepadEx1.wasJustPressed(DPAD_DOWN)) robot.intake.setTarget(Intake.V4BAngles.DOWN);
-            if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) robot.intake.setTarget(Intake.V4BAngles.CLEARING);
+            if (gamepadEx1.wasJustPressed(DPAD_UP)) robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
+            if (gamepadEx1.wasJustPressed(DPAD_DOWN)) robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
+            if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
 
             double trigger1 = gamepadEx1.getTrigger(RIGHT_TRIGGER) - gamepadEx1.getTrigger(LEFT_TRIGGER);
             double trigger2 = gamepadEx2.getTrigger(RIGHT_TRIGGER) - gamepadEx2.getTrigger(LEFT_TRIGGER);
             double intake = trigger1 != 0 ? trigger1 : trigger2;
 
-            robot.intake.setServoPower(intake);
+            robot.intake.setRollerPower(intake);
 
-            if (gamepadEx2.wasJustPressed(DPAD_UP)) robot.arm.setTarget(Arm.Position.COLLECTING);
-            if (gamepadEx2.wasJustPressed(DPAD_DOWN)) robot.arm.setTarget(Arm.Position.HIGH_BASKET);
-            if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) robot.arm.setTarget(Arm.Position.HIGH_CHAMBER_UPWARDS);
+            if (gamepadEx2.wasJustPressed(DPAD_UP)) robot.arm.setTargetPosition(Arm.Position.COLLECTING);
+            if (gamepadEx2.wasJustPressed(DPAD_DOWN)) robot.arm.setTargetPosition(Arm.Position.HIGH_BASKET);
+            if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) robot.arm.setTargetPosition(Arm.Position.HIGH_CHAMBER_UPWARDS);
 
         }
     }

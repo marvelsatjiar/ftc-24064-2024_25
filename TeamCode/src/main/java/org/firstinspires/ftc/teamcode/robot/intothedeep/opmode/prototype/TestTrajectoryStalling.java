@@ -4,10 +4,11 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 
-//@Autonomous(name = "Test Trajectory Stalling", group = "Prototype")
+@Disabled
 public final class TestTrajectoryStalling /*extends AbstractAuto*/ {
 //    @Override
 //    protected Pose2d getStartPose() {

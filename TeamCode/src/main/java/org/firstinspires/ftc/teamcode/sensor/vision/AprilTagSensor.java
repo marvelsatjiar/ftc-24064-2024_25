@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+@Deprecated
 @Config
 public final class AprilTagSensor {
     public static final int STEP_SIZE = 100;

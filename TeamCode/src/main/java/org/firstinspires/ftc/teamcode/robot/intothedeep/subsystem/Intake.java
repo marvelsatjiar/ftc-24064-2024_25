@@ -17,9 +17,9 @@ public final class Intake {
             V4B_UP_ANGLE = 110,
             V4B_UNSAFE_THRESHOLD_ANGLE = 111;
 
-    private V4BAngles targetAngle = V4BAngles.UP;
+    private V4BAngle targetAngle = V4BAngle.UP;
 
-    public enum V4BAngles {
+    public enum V4BAngle {
         DOWN,
         CLEARING,
         UP,
@@ -39,7 +39,7 @@ public final class Intake {
         }
     }
 
-    public boolean isLocked = false;
+    public boolean isV4BLocked = false;
 
     public boolean isRollerLocked = false;
 
@@ -56,22 +56,22 @@ public final class Intake {
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
     }
 
-    public boolean setTarget(V4BAngles angle, boolean isOverride) {
-        if (isLocked && !isOverride) return false;
+    public boolean setTargetV4BAngle(V4BAngle angle, boolean isOverride) {
+        if (isV4BLocked && !isOverride) return false;
         targetAngle = angle;
 
         return true;
     }
 
-    public boolean setTarget(V4BAngles angle) {
-        return setTarget(angle, false);
+    public boolean setTargetV4BAngle(V4BAngle angle) {
+        return setTargetV4BAngle(angle, false);
     }
 
-    public Intake.V4BAngles getTargetAngle() {
+    public V4BAngle getTargetV4BAngle() {
         return targetAngle;
     }
 
-    public boolean setServoPower(double power, boolean isOverride) {
+    public boolean setRollerPower(double power, boolean isOverride) {
         if (isRollerLocked && !isOverride) return false;
 
         for (CRServo servos : intakeGroup)
@@ -80,8 +80,8 @@ public final class Intake {
         return true;
     }
 
-    public boolean setServoPower(double power) {
-        return setServoPower(power, false);
+    public boolean setRollerPower(double power) {
+        return setRollerPower(power, false);
     }
 
     public void run() {

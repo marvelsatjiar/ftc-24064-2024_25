@@ -65,7 +65,7 @@ public final class Lift {
 
     private State currentState = new State();
 
-    public enum SlideTicks {
+    public enum Ticks {
         RETRACTED,
         BASKET,
         CHAMBER1,
@@ -95,7 +95,7 @@ public final class Lift {
         }
     }
 
-    private SlideTicks setPoint = SlideTicks.RETRACTED;
+    private Ticks targetTicks = Ticks.RETRACTED;
 
     public boolean isLocked = false;
 
@@ -117,20 +117,20 @@ public final class Lift {
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
-    public SlideTicks getSetPoint() {
-        return setPoint;
+    public Ticks getTargetTicks() {
+        return targetTicks;
     }
 
-    public boolean setPosition(SlideTicks slideTicks, boolean isOverride ) {
+    public boolean setTargetTicks(Ticks ticks, boolean isOverride ) {
         if (isLocked && !isOverride) return false;
-        setPoint = slideTicks;
-        controller.setTarget(new State(getSetPoint().getTicks()));
+        targetTicks = ticks;
+        controller.setTarget(new State(getTargetTicks().getTicks()));
 
         return true;
     }
 
-    public boolean setPosition(SlideTicks slideTicks) {
-        return setPosition(slideTicks, false);
+    public boolean setTargetTicks(Ticks ticks) {
+        return setTargetTicks(ticks, false);
     }
 
     /**
@@ -163,8 +163,8 @@ public final class Lift {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("Target position (ticks)", getSetPoint().getTicks());
-        mTelemetry.addData("Current state (name)", getSetPoint().name());
+        mTelemetry.addData("Target position (ticks)", getTargetTicks().getTicks());
+        mTelemetry.addData("Current state (name)", getTargetTicks().name());
     }
 
     public void printNumericalTelemetry() {

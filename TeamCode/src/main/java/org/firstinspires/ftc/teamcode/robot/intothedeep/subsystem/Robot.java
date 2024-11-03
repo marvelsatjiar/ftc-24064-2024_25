@@ -68,11 +68,11 @@ public final class Robot {
 
     // Runs all the necessary mechanisms
     public void run() {
-        extendo.run(intake.getTargetAngle().isV4BUnsafe());
+        extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
         intake.run();
         lift.run();
         claw.run();
-        arm.run(lift.getSetPoint().isArmUnsafe());
+        arm.run(lift.getTargetTicks().isArmUnsafe());
     }
 
     // Prints data on the driver hub for debugging and other uses
