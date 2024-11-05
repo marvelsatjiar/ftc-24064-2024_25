@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
@@ -30,6 +32,8 @@ public final class IntakePrototype extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Extendo extendo = new Extendo(hardwareMap);
 
+        Extendo.State targetPosition = Extendo.State.RETRACTED;
+
         waitForStart();
 
         while (opModeIsActive()) {
@@ -44,10 +48,13 @@ public final class IntakePrototype extends LinearOpMode {
 
             intake.setRollerPower(trigger1);
 
-            double leftStick = gamepadEx1.getLeftY();
-            if (leftStick != 0) extendo.setWithStick(leftStick);
+            if (gamepadEx1.wasJustPressed(A)) targetPosition = Extendo.State.RETRACTED;
+            if (gamepadEx1.wasJustPressed(B)) targetPosition = Extendo.State.EXTENDED;
 
             intake.run();
+
+            extendo.setTargetAngle(targetPosition);
+
             extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
 
             extendo.printTelemetry();

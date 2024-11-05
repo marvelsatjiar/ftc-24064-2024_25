@@ -19,23 +19,16 @@ public final class Robot {
     public final Lift lift;
     public final Arm arm;
 
-    private enum RobotFSM {
+    public enum State {
         NEUTRAL,
-        SUBMERSIBLE_INTAKE_TO_TRANSFER,
-        SAMPLE_TO_BE_TRANSFERRED,
-        SCORE_BAR_1,
-        SCORE_BAR_2,
-        SCORE_LOW_BUCKET,
-        SCORE_HIGH_BUCKET,
-        WALL_SPECIMEN,
-        INTAKE_INSIDE_SUBMERSIBLE,
-        INTAKE_OUTSIDE_SUBMERSIBLE,
-        HANG_SETUP,
-        HANG_BAR_1,
-        HANG_BAR_2
+        SETUP_INTAKE,
+        TO_BE_TRANSFERRED,
+        TRANSFERRED,
+        SETUP_SCORE_HIGH_BASKET,
+        SETUP_SCORE_HIGH_CHAMBER_UPWARDS
     }
 
-    RobotFSM currentState = RobotFSM.NEUTRAL;
+    State currentState = State.NEUTRAL;
 
     /**
      * Constructor used in teleOp classes that makes the current pose2d, 0

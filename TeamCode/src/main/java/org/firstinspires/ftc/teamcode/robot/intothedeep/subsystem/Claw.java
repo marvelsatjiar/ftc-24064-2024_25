@@ -28,6 +28,10 @@ public final class Claw {
         return setClamped(isActivated, false);
     }
 
+    public boolean getClamped() {
+        return claw.isActivated();
+    }
+
     public void run(){
         claw.updateAngles(DEPOSIT_ANGLE, CLAMP_ANGLE);
         claw.run();

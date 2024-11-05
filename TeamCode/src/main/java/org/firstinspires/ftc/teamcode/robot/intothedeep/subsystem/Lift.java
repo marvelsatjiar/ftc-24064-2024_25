@@ -45,9 +45,10 @@ public final class Lift {
     public static int
             MAX_MOTOR_TICKS = 2350,
             MIN_MOTOR_TICKS = -5,
-            BASKET_TICKS = 800,
-            CHAMBER1_TICKS = 600,
-            CHAMBER2_TICKS = 1000,
+            HIGH_BASKET_TICKS = 800,
+            LOW_CHAMBER_TICKS = 600,
+            HIGH_CHAMBER_UPWARDS_TICKS = 1000,
+            HIGH_CHAMBER_DOWNWARDS_TICKS = 1200,
             CLIMB_TICKS = 1200,
             UNSAFE_THRESHOLD_TICKS = 50;
     public static double
@@ -67,20 +68,23 @@ public final class Lift {
 
     public enum Ticks {
         RETRACTED,
-        BASKET,
-        CHAMBER1,
-        CHAMBER2,
+        HIGH_BASKET,
+        LOW_CHAMBER,
+        HIGH_CHAMBER_UPWARDS,
+        HIGH_CHAMBER_DOWNWARDS,
         CLIMB,
         EXTENDED;
 
         private int getTicks() {
             switch (this) {
-                case BASKET:
-                    return BASKET_TICKS;
-                case CHAMBER1:
-                    return CHAMBER1_TICKS;
-                case CHAMBER2:
-                    return CHAMBER2_TICKS;
+                case HIGH_BASKET:
+                    return HIGH_BASKET_TICKS;
+                case LOW_CHAMBER:
+                    return LOW_CHAMBER_TICKS;
+                case HIGH_CHAMBER_UPWARDS:
+                    return HIGH_CHAMBER_UPWARDS_TICKS;
+                case HIGH_CHAMBER_DOWNWARDS:
+                    return HIGH_CHAMBER_DOWNWARDS_TICKS;
                 case CLIMB:
                     return CLIMB_TICKS;
                 case EXTENDED:

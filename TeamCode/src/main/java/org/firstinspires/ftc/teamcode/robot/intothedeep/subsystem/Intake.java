@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -46,11 +49,11 @@ public final class Intake {
     public Intake(HardwareMap hardwareMap) {
         CRServo intakeFollower = new CRServo(hardwareMap, "intakeFollower");
         CRServo intakeMaster = new CRServo(hardwareMap, "intakeMaster");
-        ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", 0, 180);
-        ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", 0, 180);
+        ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
+        ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
 
         intakeFollower.setInverted(true);
-        intakeGearFollower.setInverted(true);
+        intakeGearMaster.setInverted(true);
 
         intakeGroup = new CRServo[] {intakeFollower, intakeMaster};
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};

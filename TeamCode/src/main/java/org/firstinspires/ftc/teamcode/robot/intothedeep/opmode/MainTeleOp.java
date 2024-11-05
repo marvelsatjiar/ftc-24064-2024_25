@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.LEFT_TRIGGER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.RIGHT_TRIGGER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static java.lang.Math.atan2;
@@ -22,10 +22,9 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 
 @TeleOp(group = "24064 Main")
@@ -86,22 +85,11 @@ public final class MainTeleOp extends LinearOpMode {
                     )
             );
 
-            double leftStick = gamepadEx2.getLeftY();
-            if (leftStick != 0) robot.extendo.setWithStick(leftStick);
-
-            if (gamepadEx1.wasJustPressed(DPAD_UP)) robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
-            if (gamepadEx1.wasJustPressed(DPAD_DOWN)) robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
-            if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
-
-            double trigger1 = gamepadEx1.getTrigger(RIGHT_TRIGGER) - gamepadEx1.getTrigger(LEFT_TRIGGER);
-            double trigger2 = gamepadEx2.getTrigger(RIGHT_TRIGGER) - gamepadEx2.getTrigger(LEFT_TRIGGER);
-            double intake = trigger1 != 0 ? trigger1 : trigger2;
-
-            robot.intake.setRollerPower(intake);
-
-            if (gamepadEx2.wasJustPressed(DPAD_UP)) robot.arm.setTargetPosition(Arm.Position.COLLECTING);
-            if (gamepadEx2.wasJustPressed(DPAD_DOWN)) robot.arm.setTargetPosition(Arm.Position.HIGH_BASKET);
-            if (gamepadEx2.wasJustPressed(DPAD_RIGHT)) robot.arm.setTargetPosition(Arm.Position.HIGH_CHAMBER_UPWARDS);
+            if (keyPressed(2, A)) RobotActions.retractForTransfer();
+            if (keyPressed(2, B)) RobotActions.transferToClaw();
+            if (keyPressed(2, X)) RobotActions.setupScoreHighBasket();
+            if (keyPressed(2, Y)) RobotActions.setupScoreHighChamberUpwards();
+            if (keyPressed(2, DPAD_UP)) RobotActions.extendIntake();
 
         }
     }
