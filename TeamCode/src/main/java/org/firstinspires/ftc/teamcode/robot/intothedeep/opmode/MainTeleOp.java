@@ -85,11 +85,11 @@ public final class MainTeleOp extends LinearOpMode {
                     )
             );
 
-            if (keyPressed(2, A)) RobotActions.retractForTransfer();
-            if (keyPressed(2, B)) RobotActions.transferToClaw();
-            if (keyPressed(2, X)) RobotActions.setupScoreHighBasket();
-            if (keyPressed(2, Y)) RobotActions.setupScoreHighChamberUpwards();
-            if (keyPressed(2, DPAD_UP)) RobotActions.extendIntake();
+            if (keyPressed(2, A)) actionScheduler.addAction(RobotActions.retractForTransfer());
+            if (keyPressed(2, B)) actionScheduler.addAction(RobotActions.transferToClaw());
+            if (keyPressed(2, X)) actionScheduler.addAction(RobotActions.setupScoreBasket(true));
+            if (keyPressed(2, Y)) actionScheduler.addAction(RobotActions.setupScoreChamber(true));
+            if (keyPressed(2, DPAD_UP)) actionScheduler.addAction(RobotActions.extendIntake());
 
         }
     }

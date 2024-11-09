@@ -18,55 +18,41 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 80,
-            NEUTRAL_WRIST_ANGLE = 110,
+            NEUTRAL_ARM_ANGLE = 50,
+            NEUTRAL_WRIST_ANGLE = 270,
             COLLECTING_ARM_ANGLE = 104,
             COLLECTING_WRIST_ANGLE = 110,
-            HIGH_BASKET_ARM_ANGLE = 60,
-            HIGH_BASKET_WRIST_ANGLE = 50,
-            LOW_BASKET_ARM_ANGLE = 60,
-            LOW_BASKET_WRIST_ANGLE = 50,
-            HIGH_CHAMBER_UPWARDS_ARM_ANGLE = 160,
-            HIGH_CHAMBER_UPWARDS_WRIST_ANGLE = 200,
-            HIGH_CHAMBER_DOWNWARDS_ARM_ANGLE = 40,
-            HIGH_CHAMBER_DOWNWARDS_WRIST_ANGLE = 200;
+            BASKET_ARM_ANGLE = 0,
+            BASKET_WRIST_ANGLE = 270,
+            CHAMBER_ARM_ANGLE = 70,
+            CHAMBER_WRIST_ANGLE = 180;
 
     public enum Position {
         NEUTRAL,
         COLLECTING,
-        HIGH_BASKET,
-        LOW_BASKET,
-        HIGH_CHAMBER_UPWARDS,
-        HIGH_CHAMBER_DOWNWARDS;
+        BASKET,
+        CHAMBER;
 
         public double getArmAngle() {
             switch (this) {
-                case HIGH_BASKET: return HIGH_BASKET_ARM_ANGLE;
-                case LOW_BASKET: return LOW_BASKET_ARM_ANGLE;
-                case HIGH_CHAMBER_UPWARDS: return HIGH_CHAMBER_UPWARDS_ARM_ANGLE;
-                case HIGH_CHAMBER_DOWNWARDS: return HIGH_CHAMBER_DOWNWARDS_ARM_ANGLE;
-                case COLLECTING: return COLLECTING_ARM_ANGLE;
-                case NEUTRAL:
-                default:
-                    return NEUTRAL_ARM_ANGLE;
+                case BASKET:            return BASKET_ARM_ANGLE;
+                case CHAMBER:           return CHAMBER_ARM_ANGLE;
+                case COLLECTING:        return COLLECTING_ARM_ANGLE;
+                case NEUTRAL: default:  return NEUTRAL_ARM_ANGLE;
             }
         }
 
         public double getWristAngle() {
             switch (this) {
-                case HIGH_BASKET: return HIGH_BASKET_WRIST_ANGLE;
-                case LOW_BASKET: return LOW_BASKET_WRIST_ANGLE;
-                case HIGH_CHAMBER_UPWARDS: return HIGH_CHAMBER_UPWARDS_WRIST_ANGLE;
-                case HIGH_CHAMBER_DOWNWARDS: return HIGH_CHAMBER_DOWNWARDS_WRIST_ANGLE;
-                case COLLECTING: return COLLECTING_WRIST_ANGLE;
-                case NEUTRAL:
-                default:
-                    return NEUTRAL_WRIST_ANGLE;
+                case BASKET:            return BASKET_WRIST_ANGLE;
+                case CHAMBER:           return CHAMBER_WRIST_ANGLE;
+                case COLLECTING:        return COLLECTING_WRIST_ANGLE;
+                case NEUTRAL: default:  return NEUTRAL_WRIST_ANGLE;
             }
         }
     }
 
-    private Position targetPosition;
+    private Position targetPosition = Position.NEUTRAL;
 
     public boolean isLocked = false;
 
@@ -96,7 +82,7 @@ public final class Arm {
     }
 
      public void run(boolean liftBelowSafety) {
-        boolean isArmDown = getTargetPosition() == Position.HIGH_CHAMBER_DOWNWARDS;
+        boolean isArmDown = getTargetPosition() == Position.CHAMBER;
         if (liftBelowSafety && isArmDown) targetPosition = Position.COLLECTING;
 
         for (ServoEx servos : armServos) {

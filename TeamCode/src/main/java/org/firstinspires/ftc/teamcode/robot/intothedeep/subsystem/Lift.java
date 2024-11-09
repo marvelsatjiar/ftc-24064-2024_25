@@ -43,12 +43,12 @@ public final class Lift {
      * Remember to set these constants correctly! (in ticks)
      */
     public static int
-            MAX_MOTOR_TICKS = 2350,
+            MAX_MOTOR_TICKS = 2970,
             MIN_MOTOR_TICKS = -5,
-            HIGH_BASKET_TICKS = 800,
+            LOW_BASKET_TICKS = 600,
+            HIGH_BASKET_TICKS = 2970,
             LOW_CHAMBER_TICKS = 600,
-            HIGH_CHAMBER_UPWARDS_TICKS = 1000,
-            HIGH_CHAMBER_DOWNWARDS_TICKS = 1200,
+            HIGH_CHAMBER_TICKS = 1200,
             CLIMB_TICKS = 1200,
             UNSAFE_THRESHOLD_TICKS = 50;
     public static double
@@ -68,34 +68,27 @@ public final class Lift {
 
     public enum Ticks {
         RETRACTED,
+        LOW_BASKET,
         HIGH_BASKET,
         LOW_CHAMBER,
-        HIGH_CHAMBER_UPWARDS,
-        HIGH_CHAMBER_DOWNWARDS,
+        HIGH_CHAMBER,
         CLIMB,
         EXTENDED;
 
-        private int getTicks() {
+        private int toTicks() {
             switch (this) {
-                case HIGH_BASKET:
-                    return HIGH_BASKET_TICKS;
-                case LOW_CHAMBER:
-                    return LOW_CHAMBER_TICKS;
-                case HIGH_CHAMBER_UPWARDS:
-                    return HIGH_CHAMBER_UPWARDS_TICKS;
-                case HIGH_CHAMBER_DOWNWARDS:
-                    return HIGH_CHAMBER_DOWNWARDS_TICKS;
-                case CLIMB:
-                    return CLIMB_TICKS;
-                case EXTENDED:
-                    return MAX_MOTOR_TICKS;
-                default:
-                    return MIN_MOTOR_TICKS;
+                case LOW_BASKET:                return LOW_BASKET_TICKS;
+                case HIGH_BASKET:               return HIGH_BASKET_TICKS;
+                case LOW_CHAMBER:               return LOW_CHAMBER_TICKS;
+                case HIGH_CHAMBER:              return HIGH_CHAMBER_TICKS;
+                case CLIMB:                     return CLIMB_TICKS;
+                case EXTENDED:                  return MAX_MOTOR_TICKS;
+                case RETRACTED: default:        return MIN_MOTOR_TICKS;
             }
         }
 
         public boolean isArmUnsafe() {
-            return getTicks() <= UNSAFE_THRESHOLD_TICKS;
+            return toTicks() <= UNSAFE_THRESHOLD_TICKS;
         }
     }
 
@@ -111,7 +104,7 @@ public final class Lift {
         MotorEx leader = new MotorEx(hardwareMap, "leader", RPM_435);
         MotorEx follower = new MotorEx(hardwareMap, "follower", RPM_435);
 
-        encoder = new MotorEx(hardwareMap, "right back", RPM_435).encoder;
+        encoder = new MotorEx(hardwareMap, "left front", RPM_435).encoder;
         encoder.reset();
 
         follower.setInverted(true);
@@ -128,7 +121,7 @@ public final class Lift {
     public boolean setTargetTicks(Ticks ticks, boolean isOverride ) {
         if (isLocked && !isOverride) return false;
         targetTicks = ticks;
-        controller.setTarget(new State(getTargetTicks().getTicks()));
+        controller.setTarget(new State(getTargetTicks().toTicks()));
 
         return true;
     }
@@ -167,7 +160,7 @@ public final class Lift {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("Target position (ticks)", getTargetTicks().getTicks());
+        mTelemetry.addData("Target position (ticks)", getTargetTicks().toTicks());
         mTelemetry.addData("Current state (name)", getTargetTicks().name());
     }
 

@@ -54,21 +54,42 @@ public class RobotActions {
         );
     }
 
-    public static Action setupScoreHighBasket() {
-        if (robot.currentState == Robot.State.SETUP_SCORE_HIGH_BASKET) return new NullAction();
+    public static Action setupScoreBasket(boolean isHighBasket) {
+        if (robot.currentState == Robot.State.SETUP_SCORE_BASKET) return new NullAction();
         return new SequentialAction(
-                setLift(Lift.Ticks.HIGH_BASKET),
-                setArm(Arm.Position.HIGH_BASKET),
-                new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_HIGH_BASKET)
+                setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET),
+                setArm(Arm.Position.BASKET),
+                new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
         );
     }
 
-    public static Action setupScoreHighChamberUpwards() {
-        if (robot.currentState == Robot.State.SETUP_SCORE_HIGH_CHAMBER_UPWARDS) return new NullAction();
+    public static Action setupScoreChamber(boolean isHighChamber) {
+        if (robot.currentState == Robot.State.SETUP_SCORE_CHAMBER) return new NullAction();
         return new SequentialAction(
-                setLift(Lift.Ticks.HIGH_CHAMBER_UPWARDS),
-                setArm(Arm.Position.HIGH_CHAMBER_UPWARDS),
-                new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_HIGH_CHAMBER_UPWARDS)
+                setLift(isHighChamber? Lift.Ticks.HIGH_CHAMBER : Lift.Ticks.LOW_CHAMBER),
+                setArm(Arm.Position.CHAMBER),
+                new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_CHAMBER)
+        );
+    }
+
+    public static Action scoreBasketandRetract() {
+        if (robot.currentState == Robot.State.SCORED) return new NullAction();
+        return new SequentialAction(
+                setClaw(false),
+                setArm(Arm.Position.COLLECTING),
+                setLift(Lift.Ticks.RETRACTED)
+        );
+    }
+
+    public static Action scoreChamberandRetract() {
+        if (robot.currentState == Robot.State.SCORED) return new NullAction();
+        return new SequentialAction(
+                new ParallelAction(
+                        setClaw(false),
+                        setLift(Lift.Ticks.EXTENDED)
+                        ),
+                setArm(Arm.Position.COLLECTING),
+                setLift(Lift.Ticks.RETRACTED)
         );
     }
 

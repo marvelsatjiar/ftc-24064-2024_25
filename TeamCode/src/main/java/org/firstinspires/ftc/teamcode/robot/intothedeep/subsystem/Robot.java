@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -21,11 +22,13 @@ public final class Robot {
 
     public enum State {
         NEUTRAL,
+        INTAKE_WALL,
         SETUP_INTAKE,
         TO_BE_TRANSFERRED,
         TRANSFERRED,
-        SETUP_SCORE_HIGH_BASKET,
-        SETUP_SCORE_HIGH_CHAMBER_UPWARDS
+        SETUP_SCORE_BASKET,
+        SETUP_SCORE_CHAMBER,
+        SCORED
     }
 
     State currentState = State.NEUTRAL;
@@ -70,6 +73,7 @@ public final class Robot {
 
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
+        mTelemetry.addData("Robot State", robot.currentState.name());
         extendo.printTelemetry();
         lift.printTelemetry();
         mTelemetry.update();

@@ -41,18 +41,15 @@ public final class ArmTransferPrototype extends LinearOpMode {
 
             switch (targetPosition) {
                 case COLLECTING:
-                    if (isAPressed) targetPosition = Arm.Position.HIGH_BASKET;
+                    if (isAPressed) targetPosition = Arm.Position.BASKET;
                     break;
-                case HIGH_BASKET:
-                    if (isAPressed) targetPosition = Arm.Position.LOW_BASKET;
+                case BASKET:
+                    if (isAPressed) targetPosition = Arm.Position.CHAMBER;
                     break;
-                case LOW_BASKET:
-                    if (isAPressed) targetPosition = Arm.Position.HIGH_CHAMBER_UPWARDS;
+                case CHAMBER:
+                    if (isAPressed) targetPosition = Arm.Position.NEUTRAL;
                     break;
-                case HIGH_CHAMBER_UPWARDS:
-                    if (isAPressed) targetPosition = Arm.Position.HIGH_CHAMBER_DOWNWARDS;
-                    break;
-                case HIGH_CHAMBER_DOWNWARDS:
+                case NEUTRAL:
                     if (isAPressed) targetPosition = Arm.Position.COLLECTING;
                     break;
             }

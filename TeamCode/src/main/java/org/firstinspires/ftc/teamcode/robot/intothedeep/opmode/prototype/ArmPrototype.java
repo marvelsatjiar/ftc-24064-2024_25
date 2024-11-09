@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -13,7 +11,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 
 @Config
 @TeleOp(name = "Arm Prototype",  group = "Prototype")
@@ -37,18 +34,15 @@ public final class ArmPrototype extends LinearOpMode {
 
             switch (targetPosition) {
                 case COLLECTING:
-                    if (isAPressed) targetPosition = Arm.Position.HIGH_BASKET;
+                    if (isAPressed) targetPosition = Arm.Position.BASKET;
                     break;
-                case HIGH_BASKET:
-                    if (isAPressed) targetPosition = Arm.Position.LOW_BASKET;
+                case BASKET:
+                    if (isAPressed) targetPosition = Arm.Position.CHAMBER;
                     break;
-                case LOW_BASKET:
-                    if (isAPressed) targetPosition = Arm.Position.HIGH_CHAMBER_UPWARDS;
+                case CHAMBER:
+                    if (isAPressed) targetPosition = Arm.Position.NEUTRAL;
                     break;
-                case HIGH_CHAMBER_UPWARDS:
-                    if (isAPressed) targetPosition = Arm.Position.HIGH_CHAMBER_DOWNWARDS;
-                    break;
-                case HIGH_CHAMBER_DOWNWARDS:
+                case NEUTRAL:
                     if (isAPressed) targetPosition = Arm.Position.COLLECTING;
                     break;
             }
