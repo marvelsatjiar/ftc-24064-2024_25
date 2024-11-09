@@ -27,22 +27,13 @@ public final class Arm {
             CHAMBER_ARM_ANGLE = 70,
             CHAMBER_WRIST_ANGLE = 180;
 
-    public enum Position {
+    public enum WristAngle {
         NEUTRAL,
         COLLECTING,
         BASKET,
         CHAMBER;
 
-        public double getArmAngle() {
-            switch (this) {
-                case BASKET:            return BASKET_ARM_ANGLE;
-                case CHAMBER:           return CHAMBER_ARM_ANGLE;
-                case COLLECTING:        return COLLECTING_ARM_ANGLE;
-                case NEUTRAL: default:  return NEUTRAL_ARM_ANGLE;
-            }
-        }
-
-        public double getWristAngle() {
+        public double getAngle() {
             switch (this) {
                 case BASKET:            return BASKET_WRIST_ANGLE;
                 case CHAMBER:           return CHAMBER_WRIST_ANGLE;
@@ -52,7 +43,25 @@ public final class Arm {
         }
     }
 
-    private Position targetPosition = Position.NEUTRAL;
+    public enum ArmAngle {
+        NEUTRAL,
+        COLLECTING,
+        BASKET,
+        CHAMBER;
+
+        public double getAngle() {
+            switch (this) {
+                case BASKET:            return BASKET_ARM_ANGLE;
+                case CHAMBER:           return CHAMBER_ARM_ANGLE;
+                case COLLECTING:        return COLLECTING_ARM_ANGLE;
+                case NEUTRAL: default:  return NEUTRAL_ARM_ANGLE;
+            }
+        }
+
+
+    }
+    private WristAngle targetWristAngle = WristAngle.NEUTRAL;
+    private ArmAngle targetArmAngle = ArmAngle.NEUTRAL;
 
     public boolean isLocked = false;
 
@@ -66,34 +75,49 @@ public final class Arm {
         armServos[1].setInverted(true);
     }
 
-    public boolean setTargetPosition(Position angle, boolean isOverride) {
+    public boolean setArmAngle(ArmAngle angle, boolean isOverride) {
         if (isLocked && !isOverride) return false;
-        targetPosition = angle;
+        targetArmAngle = angle;
 
         return true;
     }
 
-    public boolean setTargetPosition(Position angle) {
-        return setTargetPosition(angle, false);
+    public boolean setArmAngle(ArmAngle angle) {
+        return setArmAngle(angle, false);
     }
 
-    public Position getTargetPosition() {
-        return targetPosition;
+    public boolean setWristAngle(WristAngle angle, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
+        targetWristAngle = angle;
+
+        return true;
+    }
+
+    public boolean setWristAngle(WristAngle angle) {
+        return setWristAngle(angle, false);
+    }
+
+    public ArmAngle getArmAngle() {
+        return targetArmAngle;
+    }
+
+    public WristAngle getWristAngle() {
+        return targetWristAngle;
     }
 
      public void run(boolean liftBelowSafety) {
-        boolean isArmDown = getTargetPosition() == Position.CHAMBER;
-        if (liftBelowSafety && isArmDown) targetPosition = Position.COLLECTING;
+        boolean isArmDown = getArmAngle() == ArmAngle.CHAMBER;
+        if (liftBelowSafety && isArmDown) targetArmAngle = ArmAngle.COLLECTING;
 
         for (ServoEx servos : armServos) {
-            servos.turnToAngle(getTargetPosition().getArmAngle());
+            servos.turnToAngle(getArmAngle().getAngle());
         }
 
-        wrist.turnToAngle(getTargetPosition().getWristAngle());
+        wrist.turnToAngle(getWristAngle().getAngle());
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("ARM STATE:", targetPosition.getArmAngle());
-        mTelemetry.addData("WRIST STATE:", targetPosition.getWristAngle());
+        mTelemetry.addData("ARM STATE:", targetArmAngle.getAngle());
+        mTelemetry.addData("WRIST STATE:", targetWristAngle.getAngle());
     }
 }

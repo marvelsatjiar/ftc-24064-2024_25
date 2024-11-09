@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 public final class MainTeleOp extends LinearOpMode {
     // Gamepads and the 'robot' class is imported to save lines and to import controls
     public static GamepadEx gamepadEx1, gamepadEx2;
-    static ActionScheduler actionScheduler;
+
 
     // Quick method that is used for better handling the controller
     public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
@@ -47,8 +47,6 @@ public final class MainTeleOp extends LinearOpMode {
 
         robot = new Robot(hardwareMap);
 
-        actionScheduler = new ActionScheduler();
-
         Pose2d endPose = Common.AUTO_END_POSE;
         if (endPose != null) {
             robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Common.IS_RED ? Common.FORWARD : Common.BACKWARD));
@@ -58,11 +56,10 @@ public final class MainTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Read sensors + gamepads:
-            robot.run();
             robot.readSensors();
-            robot.printTelemetry();
             gamepadEx1.readButtons();
             gamepadEx2.readButtons();
+
 
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
@@ -85,12 +82,14 @@ public final class MainTeleOp extends LinearOpMode {
                     )
             );
 
-            if (keyPressed(2, A)) actionScheduler.addAction(RobotActions.retractForTransfer());
-            if (keyPressed(2, B)) actionScheduler.addAction(RobotActions.transferToClaw());
-            if (keyPressed(2, X)) actionScheduler.addAction(RobotActions.setupScoreBasket(true));
-            if (keyPressed(2, Y)) actionScheduler.addAction(RobotActions.setupScoreChamber(true));
-            if (keyPressed(2, DPAD_UP)) actionScheduler.addAction(RobotActions.extendIntake());
+            if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractForTransfer());
+            if (keyPressed(2, B)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+            if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
+            if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupScoreChamber(true));
+            if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake());
 
+            robot.run();
+            robot.printTelemetry();
         }
     }
 }

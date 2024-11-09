@@ -16,8 +16,8 @@ public final class Extendo {
     SimpleServo[] linkageServos;
 
     public static double
-        LINKAGE_MIN_ANGLE = 37,
-        LINKAGE_MAX_ANGLE = 160,
+        LINKAGE_MIN_ANGLE = 23,
+        LINKAGE_MAX_ANGLE = 105,
         STICK_MULT = 0.6;
 
     private double targetAngle = LINKAGE_MIN_ANGLE;

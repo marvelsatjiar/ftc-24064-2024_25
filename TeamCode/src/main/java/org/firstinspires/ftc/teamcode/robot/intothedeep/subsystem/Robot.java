@@ -8,6 +8,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
 
 @Config
@@ -19,6 +20,7 @@ public final class Robot {
     public final Claw claw;
     public final Lift lift;
     public final Arm arm;
+    public final ActionScheduler actionScheduler;
 
     public enum State {
         NEUTRAL,
@@ -54,6 +56,7 @@ public final class Robot {
         claw = new Claw(hardwareMap);
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
+        actionScheduler = new ActionScheduler();
     }
 
     // Reads all the necessary sensors (including battery volt.) in one bulk read
@@ -69,6 +72,7 @@ public final class Robot {
         lift.run();
         claw.run();
         arm.run(lift.getTargetTicks().isArmUnsafe());
+        actionScheduler.run();
     }
 
     // Prints data on the driver hub for debugging and other uses

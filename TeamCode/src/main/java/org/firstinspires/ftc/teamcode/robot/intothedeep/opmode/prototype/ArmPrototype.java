@@ -23,7 +23,7 @@ public final class ArmPrototype extends LinearOpMode {
 
         mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        Arm.Position targetPosition = Arm.Position.COLLECTING;
+        Arm.ArmAngle targetArmAngle = Arm.ArmAngle.COLLECTING;
 
         waitForStart();
 
@@ -32,22 +32,22 @@ public final class ArmPrototype extends LinearOpMode {
 
             boolean isAPressed = gamepadEx1.wasJustPressed(GamepadKeys.Button.A);
 
-            switch (targetPosition) {
+            switch (targetArmAngle) {
                 case COLLECTING:
-                    if (isAPressed) targetPosition = Arm.Position.BASKET;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.BASKET;
                     break;
                 case BASKET:
-                    if (isAPressed) targetPosition = Arm.Position.CHAMBER;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER;
                     break;
                 case CHAMBER:
-                    if (isAPressed) targetPosition = Arm.Position.NEUTRAL;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
-                    if (isAPressed) targetPosition = Arm.Position.COLLECTING;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.COLLECTING;
                     break;
             }
 
-            arm.setTargetPosition(targetPosition);
+            arm.setArmAngle(targetArmAngle);
 
             arm.run(false);
 

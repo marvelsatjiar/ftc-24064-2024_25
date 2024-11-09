@@ -25,7 +25,7 @@ public final class ArmTransferPrototype extends LinearOpMode {
         Lift lift = new Lift(hardwareMap);
         Arm arm = new Arm(hardwareMap);
 
-        Arm.Position targetPosition = Arm.Position.COLLECTING;
+        Arm.ArmAngle targetArmAngle = Arm.ArmAngle.COLLECTING;
         Lift.Ticks targetTicks = Lift.Ticks.RETRACTED;
 
         mTelemetry = new MultipleTelemetry();
@@ -39,18 +39,18 @@ public final class ArmTransferPrototype extends LinearOpMode {
             boolean isDPADUpPressed = gamepadEx1.wasJustPressed(DPAD_UP);
             boolean isDPADDownPressed = gamepadEx1.wasJustPressed(DPAD_DOWN);
 
-            switch (targetPosition) {
+            switch (targetArmAngle) {
                 case COLLECTING:
-                    if (isAPressed) targetPosition = Arm.Position.BASKET;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.BASKET;
                     break;
                 case BASKET:
-                    if (isAPressed) targetPosition = Arm.Position.CHAMBER;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER;
                     break;
                 case CHAMBER:
-                    if (isAPressed) targetPosition = Arm.Position.NEUTRAL;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
-                    if (isAPressed) targetPosition = Arm.Position.COLLECTING;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.COLLECTING;
                     break;
             }
 
@@ -74,7 +74,7 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.CLIMB;
                     break;
             }
-            arm.setTargetPosition(targetPosition);
+            arm.setArmAngle(targetArmAngle);
             lift.setTargetTicks(targetTicks);
 
             arm.run(lift.getTargetTicks().isArmUnsafe());

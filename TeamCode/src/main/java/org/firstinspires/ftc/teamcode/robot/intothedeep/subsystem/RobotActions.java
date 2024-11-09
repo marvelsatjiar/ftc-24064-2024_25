@@ -30,7 +30,7 @@ public class RobotActions {
                                 setExtendo(Extendo.State.RETRACTED)
                         ),
                         new SequentialAction(
-                                setArm(Arm.Position.NEUTRAL),
+                                setArm(Arm.ArmAngle.NEUTRAL),
                                 setLift(Lift.Ticks.RETRACTED)
                         ),
                         setClaw(false)
@@ -43,11 +43,11 @@ public class RobotActions {
         if (robot.currentState == Robot.State.TRANSFERRED) return new NullAction();
         return new SequentialAction(
                 retractForTransfer(),
-                setArm(Arm.Position.COLLECTING),
+                setArm(Arm.ArmAngle.COLLECTING),
                 setClaw(true),
                 new ParallelAction(
                         setRollers(-0.75),
-                        setArm(Arm.Position.NEUTRAL)
+                        setArm(Arm.ArmAngle.NEUTRAL)
                 ),
                 setRollers(0),
                 new InstantAction(() -> robot.currentState = Robot.State.TRANSFERRED)
@@ -58,7 +58,7 @@ public class RobotActions {
         if (robot.currentState == Robot.State.SETUP_SCORE_BASKET) return new NullAction();
         return new SequentialAction(
                 setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET),
-                setArm(Arm.Position.BASKET),
+                setArm(Arm.ArmAngle.BASKET),
                 new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
         );
     }
@@ -67,7 +67,7 @@ public class RobotActions {
         if (robot.currentState == Robot.State.SETUP_SCORE_CHAMBER) return new NullAction();
         return new SequentialAction(
                 setLift(isHighChamber? Lift.Ticks.HIGH_CHAMBER : Lift.Ticks.LOW_CHAMBER),
-                setArm(Arm.Position.CHAMBER),
+                setArm(Arm.ArmAngle.CHAMBER),
                 new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_CHAMBER)
         );
     }
@@ -76,7 +76,7 @@ public class RobotActions {
         if (robot.currentState == Robot.State.SCORED) return new NullAction();
         return new SequentialAction(
                 setClaw(false),
-                setArm(Arm.Position.COLLECTING),
+                setArm(Arm.ArmAngle.COLLECTING),
                 setLift(Lift.Ticks.RETRACTED)
         );
     }
@@ -88,7 +88,7 @@ public class RobotActions {
                         setClaw(false),
                         setLift(Lift.Ticks.EXTENDED)
                         ),
-                setArm(Arm.Position.COLLECTING),
+                setArm(Arm.ArmAngle.COLLECTING),
                 setLift(Lift.Ticks.RETRACTED)
         );
     }
@@ -126,11 +126,11 @@ public class RobotActions {
         );
     }
 
-    private static Action setArm(Arm.Position position) {
-        if (robot.arm.getTargetPosition() == position) return new NullAction();
+    private static Action setArm(Arm.ArmAngle armAngle) {
+        if (robot.arm.getArmAngle() == armAngle) return new NullAction();
 
         return new ParallelAction(
-                new InstantAction(() -> robot.arm.setTargetPosition(position, true)),
+                new InstantAction(() -> robot.arm.setArmAngle(armAngle, true)),
                 new SleepAction(3)
         );
     }
