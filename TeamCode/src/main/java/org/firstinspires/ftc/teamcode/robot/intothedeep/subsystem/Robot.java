@@ -67,12 +67,12 @@ public final class Robot {
 
     // Runs all the necessary mechanisms
     public void run() {
+        actionScheduler.run();
         extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
         intake.run();
         lift.run();
         claw.run();
         arm.run(lift.getTargetTicks().isArmUnsafe());
-        actionScheduler.run();
     }
 
     // Prints data on the driver hub for debugging and other uses
@@ -80,6 +80,7 @@ public final class Robot {
         mTelemetry.addData("Robot State", robot.currentState.name());
         extendo.printTelemetry();
         lift.printTelemetry();
+        arm.printTelemetry();
         mTelemetry.update();
     }
 }

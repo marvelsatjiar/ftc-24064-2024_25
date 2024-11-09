@@ -53,7 +53,7 @@ public final class IntakePrototype extends LinearOpMode {
 
             intake.run();
 
-            extendo.setTargetAngle(targetPosition);
+            extendo.setTargetState(targetPosition);
 
             extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
 

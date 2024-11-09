@@ -74,8 +74,9 @@ public final class Arm {
 
         armServos[1].setInverted(true);
     }
-
+ int counter = 0;
     public boolean setArmAngle(ArmAngle angle, boolean isOverride) {
+        counter++;
         if (isLocked && !isOverride) return false;
         targetArmAngle = angle;
 
@@ -117,7 +118,8 @@ public final class Arm {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("ARM STATE:", targetArmAngle.getAngle());
-        mTelemetry.addData("WRIST STATE:", targetWristAngle.getAngle());
+        mTelemetry.addData("armanglecounter",counter);
+        mTelemetry.addData("ARM STATE:", targetArmAngle.name());
+        mTelemetry.addData("WRIST STATE:", targetWristAngle.name());
     }
 }
