@@ -11,7 +11,13 @@ public final class Common {
             LEFT = Math.toRadians(180),
             FORWARD = Math.toRadians(90),
             RIGHT = Math.toRadians(0),
-            BACKWARD = Math.toRadians(270);
+            BACKWARD = Math.toRadians(270),
+            SERVO_25_KG_MIN = 0,
+            SERVO_25_KG_MAX = 270,
+            SERVO_45_KG_MIN = 0,
+            SERVO_45_KG_MAX = 270,
+            SERVO_AXON_MIN = 0,
+            SERVO_AXON_MAX = 255;
 
     public static final double MAX_VOLTAGE = 13;
 

@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
 
 @Config
@@ -18,24 +20,20 @@ public final class Robot {
     public final Claw claw;
     public final Lift lift;
     public final Arm arm;
+    public final ActionScheduler actionScheduler;
 
-    private enum RobotFSM {
+    public enum State {
         NEUTRAL,
-        SUBMERSIBLE_INTAKE_TO_TRANSFER,
-        SAMPLE_TO_BE_TRANSFERRED,
-        SCORE_BAR_1,
-        SCORE_BAR_2,
-        SCORE_LOW_BUCKET,
-        SCORE_HIGH_BUCKET,
-        WALL_SPECIMEN,
-        INTAKE_INSIDE_SUBMERSIBLE,
-        INTAKE_OUTSIDE_SUBMERSIBLE,
-        HANG_SETUP,
-        HANG_BAR_1,
-        HANG_BAR_2
+        INTAKE_WALL,
+        SETUP_INTAKE,
+        TO_BE_TRANSFERRED,
+        TRANSFERRED,
+        SETUP_SCORE_BASKET,
+        SETUP_SCORE_CHAMBER,
+        SCORED
     }
 
-    RobotFSM currentState = RobotFSM.NEUTRAL;
+    State currentState = State.NEUTRAL;
 
     /**
      * Constructor used in teleOp classes that makes the current pose2d, 0
@@ -58,6 +56,7 @@ public final class Robot {
         claw = new Claw(hardwareMap);
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
+        actionScheduler = new ActionScheduler();
     }
 
     // Reads all the necessary sensors (including battery volt.) in one bulk read
@@ -68,15 +67,17 @@ public final class Robot {
 
     // Runs all the necessary mechanisms
     public void run() {
-        extendo.run(intake.getTargetAngle().isV4BUnsafe());
+        extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
         intake.run();
         lift.run();
         claw.run();
-        arm.run(lift.getSetPoint().isArmUnsafe());
+        arm.run(lift.getTargetTicks().isArmUnsafe());
+        actionScheduler.run();
     }
 
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
+        mTelemetry.addData("Robot State", robot.currentState.name());
         extendo.printTelemetry();
         lift.printTelemetry();
         mTelemetry.update();

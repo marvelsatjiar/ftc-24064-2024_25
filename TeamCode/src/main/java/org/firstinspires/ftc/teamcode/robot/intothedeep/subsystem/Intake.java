@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -17,9 +20,9 @@ public final class Intake {
             V4B_UP_ANGLE = 110,
             V4B_UNSAFE_THRESHOLD_ANGLE = 111;
 
-    private V4BAngles targetAngle = V4BAngles.UP;
+    private V4BAngle targetAngle = V4BAngle.UP;
 
-    public enum V4BAngles {
+    public enum V4BAngle {
         DOWN,
         CLEARING,
         UP,
@@ -39,39 +42,39 @@ public final class Intake {
         }
     }
 
-    public boolean isLocked = false;
+    public boolean isV4BLocked = false;
 
     public boolean isRollerLocked = false;
 
     public Intake(HardwareMap hardwareMap) {
         CRServo intakeFollower = new CRServo(hardwareMap, "intakeFollower");
         CRServo intakeMaster = new CRServo(hardwareMap, "intakeMaster");
-        ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", 0, 180);
-        ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", 0, 180);
+        ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
+        ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
 
         intakeFollower.setInverted(true);
-        intakeGearFollower.setInverted(true);
+        intakeGearMaster.setInverted(true);
 
         intakeGroup = new CRServo[] {intakeFollower, intakeMaster};
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
     }
 
-    public boolean setTarget(V4BAngles angle, boolean isOverride) {
-        if (isLocked && !isOverride) return false;
+    public boolean setTargetV4BAngle(V4BAngle angle, boolean isOverride) {
+        if (isV4BLocked && !isOverride) return false;
         targetAngle = angle;
 
         return true;
     }
 
-    public boolean setTarget(V4BAngles angle) {
-        return setTarget(angle, false);
+    public boolean setTargetV4BAngle(V4BAngle angle) {
+        return setTargetV4BAngle(angle, false);
     }
 
-    public Intake.V4BAngles getTargetAngle() {
+    public V4BAngle getTargetV4BAngle() {
         return targetAngle;
     }
 
-    public boolean setServoPower(double power, boolean isOverride) {
+    public boolean setRollerPower(double power, boolean isOverride) {
         if (isRollerLocked && !isOverride) return false;
 
         for (CRServo servos : intakeGroup)
@@ -80,8 +83,8 @@ public final class Intake {
         return true;
     }
 
-    public boolean setServoPower(double power) {
-        return setServoPower(power, false);
+    public boolean setRollerPower(double power) {
+        return setRollerPower(power, false);
     }
 
     public void run() {

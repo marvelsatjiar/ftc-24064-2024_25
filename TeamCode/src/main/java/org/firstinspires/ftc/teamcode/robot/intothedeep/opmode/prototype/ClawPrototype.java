@@ -12,7 +12,6 @@ import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 @Config
 @TeleOp(name = "Claw Prototype", group = "Prototype")
 public final class ClawPrototype extends LinearOpMode {
-    SimpleServoPivot claw;
     public static double
             CLAMP_ANGLE = 0,
             DEPOSIT_ANGLE = 30;

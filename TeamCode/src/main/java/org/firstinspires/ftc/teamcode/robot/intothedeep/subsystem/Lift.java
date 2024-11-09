@@ -43,11 +43,12 @@ public final class Lift {
      * Remember to set these constants correctly! (in ticks)
      */
     public static int
-            MAX_MOTOR_TICKS = 2350,
+            MAX_MOTOR_TICKS = 2970,
             MIN_MOTOR_TICKS = -5,
-            BASKET_TICKS = 800,
-            CHAMBER1_TICKS = 600,
-            CHAMBER2_TICKS = 1000,
+            LOW_BASKET_TICKS = 600,
+            HIGH_BASKET_TICKS = 2970,
+            LOW_CHAMBER_TICKS = 600,
+            HIGH_CHAMBER_TICKS = 1200,
             CLIMB_TICKS = 1200,
             UNSAFE_THRESHOLD_TICKS = 50;
     public static double
@@ -65,37 +66,33 @@ public final class Lift {
 
     private State currentState = new State();
 
-    public enum SlideTicks {
+    public enum Ticks {
         RETRACTED,
-        BASKET,
-        CHAMBER1,
-        CHAMBER2,
+        LOW_BASKET,
+        HIGH_BASKET,
+        LOW_CHAMBER,
+        HIGH_CHAMBER,
         CLIMB,
         EXTENDED;
 
-        private int getTicks() {
+        private int toTicks() {
             switch (this) {
-                case BASKET:
-                    return BASKET_TICKS;
-                case CHAMBER1:
-                    return CHAMBER1_TICKS;
-                case CHAMBER2:
-                    return CHAMBER2_TICKS;
-                case CLIMB:
-                    return CLIMB_TICKS;
-                case EXTENDED:
-                    return MAX_MOTOR_TICKS;
-                default:
-                    return MIN_MOTOR_TICKS;
+                case LOW_BASKET:                return LOW_BASKET_TICKS;
+                case HIGH_BASKET:               return HIGH_BASKET_TICKS;
+                case LOW_CHAMBER:               return LOW_CHAMBER_TICKS;
+                case HIGH_CHAMBER:              return HIGH_CHAMBER_TICKS;
+                case CLIMB:                     return CLIMB_TICKS;
+                case EXTENDED:                  return MAX_MOTOR_TICKS;
+                case RETRACTED: default:        return MIN_MOTOR_TICKS;
             }
         }
 
         public boolean isArmUnsafe() {
-            return getTicks() <= UNSAFE_THRESHOLD_TICKS;
+            return toTicks() <= UNSAFE_THRESHOLD_TICKS;
         }
     }
 
-    private SlideTicks setPoint = SlideTicks.RETRACTED;
+    private Ticks targetTicks = Ticks.RETRACTED;
 
     public boolean isLocked = false;
 
@@ -107,7 +104,7 @@ public final class Lift {
         MotorEx leader = new MotorEx(hardwareMap, "leader", RPM_435);
         MotorEx follower = new MotorEx(hardwareMap, "follower", RPM_435);
 
-        encoder = new MotorEx(hardwareMap, "right back", RPM_435).encoder;
+        encoder = new MotorEx(hardwareMap, "left front", RPM_435).encoder;
         encoder.reset();
 
         follower.setInverted(true);
@@ -117,20 +114,20 @@ public final class Lift {
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
 
-    public SlideTicks getSetPoint() {
-        return setPoint;
+    public Ticks getTargetTicks() {
+        return targetTicks;
     }
 
-    public boolean setPosition(SlideTicks slideTicks, boolean isOverride ) {
+    public boolean setTargetTicks(Ticks ticks, boolean isOverride ) {
         if (isLocked && !isOverride) return false;
-        setPoint = slideTicks;
-        controller.setTarget(new State(getSetPoint().getTicks()));
+        targetTicks = ticks;
+        controller.setTarget(new State(getTargetTicks().toTicks()));
 
         return true;
     }
 
-    public boolean setPosition(SlideTicks slideTicks) {
-        return setPosition(slideTicks, false);
+    public boolean setTargetTicks(Ticks ticks) {
+        return setTargetTicks(ticks, false);
     }
 
     /**
@@ -163,8 +160,8 @@ public final class Lift {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("Target position (ticks)", getSetPoint().getTicks());
-        mTelemetry.addData("Current state (name)", getSetPoint().name());
+        mTelemetry.addData("Target position (ticks)", getTargetTicks().toTicks());
+        mTelemetry.addData("Current state (name)", getTargetTicks().name());
     }
 
     public void printNumericalTelemetry() {
