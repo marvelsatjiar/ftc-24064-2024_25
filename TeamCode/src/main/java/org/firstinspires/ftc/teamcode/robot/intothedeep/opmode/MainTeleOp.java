@@ -14,6 +14,7 @@ import static java.lang.Math.hypot;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -22,6 +23,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
@@ -82,11 +85,34 @@ public final class MainTeleOp extends LinearOpMode {
                     )
             );
 
-            if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractForTransfer());
-            if (keyPressed(2, B)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
-            if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
-            if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupScoreChamber(true));
-            if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake());
+
+            switch (robot.getCurrentState()) {
+                case TRANSFERRED:
+                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract(true));
+                    break;
+                case SETUP_SCORE_BASKET :
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract(true));
+                    break;
+                case NEUTRAL:
+                    if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake());
+                    break;
+                case SETUP_INTAKE:
+                    double trigger = gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+                    if (trigger != 0) {
+                        robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
+                        robot.intake.setRollerPower(trigger);
+                    } else {
+                        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
+                        robot.intake.setRollerPower(0);
+                    }
+                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractForTransfer());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    break;
+                case TO_BE_TRANSFERRED:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    break;
+            }
 
             robot.run();
             robot.printTelemetry();

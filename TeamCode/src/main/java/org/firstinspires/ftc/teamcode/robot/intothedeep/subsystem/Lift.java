@@ -47,8 +47,8 @@ public final class Lift {
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 600,
             HIGH_BASKET_TICKS = 2970,
-            LOW_CHAMBER_TICKS = 600,
-            HIGH_CHAMBER_TICKS = 1200,
+            HIGH_CHAMBER_SCORE_TICKS = 1300,
+            HIGH_CHAMBER_SETUP_TICKS = 1050,
             CLIMB_TICKS = 1200,
             UNSAFE_THRESHOLD_TICKS = 50;
     public static double
@@ -70,8 +70,8 @@ public final class Lift {
         RETRACTED,
         LOW_BASKET,
         HIGH_BASKET,
-        LOW_CHAMBER,
-        HIGH_CHAMBER,
+        HIGH_CHAMBER_SCORE,
+        HIGH_CHAMBER_SETUP,
         CLIMB,
         EXTENDED;
 
@@ -79,8 +79,8 @@ public final class Lift {
             switch (this) {
                 case LOW_BASKET:                return LOW_BASKET_TICKS;
                 case HIGH_BASKET:               return HIGH_BASKET_TICKS;
-                case LOW_CHAMBER:               return LOW_CHAMBER_TICKS;
-                case HIGH_CHAMBER:              return HIGH_CHAMBER_TICKS;
+                case HIGH_CHAMBER_SCORE:        return HIGH_CHAMBER_SCORE_TICKS;
+                case HIGH_CHAMBER_SETUP:        return HIGH_CHAMBER_SETUP_TICKS;
                 case CLIMB:                     return CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
@@ -104,7 +104,7 @@ public final class Lift {
         MotorEx leader = new MotorEx(hardwareMap, "leader", RPM_435);
         MotorEx follower = new MotorEx(hardwareMap, "follower", RPM_435);
 
-        encoder = new MotorEx(hardwareMap, "left front", RPM_435).encoder;
+        encoder = new MotorEx(hardwareMap, "dummy motor", RPM_435).encoder;
         encoder.reset();
 
         follower.setInverted(true);
@@ -160,14 +160,8 @@ public final class Lift {
     }
 
     public void printTelemetry() {
+        mTelemetry.addData("Actual position (ticks)", encoder.getPosition());
         mTelemetry.addData("Target position (ticks)", getTargetTicks().toTicks());
         mTelemetry.addData("Current state (name)", getTargetTicks().name());
-    }
-
-    public void printNumericalTelemetry() {
-        mTelemetry.addData("Current position (ticks)", currentState.x);
-        mTelemetry.addData("Error derivative (ticks/s)", controller.getFilteredErrorDerivative());
-        mTelemetry.addData("Error (ticks)", controller.getErrorIntegral());
-        mTelemetry.addData("kD (computed)", pidGains.kD);
     }
 }

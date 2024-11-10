@@ -24,8 +24,8 @@ public final class Robot {
 
     public enum State {
         NEUTRAL,
-        INTAKE_WALL,
         SETUP_INTAKE,
+        INTAKE,
         TO_BE_TRANSFERRED,
         TRANSFERRED,
         SETUP_SCORE_BASKET,
@@ -82,5 +82,9 @@ public final class Robot {
         lift.printTelemetry();
         arm.printTelemetry();
         mTelemetry.update();
+    }
+
+    public Robot.State getCurrentState() {
+        return currentState;
     }
 }

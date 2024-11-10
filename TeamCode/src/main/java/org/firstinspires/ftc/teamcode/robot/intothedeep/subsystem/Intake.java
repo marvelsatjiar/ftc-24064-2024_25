@@ -15,10 +15,10 @@ public final class Intake {
     private final ServoEx[] intakeLinkGroup;
 
     public static int
-            V4B_DOWN_ANGLE = 130,
-            V4B_CLEARING_ANGLE = 162,
-            V4B_UP_ANGLE = 110,
-            V4B_UNSAFE_THRESHOLD_ANGLE = 111;
+            V4B_DOWN_ANGLE = 155,
+            V4B_CLEARING_ANGLE = 113,
+            V4B_UP_ANGLE = 100,
+            V4B_UNSAFE_THRESHOLD_ANGLE = 101;
 
     private V4BAngle targetAngle = V4BAngle.UP;
 

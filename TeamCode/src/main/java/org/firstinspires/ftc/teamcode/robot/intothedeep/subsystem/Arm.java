@@ -24,20 +24,23 @@ public final class Arm {
             COLLECTING_WRIST_ANGLE = 110,
             BASKET_ARM_ANGLE = 0,
             BASKET_WRIST_ANGLE = 270,
-            CHAMBER_ARM_ANGLE = 70,
-            CHAMBER_WRIST_ANGLE = 180;
+            CHAMBER_ARM_ANGLE = 60,
+            CHAMBER_WRIST_ANGLE = 170,
+            CHAMBER_SCORE_WRIST_ANGLE = 177;
 
     public enum WristAngle {
         NEUTRAL,
         COLLECTING,
         BASKET,
-        CHAMBER;
+        CHAMBER,
+        CHAMBER_SCORE;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:            return BASKET_WRIST_ANGLE;
                 case CHAMBER:           return CHAMBER_WRIST_ANGLE;
                 case COLLECTING:        return COLLECTING_WRIST_ANGLE;
+                case CHAMBER_SCORE:     return CHAMBER_SCORE_WRIST_ANGLE;
                 case NEUTRAL: default:  return NEUTRAL_WRIST_ANGLE;
             }
         }
@@ -74,9 +77,8 @@ public final class Arm {
 
         armServos[1].setInverted(true);
     }
- int counter = 0;
+
     public boolean setArmAngle(ArmAngle angle, boolean isOverride) {
-        counter++;
         if (isLocked && !isOverride) return false;
         targetArmAngle = angle;
 
@@ -118,7 +120,6 @@ public final class Arm {
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("armanglecounter",counter);
         mTelemetry.addData("ARM STATE:", targetArmAngle.name());
         mTelemetry.addData("WRIST STATE:", targetWristAngle.name());
     }
