@@ -66,25 +66,17 @@ public final class MainTeleOp extends LinearOpMode {
 
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
-            double x = gamepadEx1.getRightX();
-            if (gamepadEx1.isDown(LEFT_BUMPER)) {
-                double y = gamepadEx1.getRightY();
-                if (hypot(x, y) >= 0.8) robot.drivetrain.setCurrentHeading(atan2(y, x));
-                x = 0;
-            }
 
             double slowMult = gamepadEx1.isDown(RIGHT_BUMPER) ? 0.2 : 1;
-            robot.drivetrain.setFieldCentricPowers(
-
+            robot.drivetrain.setDrivePowers(
                     new PoseVelocity2d(
                             new Vector2d(
                                     gamepadEx1.getLeftY() * slowMult,
                                     -gamepadEx1.getLeftX() * slowMult
                             ),
-                            -x * slowMult
+                            -gamepadEx1.getRightX() * slowMult
                     )
             );
-
 
             switch (robot.getCurrentState()) {
                 case TRANSFERRED:
@@ -98,14 +90,19 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake());
                     break;
                 case SETUP_INTAKE:
-                    double trigger = gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-                    if (trigger != 0) {
-                        robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
-                        robot.intake.setRollerPower(trigger);
+                    if (!gamepadEx1.isDown(LEFT_BUMPER)) {
+                        double trigger = gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+                        if (trigger != 0) {
+                            robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
+                            robot.intake.setRollerPower(trigger);
+                        } else {
+                            robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
+                            robot.intake.setRollerPower(0);
+                        }
                     } else {
-                        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
-                        robot.intake.setRollerPower(0);
+                        robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
                     }
+
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractForTransfer());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     break;
