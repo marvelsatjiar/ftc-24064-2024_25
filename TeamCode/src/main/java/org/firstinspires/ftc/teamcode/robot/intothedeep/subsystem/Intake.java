@@ -15,10 +15,10 @@ public final class Intake {
     private final ServoEx[] intakeLinkGroup;
 
     public static int
-            V4B_DOWN_ANGLE = 130,
-            V4B_CLEARING_ANGLE = 115,
-            V4B_UP_ANGLE = 110,
-            V4B_UNSAFE_THRESHOLD_ANGLE = 111;
+            V4B_DOWN_ANGLE = 155,
+            V4B_CLEARING_ANGLE = 113,
+            V4B_UP_ANGLE = 100,
+            V4B_UNSAFE_THRESHOLD_ANGLE = 101;
 
     private V4BAngle targetAngle = V4BAngle.UP;
 
@@ -52,7 +52,7 @@ public final class Intake {
         ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
         ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
 
-        intakeFollower.setInverted(true);
+        intakeMaster.setInverted(true);
         intakeGearMaster.setInverted(true);
 
         intakeGroup = new CRServo[] {intakeFollower, intakeMaster};

@@ -16,8 +16,8 @@ public final class Extendo {
     SimpleServo[] linkageServos;
 
     public static double
-        LINKAGE_MIN_ANGLE = 23,
-        LINKAGE_MAX_ANGLE = 105,
+        LINKAGE_MIN_ANGLE = 17,
+        LINKAGE_MAX_ANGLE = 107,
         STICK_MULT = 0.6;
 
     private double targetAngle = LINKAGE_MIN_ANGLE;
@@ -59,7 +59,7 @@ public final class Extendo {
         return state;
     }
 
-    public boolean setTargetAngle(State angle, boolean isOverride) {
+    public boolean setTargetState(State angle, boolean isOverride) {
         if (isLocked && !isOverride) return false;
         targetAngle = min(LINKAGE_MAX_ANGLE, max(LINKAGE_MIN_ANGLE, angle.getExtendoAngle()));
         state = targetAngle == LINKAGE_MIN_ANGLE ?
@@ -69,8 +69,8 @@ public final class Extendo {
         return true;
     }
 
-    public boolean setTargetAngle(State state) {
-        return setTargetAngle(state, false);
+    public boolean setTargetState(State state) {
+        return setTargetState(state, false);
     }
 
     // Runs each servo inside of the group to a certain angle base on what was given
