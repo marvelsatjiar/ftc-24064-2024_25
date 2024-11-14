@@ -51,6 +51,7 @@ public final class Lift {
             HIGH_CHAMBER_SCORE_FRONT_TICKS = 1100,
             HIGH_CHAMBER_SETUP_BACK_TICKS = 1050,
             HIGH_CHAMBER_SETUP_FRONT_TICKS = 850,
+            WALL_PICKUP_TICKS = 1150,
             CLIMB_TICKS = 1200,
             UNSAFE_THRESHOLD_TICKS = 1000;
 
@@ -77,6 +78,7 @@ public final class Lift {
         HIGH_CHAMBER_SCORE_FRONT,
         HIGH_CHAMBER_SETUP_BACK,
         HIGH_CHAMBER_SETUP_FRONT,
+        WALL_PICKUP,
         CLIMB,
         EXTENDED;
 
@@ -88,6 +90,7 @@ public final class Lift {
                 case HIGH_CHAMBER_SCORE_FRONT:  return HIGH_CHAMBER_SCORE_FRONT_TICKS;
                 case HIGH_CHAMBER_SETUP_BACK:   return HIGH_CHAMBER_SETUP_BACK_TICKS;
                 case HIGH_CHAMBER_SETUP_FRONT:  return HIGH_CHAMBER_SETUP_FRONT_TICKS;
+                case WALL_PICKUP:               return WALL_PICKUP_TICKS;
                 case CLIMB:                     return CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;

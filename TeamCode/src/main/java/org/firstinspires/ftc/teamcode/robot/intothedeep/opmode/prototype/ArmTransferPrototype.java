@@ -55,6 +55,12 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER_FRONT;
                     break;
                 case CHAMBER_FRONT:
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER_BACK;
+                    break;
+                case CHAMBER_BACK:
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.WALL_PICKUP;
+                    break;
+                case WALL_PICKUP:
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
@@ -67,9 +73,15 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isBPressed) targetWristAngle = Arm.WristAngle.BASKET;
                     break;
                 case BASKET:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.CHAMBER_FRONT;
+                    break;
+                case CHAMBER_FRONT:
                     if (isBPressed) targetWristAngle = Arm.WristAngle.CHAMBER_BACK;
                     break;
                 case CHAMBER_BACK:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.WALL_PICKUP;
+                    break;
+                case WALL_PICKUP:
                     if (isBPressed) targetWristAngle = Arm.WristAngle.NEUTRAL;
                     break;
                 case NEUTRAL:

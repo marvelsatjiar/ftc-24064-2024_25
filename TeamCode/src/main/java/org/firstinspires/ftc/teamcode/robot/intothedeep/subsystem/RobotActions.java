@@ -45,7 +45,13 @@ public class RobotActions {
             CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
             RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT = 1,
             RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1,
-            RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1;
+            RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1,
+            LIFT_SETUP_WALL_PICKUP = 1,
+            ARM_SETUP_WALL_PICKUP = 0.65,
+            WRIST_SETUP_WALL_PICKUP = 0.65,
+            CLAW_CLAMPED_WALL_PICKUP = 1,
+            ARM_NEUTRAL_WALL_PICKUP = 1,
+            WRIST_NEUTRAL_WALL_PICKUP = 1;
 
     public static Action extendIntake() {
         return new Actions.SingleCheckAction(
@@ -177,6 +183,35 @@ public class RobotActions {
                         ),
                         retractToNeutral(RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
                         new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                )
+        );
+    }
+
+    public static Action setupWallPickup() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_WALL_PICKUP,
+                new SequentialAction(
+                        setLift(Lift.Ticks.WALL_PICKUP, LIFT_SETUP_WALL_PICKUP),
+                        new ParallelAction(
+                                setArm(Arm.ArmAngle.WALL_PICKUP, ARM_SETUP_WALL_PICKUP),
+                                setWrist(Arm.WristAngle.WALL_PICKUP, WRIST_SETUP_WALL_PICKUP)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_WALL_PICKUP)
+                )
+        );
+    }
+
+    public static Action wallPickup() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.WALL_PICKUP,
+                new SequentialAction(
+                        setupWallPickup(),
+                        new ParallelAction(
+                                setClaw(true, CLAW_CLAMPED_WALL_PICKUP),
+                                setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_WALL_PICKUP),
+                                setWrist(Arm.WristAngle.NEUTRAL, WRIST_NEUTRAL_WALL_PICKUP)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
                 )
         );
     }

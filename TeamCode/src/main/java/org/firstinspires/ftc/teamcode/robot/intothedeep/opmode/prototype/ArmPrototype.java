@@ -24,6 +24,8 @@ public final class ArmPrototype extends LinearOpMode {
         mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         Arm.ArmAngle targetArmAngle = Arm.ArmAngle.COLLECTING;
+        Arm.WristAngle targetWristAngle = Arm.WristAngle.COLLECTING;
+
 
         waitForStart();
 
@@ -31,6 +33,7 @@ public final class ArmPrototype extends LinearOpMode {
             gamepadEx1.readButtons();
 
             boolean isAPressed = gamepadEx1.wasJustPressed(GamepadKeys.Button.A);
+            boolean isBPressed = gamepadEx1.wasJustPressed(GamepadKeys.Button.B);
 
             switch (targetArmAngle) {
                 case COLLECTING:
@@ -40,6 +43,12 @@ public final class ArmPrototype extends LinearOpMode {
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER_FRONT;
                     break;
                 case CHAMBER_FRONT:
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER_BACK;
+                    break;
+                case CHAMBER_BACK:
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.WALL_PICKUP;
+                    break;
+                case WALL_PICKUP:
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
@@ -47,7 +56,29 @@ public final class ArmPrototype extends LinearOpMode {
                     break;
             }
 
+            switch (targetWristAngle) {
+                case COLLECTING:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.BASKET;
+                    break;
+                case BASKET:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.CHAMBER_FRONT;
+                    break;
+                case CHAMBER_FRONT:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.CHAMBER_BACK;
+                    break;
+                case CHAMBER_BACK:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.WALL_PICKUP;
+                    break;
+                case WALL_PICKUP:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.NEUTRAL;
+                    break;
+                case NEUTRAL:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.COLLECTING;
+                    break;
+            }
+
             arm.setArmAngle(targetArmAngle);
+            arm.setWristAngle(targetWristAngle);
 
             arm.run(false);
 
