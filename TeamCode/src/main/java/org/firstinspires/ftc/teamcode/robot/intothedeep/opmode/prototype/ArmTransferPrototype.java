@@ -91,19 +91,31 @@ public final class ArmTransferPrototype extends LinearOpMode {
 
             switch (targetTicks) {
                 case RETRACTED:
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.LOW_BASKET;
+                    break;
+                case LOW_BASKET:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_BASKET;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.RETRACTED;
                     break;
                 case HIGH_BASKET:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP_BACK;
-                    if (isDPADDownPressed) targetTicks = Lift.Ticks.RETRACTED;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_BASKET;
                     break;
                 case HIGH_CHAMBER_SETUP_BACK:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE_BACK;
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_BASKET;
                     break;
                 case HIGH_CHAMBER_SCORE_BACK:
-                    if (isDPADUpPressed) targetTicks = Lift.Ticks.CLIMB;
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP_FRONT;
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP_BACK;
+                    break;
+                case HIGH_CHAMBER_SETUP_FRONT:
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE_FRONT;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE_BACK;
+                    break;
+                case HIGH_CHAMBER_SCORE_FRONT:
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.CLIMB;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP_FRONT;
                     break;
                 case CLIMB:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.EXTENDED;
