@@ -123,7 +123,7 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     break;
                 case CLIMB:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.EXTENDED;
-                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE_FRONT;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.WALL_PICKUP;
                     break;
                 case EXTENDED:
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.CLIMB;
