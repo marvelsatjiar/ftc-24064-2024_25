@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
@@ -53,9 +52,9 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.BASKET;
                     break;
                 case BASKET:
-                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER_FRONT;
                     break;
-                case CHAMBER:
+                case CHAMBER_FRONT:
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
@@ -68,12 +67,9 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isBPressed) targetWristAngle = Arm.WristAngle.BASKET;
                     break;
                 case BASKET:
-                    if (isBPressed) targetWristAngle = Arm.WristAngle.CHAMBER;
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.CHAMBER_BACK;
                     break;
-                case CHAMBER:
-                    if (isBPressed) targetWristAngle = Arm.WristAngle.CHAMBER_SCORE;
-                    break;
-                case CHAMBER_SCORE:
+                case CHAMBER_BACK:
                     if (isBPressed) targetWristAngle = Arm.WristAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
@@ -86,20 +82,20 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_BASKET;
                     break;
                 case HIGH_BASKET:
-                    if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP;
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP_BACK;
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.RETRACTED;
                     break;
-                case HIGH_CHAMBER_SETUP:
-                    if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE;
+                case HIGH_CHAMBER_SETUP_BACK:
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE_BACK;
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_BASKET;
                     break;
-                case HIGH_CHAMBER_SCORE:
+                case HIGH_CHAMBER_SCORE_BACK:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.CLIMB;
-                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP_BACK;
                     break;
                 case CLIMB:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.EXTENDED;
-                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE_BACK;
                     break;
                 case EXTENDED:
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.CLIMB;

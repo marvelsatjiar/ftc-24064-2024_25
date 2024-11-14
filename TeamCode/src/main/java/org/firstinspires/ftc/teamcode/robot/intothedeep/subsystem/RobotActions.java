@@ -13,28 +13,39 @@ import org.firstinspires.ftc.teamcode.auto.Actions;
 
 @Config
 public class RobotActions {
-    private static final double LIFT_EXTEND_SETUP_SCORE_BASKET = 2;
-    private static final double V4B_UP_EXTEND_INTAKE = 0.25;
-    private static final double LIFT_RETRACTED_SCORE_BASKET_AND_RETRACT = 2;
-    private static final double WRIST_NEUTRAL_SCORE_BASKET_AND_RETRACT = 2;
-    private static final double ARM_NEUTRAL_SCORE_BASKET_AND_RETRACT = 2;
-    private static final double CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT = 0.5;
-    private static final double ARM_CHAMBER_SETUP_SCORE_CHAMBER = 1;
-    private static final double LIFT_EXTEND_SETUP_SCORE_CHAMBER = 1;
-    private static final double ARM_BASKET_SETUP_SCORE_BASKET = 0.7;
-    private static final double ROLLERS_STOP_TRANSFER_TO_CLAW = 0;
-    private static final double WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.75;
-    private static final double ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.75;
-    private static final double ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.75;
-    private static final double CLAW_CLAMPED_TRANSFER_TO_CLAW = 0.2;
-    private static final double ARM_COLLECTING_TRANSFER_TO_CLAW = 0.7;
-    private static final double WRIST_COLLECTING_TRANSFER_TO_CLAW = 0.5;
-    private static final double CLAW_UNCLAMPED_RETRACT_FOR_TRANSFER = 0;
-    private static final double LIFT_RETRACTED_RETRACT_FOR_TRANSFER = 1;
-    private static final double ARM_NEUTRAL_RETRACT_FOR_TRANSFER = 0.4;
-    private static final double EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER = 0.7;
-    private static final double V4B_UP_RETRACT_FOR_TRANSFER = 0.33;
-    private static final double EXTENDO_EXTENDED_EXTEND_INTAKE = 0;
+    public static final double
+            LIFT_EXTEND_SETUP_SCORE_BASKET = 2,
+            V4B_UP_EXTEND_INTAKE = 0.25,
+            CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT = 0.5,
+            ARM_CHAMBER_SETUP_CHAMBER_FROM_BACK = 1,
+            LIFT_HIGH_CHAMBER_BACK_SETUP_CHAMBER_FROM_BACK = 1,
+            ARM_BASKET_SETUP_SCORE_BASKET = 0.7,
+            ROLLERS_STOP_TRANSFER_TO_CLAW = 0,
+            WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.75,
+            ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.75,
+            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.75,
+            CLAW_CLAMPED_TRANSFER_TO_CLAW = 0.2,
+            ARM_COLLECTING_TRANSFER_TO_CLAW = 0.7,
+            WRIST_COLLECTING_TRANSFER_TO_CLAW = 0.5,
+            CLAW_UNCLAMPED_RETRACT_FOR_TRANSFER = 0,
+            LIFT_RETRACTED_RETRACT_FOR_TRANSFER = 1,
+            ARM_NEUTRAL_RETRACT_FOR_TRANSFER = 0.4,
+            EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER = 0.7,
+            V4B_UP_RETRACT_FOR_TRANSFER = 0.33,
+            EXTENDO_EXTENDED_EXTEND_INTAKE = 0,
+            WRIST_CHAMBER_SETUP_CHAMBER_FROM_BACK = 1,
+            LIFT_HIGH_CHAMBER_BACK_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1.25,
+            CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1.25,
+            LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT = 2,
+            ARM_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 1,
+            WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 1, 
+            LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.85,
+            ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
+            WRIST_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
+            CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
+            RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT = 1,
+            RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1,
+            RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1;
 
     public static Action extendIntake() {
         return new Actions.SingleCheckAction(
@@ -98,46 +109,74 @@ public class RobotActions {
         );
     }
 
-    // TODO
-    public static Action setupScoreChamber(boolean isHighChamber) {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_SCORE_CHAMBER,
-                new SequentialAction(
-                        setLift(isHighChamber ? Lift.Ticks.HIGH_CHAMBER_SETUP : Lift.Ticks.HIGH_CHAMBER_SCORE, LIFT_EXTEND_SETUP_SCORE_CHAMBER),
-                        setArm(Arm.ArmAngle.CHAMBER, ARM_CHAMBER_SETUP_SCORE_CHAMBER),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_CHAMBER)
-                )
-        );
-    }
-
     public static Action scoreBasketAndRetract(boolean isHighBasket) {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
                         setupScoreBasket(isHighBasket),
                         setClaw(false, CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT),
-                        new ParallelAction(
-                                setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_SCORE_BASKET_AND_RETRACT),
-                                setWrist(Arm.WristAngle.NEUTRAL, WRIST_NEUTRAL_SCORE_BASKET_AND_RETRACT),
-                                setLift(Lift.Ticks.RETRACTED, LIFT_RETRACTED_SCORE_BASKET_AND_RETRACT)
-                        ),
+                        retractToNeutral(RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT),
                         new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
                 )
         );
     }
 
-    // TODO
-    public static Action scoreChamberAndRetract() {
+    public static Action setupChamberFromBack() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SCORED,
+                () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_BACK,
                 new SequentialAction(
-//                        new ParallelAction(
-//                                setClaw(false),
-//                                setLift(Lift.Ticks.EXTENDED)
-//                        ),
-//                        setArm(Arm.ArmAngle.COLLECTING),
-//                        setLift(Lift.Ticks.RETRACTED),
-//                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                        new ParallelAction(
+                                setLift(Lift.Ticks.HIGH_CHAMBER_SETUP_BACK, LIFT_HIGH_CHAMBER_BACK_SETUP_CHAMBER_FROM_BACK),
+                                setWrist(Arm.WristAngle.CHAMBER_BACK, WRIST_CHAMBER_SETUP_CHAMBER_FROM_BACK),
+                                setArm(Arm.ArmAngle.CHAMBER_FRONT, ARM_CHAMBER_SETUP_CHAMBER_FROM_BACK)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_BACK)
+                )
+        );
+    }
+
+    public static Action scoreChamberFromBackAndRetract() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.NEUTRAL,
+                new SequentialAction(
+                        setupChamberFromBack(),
+                        new ParallelAction(
+                                setLift(Lift.Ticks.HIGH_CHAMBER_SCORE_BACK, LIFT_HIGH_CHAMBER_BACK_SCORE_CHAMBER_FROM_BACK_AND_RETRACT),
+                                setClaw(false, CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_BACK_AND_RETRACT)
+                        ),
+                        retractToNeutral(RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_BACK_AND_RETRACT),
+                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                )
+        );
+    }
+
+    public static Action setupChamberFromFront() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
+                new SequentialAction(
+                        setLift(Lift.Ticks.HIGH_CHAMBER_SETUP_FRONT, LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT),
+                        new ParallelAction(
+                                setWrist(Arm.WristAngle.CHAMBER_FRONT, WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT),
+                                setArm(Arm.ArmAngle.CHAMBER_FRONT, ARM_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_FRONT)
+                )
+        );
+    }
+
+    public static Action scoreChamberFromFrontAndRetract() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.NEUTRAL,
+                new SequentialAction(
+                        setupChamberFromFront(),
+                        setLift(Lift.Ticks.HIGH_CHAMBER_SCORE_FRONT, LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
+                        new ParallelAction(
+                                setArm(Arm.ArmAngle.CHAMBER_FRONT, ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
+                                setWrist(Arm.WristAngle.CHAMBER_FRONT, WRIST_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
+                                setClaw(false, CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT)
+                        ),
+                        retractToNeutral(RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
+                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
                 )
         );
     }
@@ -212,6 +251,14 @@ public class RobotActions {
         return new ParallelAction(
                 new InstantAction(() -> robot.intake.setRollerPower(power, true)),
                 new SleepAction(sleepSeconds)
+        );
+    }
+
+    private static Action retractToNeutral(double sleepSeconds) {
+        return new ParallelAction(
+                setArm(Arm.ArmAngle.NEUTRAL, sleepSeconds),
+                setWrist(Arm.WristAngle.NEUTRAL, 0),
+                setLift(Lift.Ticks.RETRACTED, 0)
         );
     }
 }

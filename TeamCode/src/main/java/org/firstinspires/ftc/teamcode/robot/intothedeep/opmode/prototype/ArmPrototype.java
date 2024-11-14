@@ -37,9 +37,9 @@ public final class ArmPrototype extends LinearOpMode {
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.BASKET;
                     break;
                 case BASKET:
-                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.CHAMBER_FRONT;
                     break;
-                case CHAMBER:
+                case CHAMBER_FRONT:
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:

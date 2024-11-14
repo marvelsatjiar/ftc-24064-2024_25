@@ -47,10 +47,13 @@ public final class Lift {
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 600,
             HIGH_BASKET_TICKS = 2970,
-            HIGH_CHAMBER_SCORE_TICKS = 1300,
-            HIGH_CHAMBER_SETUP_TICKS = 1050,
+            HIGH_CHAMBER_SCORE_BACK_TICKS = 1300,
+            HIGH_CHAMBER_SCORE_FRONT_TICKS = 1100,
+            HIGH_CHAMBER_SETUP_BACK_TICKS = 1050,
+            HIGH_CHAMBER_SETUP_FRONT_TICKS = 850,
             CLIMB_TICKS = 1200,
-            UNSAFE_THRESHOLD_TICKS = 50;
+            UNSAFE_THRESHOLD_TICKS = 1000;
+
     public static double
             kG = 0.011065,
             JOYSTICK_MULTIPLIER = 40; // 1 = 40 ticks
@@ -70,8 +73,10 @@ public final class Lift {
         RETRACTED,
         LOW_BASKET,
         HIGH_BASKET,
-        HIGH_CHAMBER_SCORE,
-        HIGH_CHAMBER_SETUP,
+        HIGH_CHAMBER_SCORE_BACK,
+        HIGH_CHAMBER_SCORE_FRONT,
+        HIGH_CHAMBER_SETUP_BACK,
+        HIGH_CHAMBER_SETUP_FRONT,
         CLIMB,
         EXTENDED;
 
@@ -79,8 +84,10 @@ public final class Lift {
             switch (this) {
                 case LOW_BASKET:                return LOW_BASKET_TICKS;
                 case HIGH_BASKET:               return HIGH_BASKET_TICKS;
-                case HIGH_CHAMBER_SCORE:        return HIGH_CHAMBER_SCORE_TICKS;
-                case HIGH_CHAMBER_SETUP:        return HIGH_CHAMBER_SETUP_TICKS;
+                case HIGH_CHAMBER_SCORE_BACK:   return HIGH_CHAMBER_SCORE_BACK_TICKS;
+                case HIGH_CHAMBER_SCORE_FRONT:  return HIGH_CHAMBER_SCORE_FRONT_TICKS;
+                case HIGH_CHAMBER_SETUP_BACK:   return HIGH_CHAMBER_SETUP_BACK_TICKS;
+                case HIGH_CHAMBER_SETUP_FRONT:  return HIGH_CHAMBER_SETUP_FRONT_TICKS;
                 case CLIMB:                     return CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;

@@ -28,8 +28,9 @@ public final class Robot {
         INTAKE,
         TO_BE_TRANSFERRED,
         TRANSFERRED,
+        SETUP_CHAMBER_FROM_BACK,
+        SETUP_CHAMBER_FROM_FRONT,
         SETUP_SCORE_BASKET,
-        SETUP_SCORE_CHAMBER,
         SCORED
     }
 

@@ -24,23 +24,29 @@ public final class Arm {
             COLLECTING_WRIST_ANGLE = 110,
             BASKET_ARM_ANGLE = 0,
             BASKET_WRIST_ANGLE = 270,
-            CHAMBER_ARM_ANGLE = 60,
-            CHAMBER_WRIST_ANGLE = 170,
-            CHAMBER_SCORE_WRIST_ANGLE = 177;
+            CHAMBER_FRONT_ARM_ANGLE = 60,
+            CHAMBER_BACK_ARM_ANGLE = 40,
+            CHAMBER_FRONT_WRIST_ANGLE = 150,
+            CHAMBER_BACK_WRIST_ANGLE = 170,
+            WALL_PICKUP_ARM_ANGLE = 250,
+            WALL_PICKUP_WRIST_ANGLE = 180;
+
 
     public enum WristAngle {
         NEUTRAL,
         COLLECTING,
         BASKET,
-        CHAMBER,
-        CHAMBER_SCORE;
+        CHAMBER_FRONT,
+        CHAMBER_BACK,
+        WALL_PICKUP;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:            return BASKET_WRIST_ANGLE;
-                case CHAMBER:           return CHAMBER_WRIST_ANGLE;
+                case CHAMBER_BACK:      return CHAMBER_BACK_WRIST_ANGLE;
+                case CHAMBER_FRONT:      return CHAMBER_FRONT_WRIST_ANGLE;
                 case COLLECTING:        return COLLECTING_WRIST_ANGLE;
-                case CHAMBER_SCORE:     return CHAMBER_SCORE_WRIST_ANGLE;
+                case WALL_PICKUP:       return WALL_PICKUP_WRIST_ANGLE;
                 case NEUTRAL: default:  return NEUTRAL_WRIST_ANGLE;
             }
         }
@@ -50,13 +56,17 @@ public final class Arm {
         NEUTRAL,
         COLLECTING,
         BASKET,
-        CHAMBER;
+        CHAMBER_FRONT,
+        CHAMBER_BACK,
+        WALL_PICKUP;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:            return BASKET_ARM_ANGLE;
-                case CHAMBER:           return CHAMBER_ARM_ANGLE;
+                case CHAMBER_FRONT:     return CHAMBER_FRONT_ARM_ANGLE;
+                case CHAMBER_BACK:      return CHAMBER_BACK_ARM_ANGLE;
                 case COLLECTING:        return COLLECTING_ARM_ANGLE;
+                case WALL_PICKUP:       return WALL_PICKUP_ARM_ANGLE;
                 case NEUTRAL: default:  return NEUTRAL_ARM_ANGLE;
             }
         }
@@ -109,7 +119,7 @@ public final class Arm {
     }
 
      public void run(boolean liftBelowSafety) {
-        boolean isArmDown = getArmAngle() == ArmAngle.CHAMBER;
+        boolean isArmDown = getArmAngle() == ArmAngle.WALL_PICKUP;
         if (liftBelowSafety && isArmDown) targetArmAngle = ArmAngle.COLLECTING;
 
         for (ServoEx servos : armServos) {
