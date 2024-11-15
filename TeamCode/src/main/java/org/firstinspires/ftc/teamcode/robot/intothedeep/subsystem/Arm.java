@@ -25,11 +25,11 @@ public final class Arm {
             BASKET_ARM_ANGLE = 0,
             BASKET_WRIST_ANGLE = 270,
             CHAMBER_FRONT_ARM_ANGLE = 60,
-            CHAMBER_BACK_ARM_ANGLE = 40,
+            CHAMBER_BACK_ARM_ANGLE = 0,
             CHAMBER_FRONT_WRIST_ANGLE = 150,
-            CHAMBER_BACK_WRIST_ANGLE = 170,
-            WALL_PICKUP_ARM_ANGLE = 250,
-            WALL_PICKUP_WRIST_ANGLE = 180;
+            CHAMBER_BACK_WRIST_ANGLE = 268,
+            WALL_PICKUP_ARM_ANGLE = 180,
+            WALL_PICKUP_WRIST_ANGLE = 90`;
 
 
     public enum WristAngle {
