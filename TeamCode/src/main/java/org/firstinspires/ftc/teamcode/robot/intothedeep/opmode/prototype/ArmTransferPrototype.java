@@ -82,9 +82,6 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isBPressed) targetWristAngle = Arm.WristAngle.WALL_PICKUP;
                     break;
                 case WALL_PICKUP:
-                    if (isBPressed) targetWristAngle = Arm.WristAngle.NEUTRAL;
-                    break;
-                case NEUTRAL:
                     if (isBPressed) targetWristAngle = Arm.WristAngle.COLLECTING;
                     break;
             }

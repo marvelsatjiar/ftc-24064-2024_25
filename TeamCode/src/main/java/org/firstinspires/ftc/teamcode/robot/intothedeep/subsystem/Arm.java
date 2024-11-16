@@ -29,11 +29,10 @@ public final class Arm {
             CHAMBER_FRONT_WRIST_ANGLE = 150,
             CHAMBER_BACK_WRIST_ANGLE = 268,
             WALL_PICKUP_ARM_ANGLE = 180,
-            WALL_PICKUP_WRIST_ANGLE = 90`;
+            WALL_PICKUP_WRIST_ANGLE = 90;
 
 
     public enum WristAngle {
-        NEUTRAL,
         COLLECTING,
         BASKET,
         CHAMBER_FRONT,
@@ -42,12 +41,11 @@ public final class Arm {
 
         public double getAngle() {
             switch (this) {
-                case BASKET:            return BASKET_WRIST_ANGLE;
-                case CHAMBER_BACK:      return CHAMBER_BACK_WRIST_ANGLE;
-                case CHAMBER_FRONT:      return CHAMBER_FRONT_WRIST_ANGLE;
-                case COLLECTING:        return COLLECTING_WRIST_ANGLE;
-                case WALL_PICKUP:       return WALL_PICKUP_WRIST_ANGLE;
-                case NEUTRAL: default:  return NEUTRAL_WRIST_ANGLE;
+                case BASKET:                return BASKET_WRIST_ANGLE;
+                case CHAMBER_BACK:          return CHAMBER_BACK_WRIST_ANGLE;
+                case CHAMBER_FRONT:         return CHAMBER_FRONT_WRIST_ANGLE;
+                case WALL_PICKUP:           return WALL_PICKUP_WRIST_ANGLE;
+                case COLLECTING: default:   return COLLECTING_WRIST_ANGLE;
             }
         }
     }
@@ -73,7 +71,7 @@ public final class Arm {
 
 
     }
-    private WristAngle targetWristAngle = WristAngle.NEUTRAL;
+    private WristAngle targetWristAngle = WristAngle.COLLECTING;
     private ArmAngle targetArmAngle = ArmAngle.NEUTRAL;
 
     public boolean isLocked = false;

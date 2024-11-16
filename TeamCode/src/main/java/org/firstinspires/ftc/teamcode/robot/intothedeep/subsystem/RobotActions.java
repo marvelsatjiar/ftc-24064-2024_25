@@ -51,7 +51,7 @@ public class RobotActions {
             WRIST_SETUP_WALL_PICKUP = 0.65,
             CLAW_CLAMPED_WALL_PICKUP = 1,
             ARM_NEUTRAL_WALL_PICKUP = 1,
-            WRIST_NEUTRAL_WALL_PICKUP = 1;
+            WRIST_COLLECTING_WALL_PICKUP = 1;
 
     public static Action extendIntake() {
         return new Actions.SingleCheckAction(
@@ -95,7 +95,7 @@ public class RobotActions {
                         new ParallelAction(
                                 setRollers(-0.75, ROLLERS_OUTTAKE_TRANSFER_TO_CLAW),
                                 setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_TRANSFER_TO_CLAW),
-                                setWrist(Arm.WristAngle.NEUTRAL, WRIST_NEUTRAL_TRANSFER_TO_CLAW)
+                                setWrist(Arm.WristAngle.COLLECTING, WRIST_NEUTRAL_TRANSFER_TO_CLAW)
                         ),
                         setRollers(0, ROLLERS_STOP_TRANSFER_TO_CLAW),
 
@@ -209,7 +209,7 @@ public class RobotActions {
                         new ParallelAction(
                                 setClaw(true, CLAW_CLAMPED_WALL_PICKUP),
                                 setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_WALL_PICKUP),
-                                setWrist(Arm.WristAngle.NEUTRAL, WRIST_NEUTRAL_WALL_PICKUP)
+                                setWrist(Arm.WristAngle.COLLECTING, WRIST_COLLECTING_WALL_PICKUP)
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
                 )
@@ -292,7 +292,7 @@ public class RobotActions {
     private static Action retractToNeutral(double sleepSeconds) {
         return new ParallelAction(
                 setArm(Arm.ArmAngle.NEUTRAL, sleepSeconds),
-                setWrist(Arm.WristAngle.NEUTRAL, 0),
+                setWrist(Arm.WristAngle.COLLECTING, 0),
                 setLift(Lift.Ticks.RETRACTED, 0)
         );
     }
