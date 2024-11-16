@@ -48,10 +48,11 @@ public final class Lift {
             LOW_BASKET_TICKS = 600,
             HIGH_BASKET_TICKS = 2970,
             HIGH_CHAMBER_SCORE_BACK_TICKS = 1300,
-            HIGH_CHAMBER_SCORE_FRONT_TICKS = 1100,
-            HIGH_CHAMBER_SETUP_BACK_TICKS = 1050,
-            HIGH_CHAMBER_SETUP_FRONT_TICKS = 850,
+            HIGH_CHAMBER_SCORE_FRONT_TICKS = 1600,
+            HIGH_CHAMBER_SETUP_BACK_TICKS = 535,
+            HIGH_CHAMBER_SETUP_FRONT_TICKS = 1100,
             WALL_PICKUP_TICKS = 1150,
+            INTERMEDIARY_WALL_PICKUP_TICKS = 1300,
             CLIMB_TICKS = 1200,
             UNSAFE_THRESHOLD_TICKS = 1000;
 
@@ -80,6 +81,7 @@ public final class Lift {
         HIGH_CHAMBER_SETUP_FRONT,
         WALL_PICKUP,
         CLIMB,
+        INTERMEDIARY_WALL_PICKUP,
         EXTENDED;
 
         private int toTicks() {
@@ -91,6 +93,7 @@ public final class Lift {
                 case HIGH_CHAMBER_SETUP_BACK:   return HIGH_CHAMBER_SETUP_BACK_TICKS;
                 case HIGH_CHAMBER_SETUP_FRONT:  return HIGH_CHAMBER_SETUP_FRONT_TICKS;
                 case WALL_PICKUP:               return WALL_PICKUP_TICKS;
+                case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
                 case CLIMB:                     return CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;

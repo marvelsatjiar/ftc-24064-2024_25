@@ -1,9 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
@@ -80,9 +78,6 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract(true));
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
-                    if (keyPressed(2, B)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromBackAndRetract());
-                    if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
-                    if (keyPressed(2, DPAD_DOWN)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromBackAndRetract());
                     break;
                 case SETUP_SCORE_BASKET:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract(true));
@@ -91,10 +86,12 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromFrontAndRetract());
                     break;
                 case SETUP_CHAMBER_FROM_BACK:
-                    if (keyPressed(2, B)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromBackAndRetract());
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
                     break;
                 case NEUTRAL:
                     if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake());
+                    if (keyPressed(2, DPAD_DOWN)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.pickupFromWall());
                     break;
                 case SETUP_INTAKE:
                     if (!gamepadEx1.isDown(LEFT_BUMPER)) {
@@ -115,6 +112,9 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 case TO_BE_TRANSFERRED:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    break;
+                case WALL_PICKUP:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.pickupFromWall());
                     break;
             }
 
