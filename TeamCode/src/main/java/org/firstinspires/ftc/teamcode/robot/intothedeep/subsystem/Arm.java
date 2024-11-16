@@ -19,21 +19,28 @@ public final class Arm {
 
     public static double
             NEUTRAL_ARM_ANGLE = 50,
-            NEUTRAL_WRIST_ANGLE = 270,
+            TRANSFERRED_WRIST_ANGLE = 270,
             COLLECTING_ARM_ANGLE = 104,
             COLLECTING_WRIST_ANGLE = 110,
             BASKET_ARM_ANGLE = 0,
             BASKET_WRIST_ANGLE = 270,
-            CHAMBER_FRONT_ARM_ANGLE = 60,
-            CHAMBER_BACK_ARM_ANGLE = 0,
-            CHAMBER_FRONT_WRIST_ANGLE = 150,
-            CHAMBER_BACK_WRIST_ANGLE = 268,
+
+            CHAMBER_FRONT_SETUP_ARM_ANGLE = 55,
+            CHAMBER_FRONT_SCORE_ARM_ANGLE = 35,
+
+            CHAMBER_BACK_SETUP_ARM_ANGLE = 0,
+            CHAMBER_BACK_SCORE_ARM_ANGLE = 0,
+
+            CHAMBER_FRONT_WRIST_ANGLE = 172.5,
+            CHAMBER_BACK_WRIST_ANGLE = 210,
+
             WALL_PICKUP_ARM_ANGLE = 180,
             WALL_PICKUP_WRIST_ANGLE = 90;
 
 
     public enum WristAngle {
         COLLECTING,
+        TRANSFERRED,
         BASKET,
         CHAMBER_FRONT,
         CHAMBER_BACK,
@@ -45,6 +52,7 @@ public final class Arm {
                 case CHAMBER_BACK:          return CHAMBER_BACK_WRIST_ANGLE;
                 case CHAMBER_FRONT:         return CHAMBER_FRONT_WRIST_ANGLE;
                 case WALL_PICKUP:           return WALL_PICKUP_WRIST_ANGLE;
+                case TRANSFERRED:           return TRANSFERRED_WRIST_ANGLE;
                 case COLLECTING: default:   return COLLECTING_WRIST_ANGLE;
             }
         }
@@ -54,18 +62,23 @@ public final class Arm {
         NEUTRAL,
         COLLECTING,
         BASKET,
-        CHAMBER_FRONT,
-        CHAMBER_BACK,
+        CHAMBER_FRONT_SETUP,
+        CHAMBER_FRONT_SCORE,
+        CHAMBER_BACK_SETUP,
+        CHAMBER_BACK_SCORE,
         WALL_PICKUP;
+
 
         public double getAngle() {
             switch (this) {
-                case BASKET:            return BASKET_ARM_ANGLE;
-                case CHAMBER_FRONT:     return CHAMBER_FRONT_ARM_ANGLE;
-                case CHAMBER_BACK:      return CHAMBER_BACK_ARM_ANGLE;
-                case COLLECTING:        return COLLECTING_ARM_ANGLE;
-                case WALL_PICKUP:       return WALL_PICKUP_ARM_ANGLE;
-                case NEUTRAL: default:  return NEUTRAL_ARM_ANGLE;
+                case BASKET:                return BASKET_ARM_ANGLE;
+                case CHAMBER_FRONT_SETUP:   return CHAMBER_FRONT_SETUP_ARM_ANGLE;
+                case CHAMBER_FRONT_SCORE:   return CHAMBER_FRONT_SCORE_ARM_ANGLE;
+                case CHAMBER_BACK_SETUP:    return CHAMBER_BACK_SETUP_ARM_ANGLE;
+                case CHAMBER_BACK_SCORE:    return CHAMBER_BACK_SCORE_ARM_ANGLE;
+                case COLLECTING:            return COLLECTING_ARM_ANGLE;
+                case WALL_PICKUP:           return WALL_PICKUP_ARM_ANGLE;
+                case NEUTRAL: default:      return NEUTRAL_ARM_ANGLE;
             }
         }
 

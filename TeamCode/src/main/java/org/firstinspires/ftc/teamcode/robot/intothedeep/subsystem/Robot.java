@@ -25,14 +25,12 @@ public final class Robot {
     public enum State {
         NEUTRAL,
         SETUP_INTAKE,
-        SETUP_WALL_PICKUP,
+        WALL_PICKUP,
         TO_BE_TRANSFERRED,
         TRANSFERRED,
         SETUP_CHAMBER_FROM_BACK,
         SETUP_CHAMBER_FROM_FRONT,
         SETUP_SCORE_BASKET,
-        WALL_PICKUP,
-        SCORED
     }
 
     State currentState = State.NEUTRAL;
