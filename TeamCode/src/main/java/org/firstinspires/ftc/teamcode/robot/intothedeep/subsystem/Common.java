@@ -5,7 +5,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 
 public final class Common {
     public static Pose2d AUTO_END_POSE = null;
-    public static boolean IS_RED = false, IS_AUDIENCE_SIDE = false;
+    public static boolean IS_RED = false, IS_SPECIMEN_SIDE = false;
 
     public static final double
             LEFT = Math.toRadians(180),

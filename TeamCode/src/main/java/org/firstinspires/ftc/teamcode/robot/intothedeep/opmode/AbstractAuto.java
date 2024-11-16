@@ -25,7 +25,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.util.LoopUtil;
 
 @Disabled
-public abstract class AbstractAuton extends LinearOpMode {
+public abstract class AbstractAuto extends LinearOpMode {
 
     protected final void getAllianceSideData() {
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
@@ -33,14 +33,11 @@ public abstract class AbstractAuton extends LinearOpMode {
         // Get gamepad 1 button input and save "right" and "red" booleans for autonomous configuration:
         while (opModeInInit() && !(gamepadEx1.isDown(RIGHT_BUMPER) && gamepadEx1.isDown(LEFT_BUMPER))) {
             gamepadEx1.readButtons();
-            if (MainTeleOp.keyPressed(1, DPAD_UP)) Common.IS_AUDIENCE_SIDE = true;
-            if (MainTeleOp.keyPressed(1, DPAD_DOWN)) Common.IS_AUDIENCE_SIDE = false;
             if (MainTeleOp.keyPressed(1, B)) Common.IS_RED = true;
             if (MainTeleOp.keyPressed(1, X)) Common.IS_RED = false;
             mTelemetry.addLine("| B - RED | X - BLUE |");
-            mTelemetry.addLine("| D-pad-down - AUDIENCE | D-pad-up - BACKBOARD |");
             mTelemetry.addLine();
-            mTelemetry.addLine("Selected " + (Common.IS_RED ? "RED" : "BLUE") + " " + (Common.IS_AUDIENCE_SIDE ? "AUDIENCE" : "BACKBOARD"));
+            mTelemetry.addLine("Selected " + (Common.IS_RED ? "RED" : "BLUE"));
             mTelemetry.addLine("Press both shoulder buttons to confirm!");
             mTelemetry.update();
         }

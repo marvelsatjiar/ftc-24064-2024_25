@@ -9,7 +9,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(1200);
+        MeepMeep meepMeep = new MeepMeep(600);
         boolean isSpecimenSide = false;
 
         RoadRunnerBotEntity drive = new DefaultBotBuilder(meepMeep)
@@ -73,7 +73,6 @@ public class MeepMeepTesting {
                 .setTangent(Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(26,-38),Math.toRadians(180))
                 .splineToConstantHeading(new Vector2d(7,-36),Math.toRadians(180))
-//                .splineToSplineHeading(new Pose2d(10,-36,Math.toRadians(270)),Math.toRadians(180))
                 .setTangent(-45)
                 .lineToYLinearHeading(-45,Math.toRadians(-40))
                 .lineToYLinearHeading(-36,Math.toRadians(270))
@@ -81,8 +80,6 @@ public class MeepMeepTesting {
                 .lineToYLinearHeading(-36,Math.toRadians(270))
                 .lineToYLinearHeading(-45,Math.toRadians(-40))
                 .lineToYLinearHeading(-36,Math.toRadians(270))
-//                .lineToYLinearHeading(-45,Math.toRadians(-40))
-//                .lineToYLinearHeading(-36,Math.toRadians(270))
         ;
         return builder;
 
@@ -107,7 +104,7 @@ public class MeepMeepTesting {
 
     private static TrajectoryActionBuilder scoreSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                .setTangent(180)
+                .setTangent(Math.toRadians(180))
 //                .splineToConstantHeading(new Vector2d(-35,-38),Math.toRadians(180))
                 .splineToSplineHeading(new Pose2d(-48,-45,Math.toRadians(-270)),Math.toRadians(180))
                 .setTangent(Math.toRadians(-135))

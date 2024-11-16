@@ -64,7 +64,6 @@ public final class Robot {
     // Reads all the necessary sensors (including battery volt.) in one bulk read
     public void readSensors() {
         bulkReader.bulkRead();
-        drivetrain.updatePoseEstimate();
     }
 
     // Runs all the necessary mechanisms
