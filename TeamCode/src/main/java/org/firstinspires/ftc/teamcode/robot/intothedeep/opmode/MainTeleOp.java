@@ -63,7 +63,7 @@ public final class MainTeleOp extends LinearOpMode {
             // Change the heading of the drivetrain in field-centric mode
 
             double slowMult = gamepadEx1.isDown(RIGHT_BUMPER) ? 0.2 : 1;
-            robot.drivetrain.setDrivePowers(
+            robot.drivetrain.setFieldCentricPowers(
                     new PoseVelocity2d(
                             new Vector2d(
                                     gamepadEx1.getLeftY() * slowMult,
