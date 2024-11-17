@@ -3,9 +3,14 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 
+import org.firstinspires.ftc.teamcode.control.controller.PIDController;
+import org.firstinspires.ftc.teamcode.control.motion.State;
+
 public final class Common {
     public static Pose2d AUTO_END_POSE = null;
     public static boolean IS_RED = false, IS_SPECIMEN_SIDE = false;
+
+    public static boolean isDistanceSensorAligningWithObj = false;
 
     public static final double
             LEFT = Math.toRadians(180),
@@ -20,6 +25,9 @@ public final class Common {
             SERVO_AXON_MAX = 255;
 
     public static final double MAX_VOLTAGE = 13;
+
+    public static double leftSensorPID;
+    public static double rightSensorPID;
 
     public static Robot robot;
     public static MultipleTelemetry mTelemetry;

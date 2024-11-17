@@ -1,15 +1,22 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.averagePID;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.leftSensorPID;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.rightSensorPID;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
+import org.firstinspires.ftc.teamcode.control.motion.State;
 
 @Config
 public class RobotActions {
@@ -227,6 +234,23 @@ public class RobotActions {
                 )
         );
     }
+
+    public static Action alignRobotWithSensor() {
+        return new org.firstinspires.ftc.teamcode.auto.Actions.RunnableAction(() -> {
+            robot.target = new State(4);
+            robot.drivetrain.setDrivePowers(
+                    new PoseVelocity2d(
+                            new Vector2d(
+                                    0,
+                                    0
+                            ),
+                            0
+                    )
+            );
+            return !robot.pidDistanceSensorControllerLeft.getErrorRange(robot.currentDistanceState, 2) && !robot.pidDistanceSensorControllerRight.getErrorRange(robot.currentDistanceState, 2);
+        });
+    }
+
 
 /*
 

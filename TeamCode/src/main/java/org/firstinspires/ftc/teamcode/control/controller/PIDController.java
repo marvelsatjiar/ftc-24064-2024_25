@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 public class PIDController implements FeedbackController {
 
     private PIDGains gains = new PIDGains();
-    private State target = new State();
+    private static State target = new State();
 
     private final Filter derivFilter;
     private final Differentiator differentiator = new Differentiator();
@@ -51,6 +51,10 @@ public class PIDController implements FeedbackController {
         stopIntegration(abs(output) >= gains.maxOutputWithIntegral && signum(output) == signum(error.x));
 
         return output;
+    }
+
+    public boolean getErrorRange(State measurement, double tolerance) {
+        return Math.abs(measurement.minus(target).x) <= tolerance;
     }
 
     public void setTarget(State target) {
