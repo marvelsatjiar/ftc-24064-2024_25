@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
@@ -20,6 +22,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
@@ -89,23 +92,15 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
                     break;
                 case NEUTRAL:
-                    if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake());
-                    if (keyPressed(2, DPAD_DOWN)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
+                    doExtendoControls();
+                    doIntakeControls();
+
+                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.pickupFromWall());
                     break;
                 case SETUP_INTAKE:
-                    if (!gamepadEx1.isDown(LEFT_BUMPER)) {
-                        double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
-                        if (trigger != 0) {
-                            robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
-                            robot.intake.setRollerPower(trigger);
-                        } else {
-                            robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
-                            robot.intake.setRollerPower(0);
-                        }
-                    } else {
-                        robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
-                    }
+                    doExtendoControls();
+                    doIntakeControls();
 
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractForTransfer());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
@@ -122,4 +117,27 @@ public final class MainTeleOp extends LinearOpMode {
             robot.printTelemetry();
         }
     }
+
+    public void doExtendoControls() {
+        if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.EXTENDED));
+        if (keyPressed(2, DPAD_LEFT)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH));
+        if (keyPressed(2, DPAD_DOWN)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_HALF));
+        if (keyPressed(2, DPAD_RIGHT)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS));
+    }
+
+    public void doIntakeControls() {
+        if (!gamepadEx1.isDown(LEFT_BUMPER)) {
+            double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+            if (trigger != 0) {
+                robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
+                robot.intake.setRollerPower(trigger);
+            } else {
+                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
+                robot.intake.setRollerPower(0);
+            }
+        } else {
+            robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
+        }
+    }
+
 }

@@ -32,7 +32,7 @@ public final class IntakePrototype extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Extendo extendo = new Extendo(hardwareMap);
 
-        Extendo.State targetPosition = Extendo.State.RETRACTED;
+        Extendo.Extension targetPosition = Extendo.Extension.RETRACTED;
 
         waitForStart();
 
@@ -48,12 +48,12 @@ public final class IntakePrototype extends LinearOpMode {
 
             intake.setRollerPower(trigger1);
 
-            if (gamepadEx1.wasJustPressed(A)) targetPosition = Extendo.State.RETRACTED;
-            if (gamepadEx1.wasJustPressed(B)) targetPosition = Extendo.State.EXTENDED;
+            if (gamepadEx1.wasJustPressed(A)) targetPosition = Extendo.Extension.RETRACTED;
+            if (gamepadEx1.wasJustPressed(B)) targetPosition = Extendo.Extension.EXTENDED;
 
             intake.run();
 
-            extendo.setTargetState(targetPosition);
+            extendo.setTargetExtension(targetPosition);
 
             extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
 

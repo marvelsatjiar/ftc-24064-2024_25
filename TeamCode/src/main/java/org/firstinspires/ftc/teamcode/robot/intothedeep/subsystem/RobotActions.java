@@ -58,14 +58,11 @@ public class RobotActions {
             CLAW_UNCLAMPED_SETUP_WALL_PICKUP = 0.65;
 
     // DONE
-    public static Action extendIntake() {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_INTAKE,
-                new SequentialAction(
-                        setV4B(Intake.V4BAngle.UP, V4B_UP_EXTEND_INTAKE),
-                        setExtendo(Extendo.State.EXTENDED, EXTENDO_EXTENDED_EXTEND_INTAKE),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_INTAKE)
-                )
+    public static Action extendIntake(Extendo.Extension extension) {
+        return new SequentialAction(
+                setV4B(Intake.V4BAngle.UP, V4B_UP_EXTEND_INTAKE),
+                setExtendo(extension, EXTENDO_EXTENDED_EXTEND_INTAKE),
+                new InstantAction(() -> robot.currentState = Robot.State.SETUP_INTAKE)
         );
     }
 
@@ -77,7 +74,7 @@ public class RobotActions {
                         new ParallelAction(
                                 new SequentialAction(
                                         setV4B(Intake.V4BAngle.UP, V4B_UP_RETRACT_FOR_TRANSFER),
-                                        setExtendo(Extendo.State.RETRACTED, EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER)
+                                        setExtendo(Extendo.Extension.RETRACTED, EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER)
                                 ),
                                 new SequentialAction(
                                         setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_RETRACT_FOR_TRANSFER),
@@ -247,11 +244,11 @@ public class RobotActions {
         );
     }
 
-    private static Action setExtendo(Extendo.State state, double sleepSeconds) {
+    private static Action setExtendo(Extendo.Extension extension, double sleepSeconds) {
         return new Actions.SingleCheckAction(
-                () -> robot.extendo.getState() != state,
+                () -> robot.extendo.getTargetExtension() != extension,
                 new ParallelAction(
-                        new InstantAction(() -> robot.extendo.setTargetState(state, true)),
+                        new InstantAction(() -> robot.extendo.setTargetExtension(extension, true)),
                         new SleepAction(sleepSeconds)
                 )
         );

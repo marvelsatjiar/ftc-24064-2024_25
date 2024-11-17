@@ -17,27 +17,33 @@ public final class Extendo {
 
     public static double
         LINKAGE_MIN_ANGLE = 17,
-        LINKAGE_MAX_ANGLE = 107,
-        STICK_MULT = 0.6;
+        LINKAGE_ONE_FOURTH_ANGLE = 17 + 22.5,
+        LINKAGE_ONE_HALF_ANGLE = 17 + 45,
+        LINKAGE_THREE_FOURTHS_ANGLE = 17 + 67.5,
+        LINKAGE_MAX_ANGLE = 107;
 
-    private double targetAngle = LINKAGE_MIN_ANGLE;
-
-    public enum State {
+    public enum Extension {
         RETRACTED,
+        ONE_FOURTH,
+
+        ONE_HALF,
+
+        THREE_FOURTHS,
+
         EXTENDED;
 
-        public double getExtendoAngle() {
+        public double getAngle() {
             switch (this) {
-                case RETRACTED:
-                    default:
-                        return LINKAGE_MIN_ANGLE;
-                case EXTENDED:
-                    return LINKAGE_MAX_ANGLE;
+                case EXTENDED: return LINKAGE_MAX_ANGLE;
+                case ONE_FOURTH: return LINKAGE_ONE_FOURTH_ANGLE;
+                case ONE_HALF: return LINKAGE_ONE_HALF_ANGLE;
+                case THREE_FOURTHS: return LINKAGE_THREE_FOURTHS_ANGLE;
+                case RETRACTED: default: return LINKAGE_MIN_ANGLE;
             }
         }
     }
 
-    private State state = State.RETRACTED;
+    private Extension targetExtension = Extension.RETRACTED;
 
     public boolean isLocked = false;
 
@@ -55,29 +61,26 @@ public final class Extendo {
     }
 
     // Returns the state of the extendo
-    public State getState() {
-        return state;
+    public Extension getTargetExtension() {
+        return targetExtension;
     }
 
-    public boolean setTargetState(State angle, boolean isOverride) {
+    public boolean setTargetExtension(Extension extension, boolean isOverride) {
         if (isLocked && !isOverride) return false;
-        targetAngle = min(LINKAGE_MAX_ANGLE, max(LINKAGE_MIN_ANGLE, angle.getExtendoAngle()));
-        state = targetAngle == LINKAGE_MIN_ANGLE ?
-                State.RETRACTED :
-                State.EXTENDED;
+        targetExtension = extension;
 
         return true;
     }
 
-    public boolean setTargetState(State state) {
-        return setTargetState(state, false);
+    public boolean setTargetExtension(Extension extension) {
+        return setTargetExtension(extension, false);
     }
 
     // Runs each servo inside of the group to a certain angle base on what was given
     public boolean run(boolean isV4BUnsafe) {
         if (isV4BUnsafe) return false;
         for (SimpleServo servos : linkageServos) {
-            servos.turnToAngle(targetAngle);
+            servos.turnToAngle(targetExtension.getAngle());
         }
 
         return true;
@@ -85,7 +88,7 @@ public final class Extendo {
 
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
-        mTelemetry.addData("Extendo is", state);
-        mTelemetry.addData("Servo angle is", targetAngle);
+        mTelemetry.addData("Extendo is", targetExtension);
+        mTelemetry.addData("Servo angle is", targetExtension.getAngle());
     }
 }
