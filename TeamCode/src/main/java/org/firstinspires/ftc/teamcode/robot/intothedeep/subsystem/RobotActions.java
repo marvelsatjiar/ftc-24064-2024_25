@@ -62,7 +62,7 @@ public class RobotActions {
         return new SequentialAction(
                 setV4B(Intake.V4BAngle.UP, V4B_UP_EXTEND_INTAKE),
                 setExtendo(extension, EXTENDO_EXTENDED_EXTEND_INTAKE),
-                new InstantAction(() -> robot.currentState = Robot.State.SETUP_INTAKE)
+                new InstantAction(() -> robot.currentState = Robot.State.EXTENDO_OUT)
         );
     }
 

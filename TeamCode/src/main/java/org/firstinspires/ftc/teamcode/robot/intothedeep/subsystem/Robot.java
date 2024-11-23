@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
@@ -26,7 +25,7 @@ public final class Robot {
 
     public enum State {
         NEUTRAL,
-        SETUP_INTAKE,
+        EXTENDO_OUT,
         WALL_PICKUP,
         TO_BE_TRANSFERRED,
         TRANSFERRED,
