@@ -18,23 +18,23 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 50,
+            NEUTRAL_ARM_ANGLE = 76,
             TRANSFERRED_WRIST_ANGLE = 270,
-            COLLECTING_ARM_ANGLE = 104,
-            COLLECTING_WRIST_ANGLE = 110,
-            BASKET_ARM_ANGLE = 0,
+            COLLECTING_ARM_ANGLE = 130,
+            COLLECTING_WRIST_ANGLE = 105,
+            BASKET_ARM_ANGLE = 26,
             BASKET_WRIST_ANGLE = 270,
 
-            CHAMBER_FRONT_SETUP_ARM_ANGLE = 55,
-            CHAMBER_FRONT_SCORE_ARM_ANGLE = 35,
+            CHAMBER_FRONT_SETUP_ARM_ANGLE = 81,
+            CHAMBER_FRONT_SCORE_ARM_ANGLE = 61,
 
-            CHAMBER_BACK_SETUP_ARM_ANGLE = 0,
-            CHAMBER_BACK_SCORE_ARM_ANGLE = 0,
+            CHAMBER_BACK_SETUP_ARM_ANGLE = 26,
+            CHAMBER_BACK_SCORE_ARM_ANGLE = 26,
 
             CHAMBER_FRONT_WRIST_ANGLE = 172.5,
             CHAMBER_BACK_WRIST_ANGLE = 210,
 
-            WALL_PICKUP_ARM_ANGLE = 180,
+            WALL_PICKUP_ARM_ANGLE = 206,
             WALL_PICKUP_WRIST_ANGLE = 90;
 
 

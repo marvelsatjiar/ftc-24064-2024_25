@@ -14,6 +14,8 @@ public class DistanceSensorEx {
     public DistanceSensorEx(DistanceSensor distanceSensor) {
         this.distanceSensor = distanceSensor;
 
+        firLowPassFilter = new FIRLowPassFilter();
+
         firLowPassFilter.setGains(new LowPassGains(0, 2));
     }
 

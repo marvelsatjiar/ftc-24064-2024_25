@@ -1,21 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.isDistanceSensorAligningWithObj;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.leftSensorPID;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.rightSensorPID;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
-import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
-import org.firstinspires.ftc.teamcode.control.motion.State;
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
-import org.firstinspires.ftc.teamcode.sensor.DistanceSensorEx;
 import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
 
@@ -29,10 +22,7 @@ public final class Robot {
     public final Lift lift;
     public final Arm arm;
     public final ActionScheduler actionScheduler;
-
-    public final DistanceSensorEx
-            leftDistanceSensor,
-            rightDistanceSensor;
+    public final AutoAligner autoAligner;
 
     public enum State {
         NEUTRAL,
@@ -44,19 +34,6 @@ public final class Robot {
         SETUP_CHAMBER_FROM_FRONT,
         SETUP_SCORE_BASKET,
     }
-
-    public PIDController pidDistanceSensorControllerLeft;
-    public PIDController pidDistanceSensorControllerRight;
-
-    org.firstinspires.ftc.teamcode.control.motion.State target = new org.firstinspires.ftc.teamcode.control.motion.State(0);
-
-    PIDGains pidGains = new PIDGains(
-            0,
-            0,
-            0
-    );
-
-    org.firstinspires.ftc.teamcode.control.motion.State currentDistanceState = new org.firstinspires.ftc.teamcode.control.motion.State(0);
 
     State currentState = State.NEUTRAL;
 
@@ -74,11 +51,6 @@ public final class Robot {
      * @param pose2d: The current pose for the robot, which is currently zero at start of teleOp
      */
     public Robot(HardwareMap hardwareMap, Pose2d pose2d) {
-        pidDistanceSensorControllerLeft.setGains(pidGains);
-        pidDistanceSensorControllerRight.setGains(pidGains);
-
-        leftDistanceSensor = new DistanceSensorEx(hardwareMap.get(DistanceSensor.class, "Left Distance Sensor"));
-        rightDistanceSensor = new DistanceSensorEx(hardwareMap.get(DistanceSensor.class, "Right Distance Sensor"));
 
         drivetrain = new MecanumDrive(hardwareMap, pose2d);
         extendo = new Extendo(hardwareMap);
@@ -87,6 +59,7 @@ public final class Robot {
         claw = new Claw(hardwareMap);
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
+        autoAligner = new AutoAligner(hardwareMap);
         actionScheduler = new ActionScheduler();
     }
 
@@ -97,15 +70,6 @@ public final class Robot {
 
     // Runs all the necessary mechanisms
     public void run() {
-        if (isDistanceSensorAligningWithObj) {
-            pidDistanceSensorControllerLeft.setTarget(target);
-            pidDistanceSensorControllerRight.setTarget(target);
-
-            leftSensorPID = pidDistanceSensorControllerLeft.calculate(new org.firstinspires.ftc.teamcode.control.motion.State(leftDistanceSensor.calculateDistance()));
-            rightSensorPID = pidDistanceSensorControllerRight.calculate(new org.firstinspires.ftc.teamcode.control.motion.State(rightDistanceSensor.calculateDistance()));
-
-            currentDistanceState = new org.firstinspires.ftc.teamcode.control.motion.State(((leftSensorPID + rightSensorPID) / 2));
-        }
 
         actionScheduler.run();
         extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
@@ -121,6 +85,7 @@ public final class Robot {
         extendo.printTelemetry();
         lift.printTelemetry();
         arm.printTelemetry();
+        intake.printTelemetry();
         mTelemetry.update();
     }
 

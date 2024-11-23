@@ -7,15 +7,15 @@ data class State
 
 @JvmOverloads
 constructor(
-    @JvmField var x: Double = 0.0,
-    @JvmField var v: Double = 0.0,
-    @JvmField var a: Double = 0.0,
-    @JvmField var j: Double = 0.0,
+        @JvmField var p: Double = 0.0,
+        @JvmField var v: Double = 0.0,
+        @JvmField var a: Double = 0.0,
+        @JvmField var j: Double = 0.0,
 ) {
 
     operator fun plus(other: State): State {
         return State(
-            x + other.x,
+            p + other.p,
             v + other.v,
             a + other.a,
             j + other.j,
@@ -24,7 +24,7 @@ constructor(
 
     operator fun unaryMinus(): State {
         return State(
-            -x,
+            -p,
             -v,
             -a,
             -j,
@@ -37,7 +37,7 @@ constructor(
 
     operator fun times(gains: FullStateGains): State {
         return State(
-            x * gains.pGain,
+            p * gains.pGain,
             v * gains.vGain,
             a * gains.aGain,
         )
@@ -56,6 +56,6 @@ constructor(
      * Only to be used to get a control output.
      */
     fun sum(): Double {
-        return x + v + a + j
+        return p + v + a + j
     }
 }

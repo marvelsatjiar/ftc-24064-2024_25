@@ -1,26 +1,19 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.averagePID;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.leftSensorPID;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.rightSensorPID;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
-import org.firstinspires.ftc.teamcode.control.motion.State;
 
 @Config
 public class RobotActions {
-    public static final double
+    public static double
             LIFT_EXTEND_SETUP_SCORE_BASKET = 2,
             V4B_UP_EXTEND_INTAKE = 0.25,
             CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT = 0.5,
@@ -46,8 +39,8 @@ public class RobotActions {
             LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT = 2,
             ARM_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 1,
             WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 1, 
-            LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.85,
-            ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.5,
+            LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.1 ,
+            ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.2,
             WRIST_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
             CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
             RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT = 1,
@@ -235,22 +228,13 @@ public class RobotActions {
         );
     }
 
-    public static Action alignRobotWithSensor() {
-        return new org.firstinspires.ftc.teamcode.auto.Actions.RunnableAction(() -> {
-            robot.target = new State(4);
-            robot.drivetrain.setDrivePowers(
-                    new PoseVelocity2d(
-                            new Vector2d(
-                                    0,
-                                    0
-                            ),
-                            0
-                    )
-            );
-            return !robot.pidDistanceSensorControllerLeft.getErrorRange(robot.currentDistanceState, 2) && !robot.pidDistanceSensorControllerRight.getErrorRange(robot.currentDistanceState, 2);
-        });
+    public static Action alignRobotWithSensor(AutoAligner.TargetDistance target) {
+        return new SequentialAction(
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(target)),
+                new Actions.RunnableAction(() -> !robot.autoAligner.isPositionInTolerance()),
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
+        );
     }
-
 
 /*
 
@@ -318,7 +302,7 @@ public class RobotActions {
         );
     }
 
-    private static Action setRollers(double power, double sleepSeconds) {
+    public static Action setRollers(double power, double sleepSeconds) {
         return new ParallelAction(
                 new InstantAction(() -> robot.intake.setRollerPower(power, true)),
                 new SleepAction(sleepSeconds)

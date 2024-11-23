@@ -32,7 +32,7 @@ public final class Claw {
         return claw.isActivated();
     }
 
-    public void run(){
+    public void run() {
         claw.updateAngles(DEPOSIT_ANGLE, CLAMP_ANGLE);
         claw.run();
     }

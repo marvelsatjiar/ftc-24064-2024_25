@@ -2,17 +2,25 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.teamcode.auto.Actions;
 
 @Config
 public final class Intake {
     private final CRServo[] intakeGroup;
     private final ServoEx[] intakeLinkGroup;
+
+    public final DigitalChannel
+            pin0,
+            pin1;
 
     public static int
             V4B_DOWN_ANGLE = 155,
@@ -21,6 +29,15 @@ public final class Intake {
             V4B_UNSAFE_THRESHOLD_ANGLE = 101;
 
     private V4BAngle targetAngle = V4BAngle.UP;
+
+    public enum SampleColor {
+        YELLOW,
+        BLUE,
+        RED,
+        NOTHING;
+    }
+
+    public SampleColor currentSample = SampleColor.NOTHING;
 
     public enum V4BAngle {
         DOWN,
@@ -46,6 +63,8 @@ public final class Intake {
 
     public boolean isRollerLocked = false;
 
+    private double rollerPower = 0;
+
     public Intake(HardwareMap hardwareMap) {
         CRServo intakeFollower = new CRServo(hardwareMap, "intakeFollower");
         CRServo intakeMaster = new CRServo(hardwareMap, "intakeMaster");
@@ -54,6 +73,9 @@ public final class Intake {
 
         intakeMaster.setInverted(true);
         intakeGearMaster.setInverted(true);
+
+        pin0 = hardwareMap.digitalChannel.get("digital0");
+        pin1 = hardwareMap.digitalChannel.get("digital1");
 
         intakeGroup = new CRServo[] {intakeFollower, intakeMaster};
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
@@ -77,10 +99,28 @@ public final class Intake {
     public boolean setRollerPower(double power, boolean isOverride) {
         if (isRollerLocked && !isOverride) return false;
 
+        rollerPower = power;
+
         for (CRServo servos : intakeGroup)
             servos.set(power);
 
         return true;
+    }
+
+    public double getRollerPower() {
+        return rollerPower;
+    }
+
+    public SampleColor convertToEnum() {
+        if (pin0.getState()) {
+            if (pin1.getState()) return SampleColor.YELLOW;
+            if (!pin1.getState()) return SampleColor.BLUE;
+        }
+
+        if (pin1.getState()) {
+            if (!pin0.getState()) return SampleColor.RED;
+        }
+        return SampleColor.NOTHING;
     }
 
     public boolean setRollerPower(double power) {
@@ -88,7 +128,13 @@ public final class Intake {
     }
 
     public void run() {
+        currentSample = convertToEnum();
+
         for (ServoEx servos : intakeLinkGroup)
             servos.turnToAngle(targetAngle.getAngle());
+    }
+
+    public void printTelemetry() {
+        mTelemetry.addData("Sample Color", currentSample.name());
     }
 }

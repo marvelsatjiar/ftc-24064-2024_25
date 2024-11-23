@@ -1,16 +1,21 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+
+import static java.lang.Math.atan2;
+import static java.lang.Math.hypot;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -21,7 +26,9 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -50,7 +57,7 @@ public final class MainTeleOp extends LinearOpMode {
 
         Pose2d endPose = Common.AUTO_END_POSE;
         if (endPose != null) {
-            robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Common.IS_RED ? Common.FORWARD : Common.BACKWARD));
+            robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Common.IS_RED ? Common.BACKWARD : Common.FORWARD));
         }
 
         waitForStart();
@@ -64,17 +71,35 @@ public final class MainTeleOp extends LinearOpMode {
 
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
+            double x = gamepadEx1.getRightX();
+            if (gamepadEx1.isDown(RIGHT_STICK_BUTTON)) {
+                double y = gamepadEx1.getRightY();
+                if (hypot(x, y) >= 0.8) robot.drivetrain.setCurrentHeading(atan2(y, x));
+                x = 0;
+            }
 
             double slowMult = gamepadEx1.isDown(RIGHT_BUMPER) ? 0.2 : 1;
-            robot.drivetrain.setFieldCentricPowers(
-                    new PoseVelocity2d(
-                            new Vector2d(
-                                    gamepadEx1.getLeftY() * slowMult,
-                                    -gamepadEx1.getLeftX() * slowMult
-                            ),
-                            -gamepadEx1.getRightX() * slowMult
-                    )
-            );
+
+//            if (robot.autoAligner.getTargetState() != null) {
+//                robot.drivetrain.setFieldCentricPowers(
+//                                robot.autoAligner.run(gamepadEx1.getLeftX())
+//                );
+//            } else {
+                robot.drivetrain.setFieldCentricPowers(
+                        new PoseVelocity2d(
+                                new Vector2d(
+                                        gamepadEx1.getLeftY() * slowMult,
+                                        -gamepadEx1.getLeftX() * slowMult
+                                ),
+                                -gamepadEx1.getRightX() * slowMult
+                        )
+                );
+//            }
+
+//            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistances.SUBMERSIBLE));
+//            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistances.WALL_PICKUP));
+//            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistances.CLIMB));
+
 
             switch (robot.getCurrentState()) {
                 case TRANSFERRED:
@@ -97,6 +122,7 @@ public final class MainTeleOp extends LinearOpMode {
 
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.pickupFromWall());
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     break;
                 case SETUP_INTAKE:
                     doExtendoControls();
@@ -113,6 +139,7 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
             }
 
+            robot.drivetrain.updatePoseEstimate();
             robot.run();
             robot.printTelemetry();
         }
@@ -126,6 +153,8 @@ public final class MainTeleOp extends LinearOpMode {
     }
 
     public void doIntakeControls() {
+        if (robot.intake.getRollerPower() != -1 && ((robot.intake.currentSample == Intake.SampleColor.BLUE && Common.IS_RED) || (robot.intake.currentSample == Intake.SampleColor.RED && !Common.IS_RED))) robot.actionScheduler.addAction(RobotActions.setRollers(-1, 1));
+
         if (!gamepadEx1.isDown(LEFT_BUMPER)) {
             double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             if (trigger != 0) {

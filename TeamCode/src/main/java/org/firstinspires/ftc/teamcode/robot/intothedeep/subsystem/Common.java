@@ -10,8 +10,6 @@ public final class Common {
     public static Pose2d AUTO_END_POSE = null;
     public static boolean IS_RED = false, IS_SPECIMEN_SIDE = false;
 
-    public static boolean isDistanceSensorAligningWithObj = false;
-
     public static final double
             LEFT = Math.toRadians(180),
             FORWARD = Math.toRadians(90),
@@ -31,4 +29,5 @@ public final class Common {
 
     public static Robot robot;
     public static MultipleTelemetry mTelemetry;
+
 }
