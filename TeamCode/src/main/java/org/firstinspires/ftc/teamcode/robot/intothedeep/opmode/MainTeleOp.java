@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
@@ -26,6 +27,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -77,11 +79,11 @@ public final class MainTeleOp extends LinearOpMode {
 
             double slowMult = gamepadEx1.isDown(RIGHT_BUMPER) ? 0.2 : 1;
 
-//            if (robot.autoAligner.getTargetState() != null) {
-//                robot.drivetrain.setFieldCentricPowers(
-//                                robot.autoAligner.run(gamepadEx1.getLeftX())
-//                );
-//            } else {
+            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
+                robot.drivetrain.setFieldCentricPowers(
+                                robot.autoAligner.run(gamepadEx1.getLeftX())
+                );
+            } else {
                 robot.drivetrain.setFieldCentricPowers(
                         new PoseVelocity2d(
                                 new Vector2d(
@@ -91,11 +93,11 @@ public final class MainTeleOp extends LinearOpMode {
                                 -gamepadEx1.getRightX() * slowMult
                         )
                 );
-//            }
+            }
 
-//            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistances.SUBMERSIBLE));
-//            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistances.WALL_PICKUP));
-//            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistances.CLIMB));
+            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE));
+            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP));
+            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB));
 
 
             switch (robot.getCurrentState()) {
@@ -118,6 +120,7 @@ public final class MainTeleOp extends LinearOpMode {
 
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    if (keyPressed(1, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
                     break;
                 case EXTENDO_OUT:
                     doExtendoControls();
@@ -131,6 +134,12 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 case WALL_PICKUP:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.pickupFromWall());
+                    break;
+                case LEVEL_TWO_HANG:
+                    if (keyPressed(1, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelThreeHang());
+                    break;
+                case SETUP_LEVEL_THREE_HANG:
+                    if (keyPressed(1, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
                     break;
             }
 
