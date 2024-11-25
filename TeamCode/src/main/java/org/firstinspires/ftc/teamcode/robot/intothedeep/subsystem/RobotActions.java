@@ -34,17 +34,13 @@ public class RobotActions {
             V4B_UP_RETRACT_FOR_TRANSFER = 0.33,
             EXTENDO_EXTENDED_EXTEND_INTAKE = 0.1,
             WRIST_CHAMBER_BACK_SETUP_CHAMBER_FROM_BACK = 1,
-            LIFT_HIGH_CHAMBER_BACK_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1.25,
-            CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1.25,
             LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT = 0.5,
             ARM_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 0,
             WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 0,
             LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.1 ,
             ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.2,
-            WRIST_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
             CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.2,
             RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT = 0,
-            RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1,
             RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.1,
             LIFT_SETUP_WALL_PICKUP = 2,
             ARM_SETUP_WALL_PICKUP = 0.65,
@@ -52,17 +48,23 @@ public class RobotActions {
             CLAW_CLAMPED_PICKUP_FROM_WALL = 1,
             ARM_CHAMBER_FRONT_SETUP_PICKUP_FROM_WALL = 1,
             WRIST_CHAMBER_FRONT_PICKUP_FROM_WALL = 1,
-            ARM_CHAMBER_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1.25,
             LIFT_INTERMEDIARY_WALL_PICKUP_PICKUP_FROM_WALL = 1,
             LIFT_HIGH_CHAMBER_FRONT_SETUP_PICKUP_FROM_WALL = 1,
-            CLAW_UNCLAMPED_SETUP_WALL_PICKUP = 0.65;
+            CLAW_UNCLAMPED_SETUP_WALL_PICKUP = 0.65,
+            LIFT_CLIMB_LEVEL_TWO_HANG = 1,
+            SWING_CORRECTOR_ACTIVE_LEVEL_TWO_HANG = 1,
+            RETRACT_TO_NEUTRAL_CLIMB__LEVEL_TWO_HANG = 1.2,
+            LIFT_CLIMB_SETUP_LEVEL_THREE_HANG = 1,
+            SWING_CORRECTOR_INACTIVE_SETUP_LEVEL_THREE_HANG = 1,
+            SWING_CORRECTOR_ACTIVE_CLIMB_LEVEL_THREE_HANG = 0.8,
+            RETRACT_TO_NEUTRAL_CLIMB_LEVEL_THREE_HANG = 0.8;
 
     // DONE
     public static Action extendIntake(Extendo.Extension extension) {
         return new SequentialAction(
                 setV4B(Intake.V4BAngle.UP, V4B_UP_EXTEND_INTAKE),
                 setExtendo(extension, EXTENDO_EXTENDED_EXTEND_INTAKE),
-                new InstantAction(() -> robot.currentState = Robot.State.SETUP_INTAKE)
+                new InstantAction(() -> robot.currentState = Robot.State.EXTENDO_OUT)
         );
     }
 
@@ -71,7 +73,7 @@ public class RobotActions {
         return new SequentialAction(
                 setV4B(Intake.V4BAngle.UP, V4B_UP_EXTEND_INTAKE),
                 setExtendo(angle, EXTENDO_EXTENDED_EXTEND_INTAKE),
-                new InstantAction(() -> robot.currentState = Robot.State.SETUP_INTAKE)
+                new InstantAction(() -> robot.currentState = Robot.State.EXTENDO_OUT)
         );
     }
 
@@ -245,6 +247,38 @@ public class RobotActions {
         );
     }
 
+    public static Action climbLevelTwoHang() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.LEVEL_TWO_HANG,
+                new SequentialAction(
+                        new ParallelAction(
+                                setLift(Lift.Ticks.CLIMB, LIFT_CLIMB_LEVEL_TWO_HANG),
+                                setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_LEVEL_TWO_HANG)
+                        ),
+                        retractToNeutral(RETRACT_TO_NEUTRAL_CLIMB__LEVEL_TWO_HANG)
+                )
+        );
+    }
+
+    public static Action setupLevelThreeHang() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_LEVEL_THREE_HANG,
+                new SequentialAction(
+                        setLift(Lift.Ticks.CLIMB, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
+                        setSwingCorrector(false, SWING_CORRECTOR_INACTIVE_SETUP_LEVEL_THREE_HANG)
+                )
+        );
+    }
+
+    public static Action climbLevelThreeHang() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.CLIMB_LEVEL_THREE_HANG,
+                new ParallelAction(
+                        setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_CLIMB_LEVEL_THREE_HANG),
+                        retractToNeutral(RETRACT_TO_NEUTRAL_CLIMB_LEVEL_THREE_HANG)
+                )
+        );
+    }
 /*
 
 ----------------------------------------------------------------------------------------------------
@@ -318,6 +352,13 @@ public class RobotActions {
                         new InstantAction(() -> robot.claw.setClamped(isClamped, true)),
                         new SleepAction(sleepSeconds)
                 )
+        );
+    }
+
+    private static Action setSwingCorrector(boolean isSwingCorrect, double sleepSeconds) {
+        return new ParallelAction(
+                new InstantAction(() -> robot.swingCorrector.setActivated(isSwingCorrect)),
+                new SleepAction(sleepSeconds)
         );
     }
 

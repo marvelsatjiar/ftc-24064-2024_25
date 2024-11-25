@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -10,6 +13,7 @@ import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.motion.State;
 import org.firstinspires.ftc.teamcode.sensor.DistanceSensorEx;
 
+@Config
 public class AutoAligner {
     private final DistanceSensorEx
             leftDistanceSensor,
@@ -18,13 +22,13 @@ public class AutoAligner {
     private final PIDController xyPIDController = new PIDController();
     private final PIDController headingPIDController = new PIDController();
 
-    private final PIDGains xyPIDGains = new PIDGains(
+    public PIDGains xyPIDGains = new PIDGains(
             0,
             0,
             0
     );
 
-    private final PIDGains headingPIDGains = new PIDGains(
+    public PIDGains headingPIDGains = new PIDGains(
             0,
             0,
             0
@@ -89,6 +93,9 @@ public class AutoAligner {
     }
 
     public PoseVelocity2d run(double y) {
+        xyPIDController.setGains(xyPIDGains);
+        headingPIDController.setGains(headingPIDGains);
+
         double theta = Math.atan2((rightDistanceSensor.calculateDistance() - leftDistanceSensor.calculateDistance()), SENSOR_DISTANCE);
         currentXYState = new State(Math.min(rightDistanceSensor.calculateDistance(), leftDistanceSensor.calculateDistance()) * Math.cos(theta));
         currentHeadingState = new State(theta);
@@ -100,6 +107,13 @@ public class AutoAligner {
                 ),
                 getHeadingDistance()
         );
+    }
+
+    public void printTelemetry() {
+        mTelemetry.addData("left distance output", leftDistanceSensor.calculateDistance());
+        mTelemetry.addData("right distance output", rightDistanceSensor.calculateDistance());
+        mTelemetry.addData("heading pid output", headingPIDController.calculate(currentHeadingState));
+        mTelemetry.addData("xy pid output", headingPIDController.calculate(currentXYState));
     }
 
 }

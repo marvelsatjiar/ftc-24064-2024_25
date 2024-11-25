@@ -2,15 +2,16 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
+import static org.firstinspires.ftc.teamcode.util.SimpleServoPivot.getGoBildaServo;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
+import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 @Config
 public final class Robot {
@@ -24,15 +25,24 @@ public final class Robot {
     public final ActionScheduler actionScheduler;
     public final AutoAligner autoAligner;
 
+    public final double
+        SWING_CORRECTOR_INACTIVE = 0,
+        SWING_CORRECTOR_ACTIVE = 90;
+
+    public final SimpleServoPivot swingCorrector;
+
     public enum State {
         NEUTRAL,
-        SETUP_INTAKE,
+        EXTENDO_OUT,
         WALL_PICKUP,
         TO_BE_TRANSFERRED,
         TRANSFERRED,
         SETUP_CHAMBER_FROM_BACK,
         SETUP_CHAMBER_FROM_FRONT,
         SETUP_SCORE_BASKET,
+        LEVEL_TWO_HANG,
+        SETUP_LEVEL_THREE_HANG,
+        CLIMB_LEVEL_THREE_HANG
     }
 
     State currentState = State.NEUTRAL;
@@ -51,6 +61,7 @@ public final class Robot {
      * @param pose2d: The current pose for the robot, which is currently zero at start of teleOp
      */
     public Robot(HardwareMap hardwareMap, Pose2d pose2d) {
+        swingCorrector = new SimpleServoPivot(SWING_CORRECTOR_INACTIVE, SWING_CORRECTOR_ACTIVE, getGoBildaServo(hardwareMap, "swing corrector"));
 
         drivetrain = new MecanumDrive(hardwareMap, pose2d);
         extendo = new Extendo(hardwareMap);
@@ -86,6 +97,7 @@ public final class Robot {
         lift.printTelemetry();
         arm.printTelemetry();
         intake.printTelemetry();
+        autoAligner.printTelemetry();
         mTelemetry.update();
     }
 
