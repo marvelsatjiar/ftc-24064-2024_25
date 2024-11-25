@@ -23,10 +23,11 @@ public final class Intake {
             pin1;
 
     public static int
-            V4B_DOWN_ANGLE = 155,
+            V4B_DOWN_ANGLE = 168,
             V4B_CLEARING_ANGLE = 113,
             V4B_UP_ANGLE = 100,
-            V4B_UNSAFE_THRESHOLD_ANGLE = 101;
+            V4B_UNSAFE_THRESHOLD_ANGLE = 101,
+            V4B_HOVERING_ANGLE = 150;
 
     private V4BAngle targetAngle = V4BAngle.UP;
 
@@ -43,13 +44,15 @@ public final class Intake {
         DOWN,
         CLEARING,
         UP,
-        UNSAFE;
+        UNSAFE,
+        HOVERING;
 
         private int getAngle() {
             switch (this) {
                 case DOWN: return  V4B_DOWN_ANGLE;
                 case CLEARING: return V4B_CLEARING_ANGLE;
                 case UNSAFE: return V4B_UNSAFE_THRESHOLD_ANGLE;
+                case HOVERING: return V4B_HOVERING_ANGLE;
                 default: return V4B_UP_ANGLE;
             }
         }
@@ -136,5 +139,6 @@ public final class Intake {
 
     public void printTelemetry() {
         mTelemetry.addData("Sample Color", currentSample.name());
+        mTelemetry.addData("V4B State", targetAngle.name());
     }
 }

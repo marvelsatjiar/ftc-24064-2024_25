@@ -15,37 +15,37 @@ import org.firstinspires.ftc.teamcode.auto.Actions;
 public class RobotActions {
     public static double
             LIFT_EXTEND_SETUP_SCORE_BASKET = 2,
-            V4B_UP_EXTEND_INTAKE = 0.25,
-            CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT = 0.5,
+            V4B_UP_EXTEND_INTAKE = 0,
+            CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT = 0.2,
             ARM_CHAMBER_BACK_SETUP_SETUP_CHAMBER_FROM_BACK = 1,
             LIFT_HIGH_CHAMBER_SETUP_BACK_SETUP_CHAMBER_FROM_BACK = 1,
             ARM_BASKET_SETUP_SCORE_BASKET = 0.7,
             ROLLERS_STOP_TRANSFER_TO_CLAW = 0,
-            WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.75,
-            ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.75,
-            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.75,
+            WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.2,
+            ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.2,
+            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.2,
             CLAW_CLAMPED_TRANSFER_TO_CLAW = 0.2,
-            ARM_COLLECTING_TRANSFER_TO_CLAW = 0.7,
-            WRIST_COLLECTING_TRANSFER_TO_CLAW = 0.5,
+            ARM_COLLECTING_TRANSFER_TO_CLAW = 0.3,
+            WRIST_COLLECTING_TRANSFER_TO_CLAW = 0,
             CLAW_UNCLAMPED_RETRACT_FOR_TRANSFER = 0,
             LIFT_RETRACTED_RETRACT_FOR_TRANSFER = 1,
             ARM_NEUTRAL_RETRACT_FOR_TRANSFER = 0.4,
             EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER = 0.7,
             V4B_UP_RETRACT_FOR_TRANSFER = 0.33,
-            EXTENDO_EXTENDED_EXTEND_INTAKE = 0,
+            EXTENDO_EXTENDED_EXTEND_INTAKE = 0.1,
             WRIST_CHAMBER_BACK_SETUP_CHAMBER_FROM_BACK = 1,
             LIFT_HIGH_CHAMBER_BACK_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1.25,
             CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1.25,
-            LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT = 2,
-            ARM_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 1,
-            WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 1, 
+            LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT = 0.5,
+            ARM_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 0,
+            WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 0,
             LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.1 ,
             ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.2,
             WRIST_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
-            CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1.15,
-            RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT = 1,
+            CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.2,
+            RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT = 0,
             RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_BACK_AND_RETRACT = 1,
-            RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 1,
+            RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.1,
             LIFT_SETUP_WALL_PICKUP = 2,
             ARM_SETUP_WALL_PICKUP = 0.65,
             WRIST_SETUP_WALL_PICKUP = 0.65,
@@ -65,6 +65,17 @@ public class RobotActions {
                 new InstantAction(() -> robot.currentState = Robot.State.SETUP_INTAKE)
         );
     }
+
+
+    public static Action extendIntake(double angle) {
+        return new SequentialAction(
+                setV4B(Intake.V4BAngle.UP, V4B_UP_EXTEND_INTAKE),
+                setExtendo(angle, EXTENDO_EXTENDED_EXTEND_INTAKE),
+                new InstantAction(() -> robot.currentState = Robot.State.SETUP_INTAKE)
+        );
+    }
+
+
 
     // DONE
     public static Action retractForTransfer() {
@@ -121,11 +132,10 @@ public class RobotActions {
     }
 
     // DONE
-    public static Action scoreBasketAndRetract(boolean isHighBasket) {
+    public static Action scoreBasketAndRetract() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
-                        setupScoreBasket(isHighBasket),
                         setClaw(false, CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT),
                         retractToNeutral(RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT),
                         new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
@@ -168,7 +178,6 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
-                        setupChamberFromFront(),
                         setLift(Lift.Ticks.HIGH_CHAMBER_SCORE_FRONT, LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
                         setArm(Arm.ArmAngle.CHAMBER_FRONT_SCORE, ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
                         setClaw(false, CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
@@ -242,7 +251,7 @@ public class RobotActions {
 
  */
 
-    private static Action setV4B(Intake.V4BAngle angle, double sleepSeconds) {
+    public static Action setV4B(Intake.V4BAngle angle, double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.intake.getTargetV4BAngle() != angle,
                 new ParallelAction(
@@ -257,6 +266,16 @@ public class RobotActions {
                 () -> robot.extendo.getTargetExtension() != extension,
                 new ParallelAction(
                         new InstantAction(() -> robot.extendo.setTargetExtension(extension, true)),
+                        new SleepAction(sleepSeconds)
+                )
+        );
+    }
+
+    private static Action setExtendo(double angle, double sleepSeconds) {
+        return new Actions.SingleCheckAction(
+                () -> robot.extendo.getTargetAngle() != angle,
+                new ParallelAction(
+                        new InstantAction(() -> robot.extendo.setTargetAngle(angle, true)),
                         new SleepAction(sleepSeconds)
                 )
         );
@@ -292,7 +311,7 @@ public class RobotActions {
         );
     }
 
-    private static Action setClaw(boolean isClamped, double sleepSeconds) {
+    public static Action setClaw(boolean isClamped, double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.claw.getClamped() != isClamped,
                 new ParallelAction(

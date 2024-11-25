@@ -9,6 +9,7 @@ import static java.lang.Math.min;
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.Range;
 
 @Config
 public final class Extendo {
@@ -25,11 +26,8 @@ public final class Extendo {
     public enum Extension {
         RETRACTED,
         ONE_FOURTH,
-
         ONE_HALF,
-
         THREE_FOURTHS,
-
         EXTENDED;
 
         public double getAngle() {
@@ -43,6 +41,7 @@ public final class Extendo {
         }
     }
 
+    private double targetAngle = LINKAGE_MIN_ANGLE;
     private Extension targetExtension = Extension.RETRACTED;
 
     public boolean isLocked = false;
@@ -65,9 +64,23 @@ public final class Extendo {
         return targetExtension;
     }
 
+    public double getTargetAngle() {
+        return targetAngle;
+    }
+
     public boolean setTargetExtension(Extension extension, boolean isOverride) {
         if (isLocked && !isOverride) return false;
         targetExtension = extension;
+        targetAngle = extension.getAngle();
+
+        return true;
+    }
+
+    public boolean setTargetAngle(double angle, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
+        targetAngle = Range.clip(angle, LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE);
+        if (targetAngle == LINKAGE_MIN_ANGLE) targetExtension = Extension.RETRACTED;
+        else targetExtension = Extension.EXTENDED;
 
         return true;
     }
@@ -80,7 +93,7 @@ public final class Extendo {
     public boolean run(boolean isV4BUnsafe) {
         if (isV4BUnsafe) return false;
         for (SimpleServo servos : linkageServos) {
-            servos.turnToAngle(targetExtension.getAngle());
+            servos.turnToAngle(targetAngle);
         }
 
         return true;
@@ -89,6 +102,6 @@ public final class Extendo {
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
         mTelemetry.addData("Extendo is", targetExtension);
-        mTelemetry.addData("Servo angle is", targetExtension.getAngle());
+        mTelemetry.addData("Servo angle is", targetAngle);
     }
 }

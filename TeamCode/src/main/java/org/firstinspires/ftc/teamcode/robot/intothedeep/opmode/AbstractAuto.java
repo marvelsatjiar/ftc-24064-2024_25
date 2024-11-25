@@ -45,6 +45,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     protected final void update() {
         robot.readSensors();
         robot.run();
+        robot.printTelemetry();
         mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
         mTelemetry.update();
     }

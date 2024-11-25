@@ -104,11 +104,11 @@ public final class MainTeleOp extends LinearOpMode {
             switch (robot.getCurrentState()) {
                 case TRANSFERRED:
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract(true));
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
                     break;
                 case SETUP_SCORE_BASKET:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract(true));
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract());
                     break;
                 case SETUP_CHAMBER_FROM_FRONT:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromFrontAndRetract());
