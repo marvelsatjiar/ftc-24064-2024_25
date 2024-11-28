@@ -11,6 +11,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
@@ -22,16 +23,20 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 @Config
 public class SampleAuto extends AbstractAuto {
     public static double
-            scoreSpecimenY = -29.5,
+            scoreSpecimenY = -29,
             waitToScoreSample1 = 4,
             waitToScoreSample2 = 4,
+            waitToScoreSample3 = 4,
             robotAngle = 97,
-            xSample1 = -44,
+            thirdSampleangle = 148,
+            xSample1 = -45.6,
             ySample1 = -34,
-            xSample2 = -58,
-            ySample2 = -34,
-            xBasket = -55,
-            yBasket = -55;
+            xSample2 = -57.5,
+            ySample2 = -36,
+            xSample3 = -46.75,
+            ySample3 = -40,
+            xBasket = -54.25,
+            yBasket = -54.25;
 
     @Override
     protected Pose2d getStartPose() {
@@ -43,7 +48,7 @@ public class SampleAuto extends AbstractAuto {
         TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
         builder = scoreSpecimen(builder);
         builder = scoreSamples(builder);
-//        builder = samplePark(builder);
+        builder = samplePark(builder);
 
         return builder.build();
     }
@@ -64,7 +69,7 @@ public class SampleAuto extends AbstractAuto {
                 // Moving to 1st sample
                 .setTangent(Math.toRadians(270))
                 .afterTime(1, RobotActions.setV4B(Intake.V4BAngle.HOVERING, 0))
-                .afterTime(2, new SequentialAction(
+                .afterTime(1.5, new SequentialAction(
                         new ParallelAction(
                                 RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
                                 RobotActions.setRollers(1, 2)
@@ -84,40 +89,46 @@ public class SampleAuto extends AbstractAuto {
                 // Moving to 2nd sample
                 .setTangent(Math.toRadians(110))
                 .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.HOVERING, 0))
+                .afterTime(0.5, new SequentialAction(
+                        new ParallelAction(
+                                RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
+                                RobotActions.setRollers(1, 2)
+                        ),
+                        RobotActions.transferToClaw(),
+                        RobotActions.setupScoreBasket(true)
+                ))
                 .splineToLinearHeading(new Pose2d(xSample2, ySample2, Math.toRadians(robotAngle)),Math.toRadians(110))
                 // 2nd sample intaking
-                .afterTime(0, new SequentialAction(
-                    new ParallelAction(
-                            RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                            RobotActions.setRollers(1, 2)
-                    ),
-                    RobotActions.transferToClaw(),
-                    RobotActions.setupScoreBasket(true)
-                ))
+
                 // Moving to basket
                 .setTangent(Math.toRadians(90))
                 .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)),Math.toRadians(290))
                 .waitSeconds(waitToScoreSample2)
                 // Basket
+                .afterTime(0, RobotActions.scoreBasketAndRetract())
+                // Moving to 3rd sample
+                .setTangent(Math.toRadians(90))
+                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.HOVERING, 0))
+                .splineToLinearHeading(new Pose2d(xSample3, ySample3, Math.toRadians(thirdSampleangle)), Math.toRadians(thirdSampleangle))
+                // 3rd sample intaking
+                .stopAndAdd(new SequentialAction(
+                        RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS),
+                        new ParallelAction(
+                                RobotActions.setV4B(Intake.V4BAngle.DOWN, 1),
+                                RobotActions.setRollers(1, 2)
+                        )
+                ))
+                .afterTime(0.5, new SequentialAction(
+                        RobotActions.transferToClaw(),
+                        RobotActions.setupScoreBasket(true)
+                ))
+                // Moving to basket
+                .setTangent(Math.toRadians(135))
+                .splineToConstantHeading(new Vector2d(xSample3 - 2, ySample3 + 2), Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(255))
+                .waitSeconds(waitToScoreSample3)
+                // Basket
                 .afterTime(0, RobotActions.scoreBasketAndRetract());
-//                // Moving to 3rd sample
-//                .setTangent(Math.toRadians(90))
-//                .splineToLinearHeading(new Pose2d(-54,-46,Math.toRadians(127)),Math.toRadians(127))
-//                // 3rd sample intaking
-//                .stopAndAdd(new SequentialAction(
-//                        RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH),
-//                        RobotActions.setRollers(1, 0.5)
-//                ))
-//                .afterTime(0.0, new SequentialAction(
-//                        RobotActions.transferToClaw(),
-//                        RobotActions.setupScoreBasket(true)
-//
-//                ))
-//                // Moving to basket
-//                .setTangent(Math.toRadians(255))
-//                .splineToLinearHeading(new Pose2d(-56,-56,Math.toRadians(45)),Math.toRadians(255))
-//                // Basket
-//                .afterTime(0.0, RobotActions.scoreBasketAndRetract(true));
         return builder;
     }
 

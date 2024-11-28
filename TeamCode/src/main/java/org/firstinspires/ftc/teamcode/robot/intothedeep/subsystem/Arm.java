@@ -21,12 +21,12 @@ public final class Arm {
             NEUTRAL_ARM_ANGLE = 85,
             TRANSFERRED_WRIST_ANGLE = 270,
             COLLECTING_ARM_ANGLE = 110,
-            COLLECTING_WRIST_ANGLE = 105,
+            COLLECTING_WRIST_ANGLE = 95,
             BASKET_ARM_ANGLE = 5,
             BASKET_WRIST_ANGLE = 270,
 
             CHAMBER_FRONT_SETUP_ARM_ANGLE = 70,
-            CHAMBER_FRONT_SCORE_ARM_ANGLE = 30,
+            CHAMBER_FRONT_SCORE_ARM_ANGLE = 25,
 
             CHAMBER_BACK_SETUP_ARM_ANGLE = 26,
             CHAMBER_BACK_SCORE_ARM_ANGLE = 26,

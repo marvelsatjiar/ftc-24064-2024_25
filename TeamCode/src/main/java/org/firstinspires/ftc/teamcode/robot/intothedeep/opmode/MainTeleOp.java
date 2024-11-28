@@ -95,9 +95,9 @@ public final class MainTeleOp extends LinearOpMode {
                 );
             }
 
-            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE));
-            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP));
-            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB));
+//            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE));
+//            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP));
+//            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB));
 
 
             switch (robot.getCurrentState()) {

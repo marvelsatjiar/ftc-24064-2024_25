@@ -39,7 +39,7 @@ public class RobotActions {
             WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT = 0,
             LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.1 ,
             ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.2,
-            CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.2,
+            CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.5,
             RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT = 0,
             RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT = 0.1,
             LIFT_SETUP_WALL_PICKUP = 2,
@@ -305,7 +305,7 @@ public class RobotActions {
         );
     }
 
-    private static Action setExtendo(double angle, double sleepSeconds) {
+    public static Action setExtendo(double angle, double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.extendo.getTargetAngle() != angle,
                 new ParallelAction(

@@ -23,11 +23,11 @@ public final class Intake {
             pin1;
 
     public static int
-            V4B_DOWN_ANGLE = 168,
+            V4B_DOWN_ANGLE = 150,
             V4B_CLEARING_ANGLE = 113,
             V4B_UP_ANGLE = 100,
             V4B_UNSAFE_THRESHOLD_ANGLE = 101,
-            V4B_HOVERING_ANGLE = 150;
+            V4B_HOVERING_ANGLE = 145;
 
     private V4BAngle targetAngle = V4BAngle.UP;
 

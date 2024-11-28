@@ -114,8 +114,9 @@ public class MeepMeepTesting {
                 .setTangent(Math.toRadians(90))
                 .splineToLinearHeading(new Pose2d(-56,-56,Math.toRadians(45)),Math.toRadians(290))
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(-54,-46,Math.toRadians(127)),Math.toRadians(127))
-                .setTangent(Math.toRadians(255))
+                .splineToLinearHeading(new Pose2d(-49,-44,Math.toRadians(145)),Math.toRadians(145))
+                .setTangent(Math.toRadians(135))
+                .splineToConstantHeading(new Vector2d(-51, -42), Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(-56,-56,Math.toRadians(45)),Math.toRadians(255))
         ;
         return builder;
