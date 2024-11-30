@@ -10,7 +10,7 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 public class MeepMeepTesting {
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
-        boolean isSpecimenSide = false;
+        boolean isSpecimenSide = true;
 
         RoadRunnerBotEntity drive = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
@@ -19,7 +19,7 @@ public class MeepMeepTesting {
 
         Pose2d startPose;
         if (isSpecimenSide)
-            startPose = new Pose2d(10,-63,Math.toRadians(-270));
+            startPose = new Pose2d(8,-63,Math.toRadians(-270));
         else
             startPose = new Pose2d(-8,-63,Math.toRadians(-270));
 
@@ -35,7 +35,7 @@ public class MeepMeepTesting {
             builder = scoreSpecimen(builder);
             builder = giveSamples(builder);
             builder = scoreAllSpecimens(builder);
-            builder = specimenPark(builder);
+//            builder = specimenPark(builder);
 
 
 
@@ -71,15 +71,16 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder scoreAllSpecimens(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(26,-38),Math.toRadians(180))
-                .splineToConstantHeading(new Vector2d(7,-36),Math.toRadians(180))
-                .setTangent(-45)
-                .lineToYLinearHeading(-45,Math.toRadians(-40))
-                .lineToYLinearHeading(-36,Math.toRadians(270))
-                .lineToYLinearHeading(-45,Math.toRadians(-40))
-                .lineToYLinearHeading(-36,Math.toRadians(270))
-                .lineToYLinearHeading(-45,Math.toRadians(-40))
-                .lineToYLinearHeading(-36,Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(17,-46, Math.toRadians(-45)),Math.toRadians(180))
+                .lineToXConstantHeading(19)
+                .splineToLinearHeading(new Pose2d(7,-34, Math.toRadians(-90)),Math.toRadians(180))
+//                .setTangent(-45)
+//                .lineToYLinearHeading(-45,Math.toRadians(-40))
+//                .lineToYLinearHeading(-36,Math.toRadians(270))
+//                .lineToYLinearHeading(-45,Math.toRadians(-40))
+//                .lineToYLinearHeading(-36,Math.toRadians(270))
+//                .lineToYLinearHeading(-45,Math.toRadians(-40))
+//                .lineToYLinearHeading(-36,Math.toRadians(270))
         ;
         return builder;
 
@@ -87,16 +88,19 @@ public class MeepMeepTesting {
     }
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                .setTangent(Math.toRadians(-20))
+                .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(26,-38),Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(35,-36,Math.toRadians(35)),Math.toRadians(35))
+                .splineToSplineHeading(new Pose2d(37.5,-36.5,Math.toRadians(35)),Math.toRadians(35))
+                .lineToY(-38)
         //extend intake ~5in
-                .turn(Math.toRadians(-70))
+                .splineToLinearHeading(new Pose2d(46, -35, Math.toRadians(-100)),Math.toRadians(-100))
+
                 //give sample 2 below
                 .splineToSplineHeading(new Pose2d(47,-36,Math.toRadians(35)),Math.toRadians(35))
                 .turn(Math.toRadians(-80))
         //give sample 3 below
                 .turn(Math.toRadians(65))
+                .lineToY(-33.5)
                 .turn(Math.toRadians(-110))
         ;
         return builder;

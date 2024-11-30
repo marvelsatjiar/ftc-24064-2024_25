@@ -28,11 +28,12 @@ public final class Arm {
             CHAMBER_FRONT_SETUP_ARM_ANGLE = 70,
             CHAMBER_FRONT_SCORE_ARM_ANGLE = 25,
 
-            CHAMBER_BACK_SETUP_ARM_ANGLE = 26,
-            CHAMBER_BACK_SCORE_ARM_ANGLE = 26,
+            CHAMBER_BACK_SETUP_ARM_ANGLE = 0,
+            CHAMBER_BACK_SCORE_ARM_ANGLE = 0,
 
             CHAMBER_FRONT_WRIST_ANGLE = 172.5,
-            CHAMBER_BACK_WRIST_ANGLE = 210,
+            CHAMBER_BACK_WRIST_ANGLE = 190,
+            CHAMBER_BACK_AUTON_WRIST_ANGLE = 210,
 
             WALL_PICKUP_ARM_ANGLE = 206,
             WALL_PICKUP_WRIST_ANGLE = 90;
@@ -44,12 +45,14 @@ public final class Arm {
         BASKET,
         CHAMBER_FRONT,
         CHAMBER_BACK,
+        CHAMBER_BACK_AUTON,
         WALL_PICKUP;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:                return BASKET_WRIST_ANGLE;
                 case CHAMBER_BACK:          return CHAMBER_BACK_WRIST_ANGLE;
+                case CHAMBER_BACK_AUTON:    return CHAMBER_BACK_AUTON_WRIST_ANGLE;
                 case CHAMBER_FRONT:         return CHAMBER_FRONT_WRIST_ANGLE;
                 case WALL_PICKUP:           return WALL_PICKUP_WRIST_ANGLE;
                 case TRANSFERRED:           return TRANSFERRED_WRIST_ANGLE;

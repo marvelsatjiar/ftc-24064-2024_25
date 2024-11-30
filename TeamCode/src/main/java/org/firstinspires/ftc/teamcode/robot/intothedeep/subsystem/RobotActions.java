@@ -21,9 +21,9 @@ public class RobotActions {
             LIFT_HIGH_CHAMBER_SETUP_BACK_SETUP_CHAMBER_FROM_BACK = 1,
             ARM_BASKET_SETUP_SCORE_BASKET = 0.7,
             ROLLERS_STOP_TRANSFER_TO_CLAW = 0,
-            WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.2,
-            ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.2,
-            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.2,
+            WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.3,
+            ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.3,
+            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.1,
             CLAW_CLAMPED_TRANSFER_TO_CLAW = 0.2,
             ARM_COLLECTING_TRANSFER_TO_CLAW = 0.3,
             WRIST_COLLECTING_TRANSFER_TO_CLAW = 0,
@@ -109,8 +109,8 @@ public class RobotActions {
                         setWrist(Arm.WristAngle.COLLECTING, WRIST_COLLECTING_TRANSFER_TO_CLAW),
                         setArm(Arm.ArmAngle.COLLECTING, ARM_COLLECTING_TRANSFER_TO_CLAW),
                         setClaw(true, CLAW_CLAMPED_TRANSFER_TO_CLAW),
+                        setRollers(-0.75, ROLLERS_OUTTAKE_TRANSFER_TO_CLAW),
                         new ParallelAction(
-                                setRollers(-0.75, ROLLERS_OUTTAKE_TRANSFER_TO_CLAW),
                                 setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_TRANSFER_TO_CLAW),
                                 setWrist(Arm.WristAngle.TRANSFERRED, WRIST_NEUTRAL_TRANSFER_TO_CLAW)
                         ),
@@ -295,7 +295,7 @@ public class RobotActions {
         );
     }
 
-    private static Action setExtendo(Extendo.Extension extension, double sleepSeconds) {
+    public static Action setExtendo(Extendo.Extension extension, double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.extendo.getTargetExtension() != extension,
                 new ParallelAction(
@@ -325,7 +325,7 @@ public class RobotActions {
         );
     }
 
-    private static Action setArm(Arm.ArmAngle angle, double sleepSeconds) {
+    public static Action setArm(Arm.ArmAngle angle, double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.arm.getArmAngle() != angle,
                 new ParallelAction(
@@ -335,7 +335,7 @@ public class RobotActions {
         );
     }
 
-    private static Action setWrist(Arm.WristAngle angle, double sleepSeconds) {
+    public static Action setWrist(Arm.WristAngle angle, double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.arm.getWristAngle() != angle,
                 new ParallelAction(
