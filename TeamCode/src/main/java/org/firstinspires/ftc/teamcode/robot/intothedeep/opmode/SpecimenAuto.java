@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -95,7 +96,7 @@ public class SpecimenAuto extends AbstractAuto {
                 .setTangent(-45)
                 .afterTime(unclampAfterTimeWait, new SequentialAction(
                         RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
-                        RobotActions.setClaw(false, 0),
+                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
                         RobotActions.retractToNeutral(0)
                 ))
 
@@ -122,7 +123,7 @@ public class SpecimenAuto extends AbstractAuto {
                 .setTangent(-45)
                 .afterTime(unclampAfterTimeWait, new SequentialAction(
                         RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
-                        RobotActions.setClaw(false, 0),
+                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
                         RobotActions.retractToNeutral(0)
                 ))
                 .lineToYLinearHeading(-45,Math.toRadians(-45))
@@ -146,7 +147,7 @@ public class SpecimenAuto extends AbstractAuto {
                 .setTangent(-45)
                 .afterTime(unclampAfterTimeWait, new SequentialAction(
                         RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
-                        RobotActions.setClaw(false, 0),
+                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
                         RobotActions.retractToNeutral(0)
                 ))
                 .lineToYLinearHeading(-45,Math.toRadians(-45))
@@ -243,7 +244,7 @@ public class SpecimenAuto extends AbstractAuto {
         builder = builder
                 .afterTime(0.0, new ParallelAction(
                         RobotActions.setupChamberFromFront(),
-                        RobotActions.setClaw(true, 0.0)
+                        RobotActions.setClaw(Claw.ClawAngles.CLAMP_ANGLE, 0.0)
                 ))
                 .lineToY(scoreSpecimenY)
                 .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());

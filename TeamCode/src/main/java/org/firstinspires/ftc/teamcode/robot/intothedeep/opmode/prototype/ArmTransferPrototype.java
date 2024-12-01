@@ -45,7 +45,7 @@ public final class ArmTransferPrototype extends LinearOpMode {
             boolean isDPADUpPressed = gamepadEx1.wasJustPressed(DPAD_UP);
             boolean isDPADDownPressed = gamepadEx1.wasJustPressed(DPAD_DOWN);
 
-            if (gamepadEx1.wasJustPressed(Y)) claw.setClamped(!claw.getClamped());
+//            if (gamepadEx1.wasJustPressed(Y)) claw.setAngle();
 
             switch (targetArmAngle) {
                 case COLLECTING:

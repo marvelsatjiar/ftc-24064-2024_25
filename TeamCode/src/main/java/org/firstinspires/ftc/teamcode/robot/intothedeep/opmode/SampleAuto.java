@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -57,7 +58,7 @@ public class SampleAuto extends AbstractAuto {
         builder = builder
                 .afterTime(0.0, new ParallelAction(
                         RobotActions.setupChamberFromFront(),
-                        RobotActions.setClaw(true, 0.0)
+                        RobotActions.setClaw(Claw.ClawAngles.CLAMP_ANGLE, 0.0)
                 ))
                 .lineToY(scoreSpecimenY)
                 .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());
