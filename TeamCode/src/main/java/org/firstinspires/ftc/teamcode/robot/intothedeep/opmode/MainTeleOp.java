@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
@@ -120,7 +119,7 @@ public final class MainTeleOp extends LinearOpMode {
 
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
-                    if (keyPressed(1, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
                 case EXTENDO_OUT:
                     doExtendoControls();
@@ -135,11 +134,14 @@ public final class MainTeleOp extends LinearOpMode {
                 case WALL_PICKUP:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.pickupFromWall());
                     break;
-                case LEVEL_TWO_HANG:
+                case SETUP_LEVEL_TWO_HANG:
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
+                    break;
+                case CLIMB_LEVEL_TWO_HANG:
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelThreeHang());
                     break;
                 case SETUP_LEVEL_THREE_HANG:
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelThreeHang());
                     break;
             }
 

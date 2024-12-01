@@ -14,6 +14,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -23,7 +24,10 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 @Config
 public class SampleAuto extends AbstractAuto {
     public static double
+            startingPositionX = 7.375,
+            startingPositionY = -62,
             scoreSpecimenY = -29,
+            scoreSpecimenX = -4,
             waitToScoreSample1 = 4,
             waitToScoreSample2 = 4,
             waitToScoreSample3 = 4,
@@ -40,7 +44,17 @@ public class SampleAuto extends AbstractAuto {
 
     @Override
     protected Pose2d getStartPose() {
-        return new Pose2d(-8,-63,Math.toRadians(-270));
+        return new Pose2d(startingPositionX, startingPositionY, Math.toRadians(-270));
+    }
+
+    @Override
+    protected void onInit() {
+        robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
+        robot.arm.setWristAngle(Arm.WristAngle.CHAMBER_FRONT);
+        robot.claw.setClamped(true);
+
+        robot.arm.run(false);
+        robot.claw.run();
     }
 
     @Override
@@ -59,7 +73,7 @@ public class SampleAuto extends AbstractAuto {
                         RobotActions.setupChamberFromFront(),
                         RobotActions.setClaw(true, 0.0)
                 ))
-                .lineToY(scoreSpecimenY)
+                .splineToConstantHeading(new Vector2d(scoreSpecimenX, scoreSpecimenY), Math.toRadians(90))
                 .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());
         return builder;
     }

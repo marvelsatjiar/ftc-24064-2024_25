@@ -49,11 +49,12 @@ public final class Lift {
             HIGH_BASKET_TICKS = 2970,
             HIGH_CHAMBER_SCORE_BACK_TICKS = 1300,
             HIGH_CHAMBER_SCORE_FRONT_TICKS = 1650,
-            HIGH_CHAMBER_SETUP_BACK_TICKS = 485,
+            HIGH_CHAMBER_SETUP_BACK_TICKS = 515,
             HIGH_CHAMBER_SETUP_FRONT_TICKS = 1100,
             WALL_PICKUP_TICKS = 1150,
             INTERMEDIARY_WALL_PICKUP_TICKS = 1300,
-            CLIMB_TICKS = 1200,
+            CLIMB_TICKS = 1400,
+            LEVEL_THREE_CLIMB_TICKS = 2960,
             UNSAFE_THRESHOLD_TICKS = 1000;
 
     public static double
@@ -81,6 +82,7 @@ public final class Lift {
         HIGH_CHAMBER_SETUP_FRONT,
         WALL_PICKUP,
         CLIMB,
+        LEVEL_THREE_CLIMB_TICKS,
         INTERMEDIARY_WALL_PICKUP,
         EXTENDED;
 
@@ -95,6 +97,7 @@ public final class Lift {
                 case WALL_PICKUP:               return WALL_PICKUP_TICKS;
                 case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
                 case CLIMB:                     return CLIMB_TICKS;
+                case LEVEL_THREE_CLIMB_TICKS:   return Lift.LEVEL_THREE_CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
             }

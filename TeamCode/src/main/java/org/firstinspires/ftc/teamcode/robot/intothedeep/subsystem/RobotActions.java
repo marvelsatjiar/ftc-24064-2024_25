@@ -57,7 +57,10 @@ public class RobotActions {
             LIFT_CLIMB_SETUP_LEVEL_THREE_HANG = 1,
             SWING_CORRECTOR_INACTIVE_SETUP_LEVEL_THREE_HANG = 1,
             SWING_CORRECTOR_ACTIVE_CLIMB_LEVEL_THREE_HANG = 0.8,
-            RETRACT_TO_NEUTRAL_CLIMB_LEVEL_THREE_HANG = 0.8;
+            RETRACT_TO_NEUTRAL_CLIMB_LEVEL_THREE_HANG = 0.8,
+            ARM_NEUTRAL_LEVEL_TWO_HANG = 1,
+            LIFT_RETRACTED_CLIMB_LEVEL_TWO_HANG = 3,
+            LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG = 3;
 
     // DONE
     public static Action extendIntake(Extendo.Extension extension) {
@@ -247,15 +250,26 @@ public class RobotActions {
         );
     }
 
-    public static Action climbLevelTwoHang() {
+    public static Action setupLevelTwoHang() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.LEVEL_TWO_HANG,
+                () -> robot.currentState != Robot.State.SETUP_LEVEL_TWO_HANG,
                 new SequentialAction(
                         new ParallelAction(
                                 setLift(Lift.Ticks.CLIMB, LIFT_CLIMB_LEVEL_TWO_HANG),
+                                setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_LEVEL_TWO_HANG),
                                 setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_LEVEL_TWO_HANG)
                         ),
-                        retractToNeutral(RETRACT_TO_NEUTRAL_CLIMB__LEVEL_TWO_HANG)
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_LEVEL_TWO_HANG)
+                )
+        );
+    }
+
+    public static Action climbLevelTwoHang() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.CLIMB_LEVEL_TWO_HANG,
+                new SequentialAction(
+                        setLift(Lift.Ticks.RETRACTED, LIFT_RETRACTED_CLIMB_LEVEL_TWO_HANG),
+                        new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_TWO_HANG)
                 )
         );
     }
@@ -264,8 +278,9 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_LEVEL_THREE_HANG,
                 new SequentialAction(
-                        setLift(Lift.Ticks.CLIMB, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
-                        setSwingCorrector(false, SWING_CORRECTOR_INACTIVE_SETUP_LEVEL_THREE_HANG)
+                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB_TICKS, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
+                        setSwingCorrector(false, SWING_CORRECTOR_INACTIVE_SETUP_LEVEL_THREE_HANG),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_LEVEL_THREE_HANG)
                 )
         );
     }
@@ -273,9 +288,12 @@ public class RobotActions {
     public static Action climbLevelThreeHang() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.CLIMB_LEVEL_THREE_HANG,
-                new ParallelAction(
-                        setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_CLIMB_LEVEL_THREE_HANG),
-                        retractToNeutral(RETRACT_TO_NEUTRAL_CLIMB_LEVEL_THREE_HANG)
+                new SequentialAction(
+                        new ParallelAction (
+                                setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_CLIMB_LEVEL_THREE_HANG),
+                                setLift(Lift.Ticks.RETRACTED, LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_THREE_HANG)
                 )
         );
     }
