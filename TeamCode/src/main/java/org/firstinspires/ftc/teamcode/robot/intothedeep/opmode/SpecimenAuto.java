@@ -7,7 +7,6 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -60,7 +59,7 @@ public class SpecimenAuto extends AbstractAuto {
     protected void onInit() {
         robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         robot.arm.setWristAngle(Arm.WristAngle.CHAMBER_FRONT);
-        robot.claw.setClamped(true);
+        robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
 
         robot.arm.run(false);
         robot.claw.run();
@@ -70,9 +69,8 @@ public class SpecimenAuto extends AbstractAuto {
     protected Action onRun() {
         TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
 
-        builder = scoreSpecimen(builder);
+        builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
-//        builder = scoreAllSpecimensExtendo(builder);
         builder = scoreAllSpecimensWallPickUp(builder);
 //        builder = park(builder);
 
@@ -81,24 +79,26 @@ public class SpecimenAuto extends AbstractAuto {
 
     private TrajectoryActionBuilder scoreAllSpecimensWallPickUp(TrajectoryActionBuilder builder) {
         builder = builder
-                 // Intaking 1st Specimen
+                // Intaking 1st Specimen
                 .setTangent(Math.toRadians(270))
-                .afterTime(0, RobotActions.pickupFromWall())
-                .lineToYLinearHeading(yintakeSpecimenWall,Math.toRadians(270))
-                .afterTime(0,RobotActions.setupChamberFromBack())
+                .afterTime(0, RobotActions.setupFrontWallPickup())
+                .lineToYLinearHeading(yintakeSpecimenWall, Math.toRadians(270))
+                .afterTime(0, RobotActions.setupSpecimenFromFrontWallPickup())
                 .setTangent(Math.toRadians(-35))
                 //Going to Sub
                 .lineToYConstantHeading(ySubmersibleSpecimen)
-                // Intaking 2nd Specimen
-                .setTangent(Math.toRadians(-35))
-                .lineToYConstantHeading(yintakeSpecimenWall)
-                // Going to Sub
-                .lineToYConstantHeading(ySubmersibleSpecimen)
-                // Intaking 3rd Specimen
-                .setTangent(Math.toRadians(-35))
-                .lineToYConstantHeading(yintakeSpecimenWall)
-                // Going to Sub
-                .lineToYConstantHeading(ySubmersibleSpecimen);
+                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup());
+        // Intaking 2nd Specimen
+//                .setTangent(Math.toRadians(-35))
+//                .lineToYConstantHeading(yintakeSpecimenWall)
+
+//                // Going to Sub
+//                .lineToYConstantHeading(ySubmersibleSpecimen)
+//                // Intaking 3rd Specimen
+//                .setTangent(Math.toRadians(-35))
+//                .lineToYConstantHeading(yintakeSpecimenWall)
+//                // Going to Sub
+//                .lineToYConstantHeading(ySubmersibleSpecimen);
 
 
         return builder;
@@ -111,114 +111,114 @@ public class SpecimenAuto extends AbstractAuto {
         return builder;
     }
 
-    private TrajectoryActionBuilder scoreAllSpecimensExtendo(TrajectoryActionBuilder builder) {
-        builder = builder
-                // Turning to intake 1st Specimen
-                .setTangent(Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(xintakeSpecimen,yintakeSpecimen,Math.toRadians(-45)), Math.toRadians(180))
-                .stopAndAdd( new SequentialAction(
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1),
-                        RobotActions.setRollers(1, rollerIntakeSeconds)))
-                .lineToXConstantHeading(bumpSpecimen)
-                .afterTime(0.0, new SequentialAction(
-                        RobotActions.transferToClaw(),
-                        RobotActions.setupChamberFromBack()
-                ))
-                .waitSeconds(setupChamberFromBackWait)
-        // Moving to chamber
-                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(-90)),Math.toRadians(180))
-                // Scoring 1st Specimen
-                .stopAndAdd(scoreBackSpecimen())
-//                // Moving to intake 2nd Specimen
-                .setTangent(-45)
-
-                .afterTime(unclampAfterTimeWait, new SequentialAction(
-                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
-                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
-                        RobotActions.retractToNeutral(0)
-                ))
-
-
-
-
-                .lineToYLinearHeading(-45,Math.toRadians(-45))
-                .afterTime(bumpDelay, new SequentialAction(
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1),
-                        RobotActions.setRollers(1, rollerIntakeSeconds)))
-                .lineToX(bumpSpecimen)
-                .afterTime(0.0, new SequentialAction(
-                        RobotActions.transferToClaw(),
-                        RobotActions.setupChamberFromBack()
-                ))
-                // Scoring 2nd Specimen
-                .waitSeconds(setupChamberFromBackWait)
-                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen - 1, ySubmersibleSpecimen, Math.toRadians(-90)),Math.toRadians(180))
-                .stopAndAdd(scoreBackSpecimen())
-                .setTangent(-45)
-
-                .afterTime(unclampAfterTimeWait, new SequentialAction(
-                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
-                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
-                        RobotActions.retractToNeutral(0)
-                ))
-                .lineToYLinearHeading(-45,Math.toRadians(-45))
-
-                .afterTime(bumpDelay, new SequentialAction(
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1),
-                        RobotActions.setRollers(1, rollerIntakeSeconds)))
-                .lineToX(bumpSpecimen)
-                .afterTime(0.0, new SequentialAction(
-                        RobotActions.transferToClaw(),
-                        RobotActions.setupChamberFromBack()
-                ))
-                // Scoring 2nd Specimen
-                .waitSeconds(setupChamberFromBackWait)
-                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen - 2, ySubmersibleSpecimen, Math.toRadians(-90)),Math.toRadians(180))
-                .stopAndAdd(scoreBackSpecimen())
-                .setTangent(-45)
-
-
-                .afterTime(unclampAfterTimeWait, new SequentialAction(
-                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
-                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
-                        RobotActions.retractToNeutral(0)
-                ))
-
-                .lineToYLinearHeading(-45,Math.toRadians(-45))
-
+//    private TrajectoryActionBuilder scoreAllSpecimensExtendo(TrajectoryActionBuilder builder) {
+//        builder = builder
+//                // Turning to intake 1st Specimen
+//                .setTangent(Math.toRadians(180))
+//                .splineToLinearHeading(new Pose2d(xintakeSpecimen,yintakeSpecimen,Math.toRadians(-45)), Math.toRadians(180))
 //                .stopAndAdd( new SequentialAction(
 //                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1),
 //                        RobotActions.setRollers(1, rollerIntakeSeconds)))
-        ;
-
-        // Moving to intake 3rd Specimen
-//                .afterTime(0.0, RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH))
-//                .lineToYLinearHeading(-45,Math.toRadians(-40))
-//                .stopAndAdd(RobotActions.setRollers(1, 0.5))
+//                .lineToXConstantHeading(bumpSpecimen)
 //                .afterTime(0.0, new SequentialAction(
 //                        RobotActions.transferToClaw(),
 //                        RobotActions.setupChamberFromBack()
 //                ))
-//                // Scoring 3rd Specimen
-//                .lineToYLinearHeading(-36,Math.toRadians(270))
-//                .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());
-        return builder;
-    }
+//                .waitSeconds(setupChamberFromBackWait)
+//        // Moving to chamber
+//                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(-90)),Math.toRadians(180))
+//                // Scoring 1st Specimen
+//                .stopAndAdd(scoreBackSpecimen())
+////                // Moving to intake 2nd Specimen
+//                .setTangent(-45)
+//
+////                .afterTime(unclampAfterTimeWait, new SequentialAction(
+////                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
+////                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
+////                        RobotActions.retractToNeutral(0)
+////                ))
+//
+//
+//
+//
+//                .lineToYLinearHeading(-45,Math.toRadians(-45))
+//                .afterTime(bumpDelay, new SequentialAction(
+//                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1),
+//                        RobotActions.setRollers(1, rollerIntakeSeconds)))
+//                .lineToX(bumpSpecimen)
+//                .afterTime(0.0, new SequentialAction(
+//                        RobotActions.transferToClaw(),
+//                        RobotActions.setupChamberFromBack()
+//                ))
+//                // Scoring 2nd Specimen
+//                .waitSeconds(setupChamberFromBackWait)
+//                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen - 1, ySubmersibleSpecimen, Math.toRadians(-90)),Math.toRadians(180))
+//                .stopAndAdd(scoreBackSpecimen())
+//                .setTangent(-45)
+//
+////                .afterTime(unclampAfterTimeWait, new SequentialAction(
+////                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
+////                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
+////                        RobotActions.retractToNeutral(0)
+////                ))
+//                .lineToYLinearHeading(-45,Math.toRadians(-45))
+//
+//                .afterTime(bumpDelay, new SequentialAction(
+//                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1),
+//                        RobotActions.setRollers(1, rollerIntakeSeconds)))
+//                .lineToX(bumpSpecimen)
+//                .afterTime(0.0, new SequentialAction(
+//                        RobotActions.transferToClaw(),
+//                        RobotActions.setupChamberFromBack()
+//                ))
+//                // Scoring 2nd Specimen
+//                .waitSeconds(setupChamberFromBackWait)
+//                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen - 2, ySubmersibleSpecimen, Math.toRadians(-90)),Math.toRadians(180))
+//                .stopAndAdd(scoreBackSpecimen())
+//                .setTangent(-45)
+//
+//
+////                .afterTime(unclampAfterTimeWait, new SequentialAction(
+////                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, UnclampSpecimenWait),
+////                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, 0),
+////                        RobotActions.retractToNeutral(0)
+////                ))
+////
+////                .lineToYLinearHeading(-45,Math.toRadians(-45))
+//
+////                .stopAndAdd( new SequentialAction(
+////                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1),
+////                        RobotActions.setRollers(1, rollerIntakeSeconds)))
+//        ;
+//
+//        // Moving to intake 3rd Specimen
+////                .afterTime(0.0, RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH))
+////                .lineToYLinearHeading(-45,Math.toRadians(-40))
+////                .stopAndAdd(RobotActions.setRollers(1, 0.5))
+////                .afterTime(0.0, new SequentialAction(
+////                        RobotActions.transferToClaw(),
+////                        RobotActions.setupChamberFromBack()
+////                ))
+////                // Scoring 3rd Specimen
+////                .lineToYLinearHeading(-36,Math.toRadians(270))
+////                .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());
+//        return builder;
+//    }
 
-    private Action scoreBackSpecimen() {
-        return new ParallelAction(
-                new SequentialAction(
-                        RobotActions.setWrist(Arm.WristAngle.CHAMBER_BACK_AUTON, wristSpecimenWait),
-                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, unclampSpecimenWait),
-                        RobotActions.setClaw(false, 0),
-                        RobotActions.retractToNeutral(0)
-                ),
-                new SequentialAction(
-                        new SleepAction(transferSpecimenToClawWait),
-                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0)
-                )
-        );
-    }
+//    private Action scoreBackSpecimen() {
+//        return new ParallelAction(
+//                new SequentialAction(
+//                        RobotActions.setWrist(Arm.WristAngle.CHAMBER_BACK_AUTON, wristSpecimenWait),
+//                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, unclampSpecimenWait),
+//                        RobotActions.setClaw(Claw.ClawAngles.DEPOSIT, 0),
+//                        RobotActions.retractToNeutral(0)
+//                ),
+//                new SequentialAction(
+//                        new SleepAction(transferSpecimenToClawWait),
+//                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0)
+//                )
+//        );
+//    }
 
     private TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
@@ -289,11 +289,11 @@ public class SpecimenAuto extends AbstractAuto {
         return builder;
     }
 
-    private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder) {
+    private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0.0, new ParallelAction(
                         RobotActions.setupChamberFromFront(),
-                        RobotActions.setClaw(Claw.ClawAngles.CLAMP_ANGLE, 0.0)
+                        RobotActions.setClaw(Claw.ClawAngles.CLAMPED, 0.0)
                 ))
                 .splineToConstantHeading(new Vector2d(scoreSpecimenX, scoreSpecimenY), Math.toRadians(90))
                 .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());

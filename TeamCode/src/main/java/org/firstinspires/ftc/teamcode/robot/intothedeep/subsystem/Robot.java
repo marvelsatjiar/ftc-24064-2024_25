@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
+import org.firstinspires.ftc.teamcode.util.LoopUtil;
 import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 @Config
@@ -96,6 +97,7 @@ public final class Robot {
     // Prints data on the driver hub for debugging and other uses
     public void printTelemetry() {
         mTelemetry.addData("Robot State", robot.currentState.name());
+        mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
         extendo.printTelemetry();
         lift.printTelemetry();
         arm.printTelemetry();

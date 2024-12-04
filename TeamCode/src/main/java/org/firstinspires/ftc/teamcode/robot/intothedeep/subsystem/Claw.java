@@ -13,26 +13,24 @@ public final class Claw {
             DEPOSIT_ANGLE = 30;
 
     public enum ClawAngles {
-        CLAMP_ANGLE,
-        WALL_PICKUP_ANGLE,
-        DEPOSIT_ANGLE;
+        CLAMPED,
+        WALL_PICKUP,
+        DEPOSIT;
 
         public double getAngle() {
             switch (this) {
-                case CLAMP_ANGLE:               return 0;
-                case WALL_PICKUP_ANGLE:         return 60;
-                case DEPOSIT_ANGLE: default:    return 30;
+                case CLAMPED:               return 0;
+                case WALL_PICKUP:         return 60;
+                case DEPOSIT: default:    return 30;
             }
         }
     }
 
     private final ServoEx claw;
 
-    private ClawAngles targetAngle = ClawAngles.DEPOSIT_ANGLE;
+    private ClawAngles targetAngle = ClawAngles.DEPOSIT;
 
     public boolean isLocked = false;
-
-    private boolean isClamped = false;
 
     public Claw(HardwareMap hardwareMap) {
         claw = new SimpleServo(hardwareMap, "claw", SERVO_25_KG_MIN, SERVO_25_KG_MAX);

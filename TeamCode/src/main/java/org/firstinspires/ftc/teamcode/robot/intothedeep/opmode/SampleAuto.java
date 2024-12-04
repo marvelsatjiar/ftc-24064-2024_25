@@ -4,12 +4,9 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.Actions;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -51,7 +48,7 @@ public class SampleAuto extends AbstractAuto {
     protected void onInit() {
         robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         robot.arm.setWristAngle(Arm.WristAngle.CHAMBER_FRONT);
-        robot.claw.setClamped(true);
+        robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
 
         robot.arm.run(false);
         robot.claw.run();
@@ -71,7 +68,7 @@ public class SampleAuto extends AbstractAuto {
         builder = builder
                 .afterTime(0.0, new ParallelAction(
                         RobotActions.setupChamberFromFront(),
-                        RobotActions.setClaw(Claw.ClawAngles.CLAMP_ANGLE, 0.0)
+                        RobotActions.setClaw(Claw.ClawAngles.CLAMPED, 0.0)
                 ))
                 .splineToConstantHeading(new Vector2d(scoreSpecimenX, scoreSpecimenY), Math.toRadians(90))
                 .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());
