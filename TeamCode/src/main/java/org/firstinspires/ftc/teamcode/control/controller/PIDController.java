@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 public class PIDController implements FeedbackController {
 
     private PIDGains gains = new PIDGains();
-    private static State target = new State();
+    private State target = new State();
 
     private final Filter derivFilter;
     private final Differentiator differentiator = new Differentiator();
