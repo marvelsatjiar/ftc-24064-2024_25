@@ -24,7 +24,7 @@ public final class Robot {
     public final Lift lift;
     public final Arm arm;
     public final ActionScheduler actionScheduler;
-    public final AutoAligner autoAligner;
+//    public final AutoAligner autoAligner;
 
     public final double
         SWING_CORRECTOR_INACTIVE = 0,
@@ -74,7 +74,7 @@ public final class Robot {
         claw = new Claw(hardwareMap);
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
-        autoAligner = new AutoAligner(hardwareMap);
+//        autoAligner = new AutoAligner(hardwareMap);
         actionScheduler = new ActionScheduler();
     }
 
@@ -98,11 +98,11 @@ public final class Robot {
     public void printTelemetry() {
         mTelemetry.addData("Robot State", robot.currentState.name());
         mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
-        extendo.printTelemetry();
-        lift.printTelemetry();
-        arm.printTelemetry();
+//        extendo.printTelemetry();
+//        lift.printTelemetry();
+//        arm.printTelemetry();
         intake.printTelemetry();
-        autoAligner.printTelemetry();
+//        autoAligner.printTelemetry();
         mTelemetry.update();
     }
 

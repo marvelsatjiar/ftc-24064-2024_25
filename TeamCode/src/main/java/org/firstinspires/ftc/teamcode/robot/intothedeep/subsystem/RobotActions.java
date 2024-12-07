@@ -23,7 +23,7 @@ public class RobotActions {
             ROLLERS_STOP_TRANSFER_TO_CLAW = 0,
             WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.3,
             ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.3,
-            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.1,
+            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.5,
             CLAW_CLAMPED_TRANSFER_TO_CLAW = 0.2,
             ARM_COLLECTING_TRANSFER_TO_CLAW = 0.3,
             WRIST_COLLECTING_TRANSFER_TO_CLAW = 0,
@@ -306,13 +306,13 @@ public class RobotActions {
     }
 
     // TODO
-    public static Action alignRobotWithSensor(AutoAligner.TargetDistance target) {
-        return new SequentialAction(
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(target)),
-                new Actions.RunnableAction(() -> !robot.autoAligner.isPositionInTolerance()),
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
-        );
-    }
+//    public static Action alignRobotWithSensor(AutoAligner.TargetDistance target) {
+//        return new SequentialAction(
+//                new InstantAction(() -> robot.autoAligner.setTargetDistance(target)),
+//                new Actions.RunnableAction(() -> !robot.autoAligner.isPositionInTolerance()),
+//                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
+//        );
+//    }
 
     // TODO
     public static Action setupLevelTwoHang() {

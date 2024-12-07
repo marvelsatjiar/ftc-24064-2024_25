@@ -17,7 +17,7 @@ public final class Extendo {
     SimpleServo[] linkageServos;
 
     public static double
-        LINKAGE_MIN_ANGLE = 15,
+        LINKAGE_MIN_ANGLE = 13,
         LINKAGE_ONE_FOURTH_ANGLE = 17 + 22.5,
         LINKAGE_ONE_HALF_ANGLE = 17 + 45,
         LINKAGE_THREE_FOURTHS_ANGLE = 17 + 67.5,

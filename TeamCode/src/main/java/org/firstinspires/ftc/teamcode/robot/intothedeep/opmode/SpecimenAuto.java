@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -23,7 +24,7 @@ public class SpecimenAuto extends AbstractAuto {
     public static double
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -29,
+            scoreSpecimenY = -31,
             scoreSpecimenX = 4,
             firstSampleAngle = 35,
             xSample1 = 38,
@@ -37,12 +38,14 @@ public class SpecimenAuto extends AbstractAuto {
             extendoAngleSample3 = 85,
             bumpSample3 = -35.5,
             retractExtendoWait = 0.3,
-            xSubmersibleSpecimen = 6,
-            ySubmersibleSpecimen = -34,
-            xintakeSpecimen = 16,
+            retractExtendoWaitToWallPickup = 1,
+            clampAfterSpecimenWait = 1,
+            xSubmersibleSpecimen = 7,
+            ySubmersibleSpecimen = -31,
+            xintakeSpecimen = 32.5,
             bumpSpecimen = 19,
             yintakeSpecimen = -46,
-            yintakeSpecimenWall = -60,
+            yintakeSpecimenWall = -62.5,
             transferSpecimenToClawWait = 0.5,
             rollerIntakeSeconds = 1,
             setupChamberFromBackWait = 1,
@@ -80,25 +83,26 @@ public class SpecimenAuto extends AbstractAuto {
     private TrajectoryActionBuilder scoreAllSpecimensWallPickUp(TrajectoryActionBuilder builder) {
         builder = builder
                 // Intaking 1st Specimen
-                .setTangent(Math.toRadians(270))
-                .afterTime(0, RobotActions.setupFrontWallPickup())
-                .lineToYLinearHeading(yintakeSpecimenWall, Math.toRadians(270))
-                .afterTime(0, RobotActions.setupSpecimenFromFrontWallPickup())
-                .setTangent(Math.toRadians(-35))
+                .splineToLinearHeading(new Pose2d(xintakeSpecimen, yintakeSpecimenWall, Math.toRadians(270)), Math.toRadians(138))
+                .waitSeconds(clampAfterSpecimenWait)
+                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
                 //Going to Sub
-                .lineToYConstantHeading(ySubmersibleSpecimen)
-                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup());
+                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(270)), Math.toRadians(-42))
+                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
         // Intaking 2nd Specimen
-//                .setTangent(Math.toRadians(-35))
-//                .lineToYConstantHeading(yintakeSpecimenWall)
-
-//                // Going to Sub
-//                .lineToYConstantHeading(ySubmersibleSpecimen)
-//                // Intaking 3rd Specimen
-//                .setTangent(Math.toRadians(-35))
-//                .lineToYConstantHeading(yintakeSpecimenWall)
-//                // Going to Sub
-//                .lineToYConstantHeading(ySubmersibleSpecimen);
+                .splineToLinearHeading(new Pose2d(xintakeSpecimen, yintakeSpecimenWall, Math.toRadians(270)), Math.toRadians(138))
+                .waitSeconds(clampAfterSpecimenWait)
+                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
+                //Going to Sub
+                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(270)), Math.toRadians(-42))
+                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
+        // Intaking 3rd Specimen
+                .splineToLinearHeading(new Pose2d(xintakeSpecimen, yintakeSpecimenWall, Math.toRadians(270)), Math.toRadians(138))
+                .waitSeconds(clampAfterSpecimenWait)
+                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
+                //Going to Sub
+                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(270)), Math.toRadians(-42))
+                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup());
 
 
         return builder;
@@ -278,13 +282,11 @@ public class SpecimenAuto extends AbstractAuto {
                 .afterTime(.5, new SequentialAction(
                         RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0.3),
                         RobotActions.setRollers(-0.8,0.3),
-                        RobotActions.setRollers(0, 0.1)
-//                        RobotActions.setV4B(Intake.V4BAngle.DOWN,0.1)
-//                        RobotActions.setExtendo(Extendo.LINKAGE_MIN_ANGLE, retractExtendoWait)
-
+                        RobotActions.setRollers(0, 0.1),
+                        RobotActions.setExtendo(Extendo.LINKAGE_MIN_ANGLE, retractExtendoWaitToWallPickup),
+                        RobotActions.setupFrontWallPickup()
                 ))
-                .splineToLinearHeading(new Pose2d((xSample2 + xSample1) / 2, ySample2, Math.toRadians(300)), Math.toRadians(300))
-                ;
+                .splineToLinearHeading(new Pose2d(34, ySample2, Math.toRadians(300)), Math.toRadians(300));
                 // Given Sample 3;
         return builder;
     }

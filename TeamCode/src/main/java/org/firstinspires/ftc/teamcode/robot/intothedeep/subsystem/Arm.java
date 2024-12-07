@@ -18,7 +18,7 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 85,
+            NEUTRAL_ARM_ANGLE = 75,
             TRANSFERRED_WRIST_ANGLE = 270,
             COLLECTING_ARM_ANGLE = 110,
             COLLECTING_WRIST_ANGLE = 95,
@@ -31,8 +31,8 @@ public final class Arm {
             CHAMBER_BACK_SETUP_ARM_ANGLE = 0,
             CHAMBER_BACK_SCORE_ARM_ANGLE = 0,
 
-            FRONT_WALL_PICKUP_ARM_ANGLE = 100,
-            FRONT_WALL_PICKUP_WRIST_ANGLE = 180,
+            FRONT_WALL_PICKUP_ARM_ANGLE = 105,
+            FRONT_WALL_PICKUP_WRIST_ANGLE = 190,
 
             FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE = 10,
             FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 240,
@@ -157,11 +157,11 @@ public final class Arm {
         boolean isArmDown = getArmAngle() == ArmAngle.WALL_PICKUP;
         if (liftBelowSafety && isArmDown) targetArmAngle = ArmAngle.COLLECTING;
 
-        for (ServoEx servos : armServos) {
+        wrist.turnToAngle(getWristAngle().getAngle());
+
+         for (ServoEx servos : armServos) {
             servos.turnToAngle(getArmAngle().getAngle());
         }
-
-        wrist.turnToAngle(getWristAngle().getAngle());
     }
 
     public void printTelemetry() {
