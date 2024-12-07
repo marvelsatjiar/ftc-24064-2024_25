@@ -90,26 +90,27 @@ public class SpecimenAuto extends AbstractAuto {
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
                 .lineToY(bumpSpecimen)
+                .afterTime(0.2, RobotActions.setupSpecimenFromFrontWallPickup())
                 .waitSeconds(clampAfterSpecimenWait)
-                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
+
                 //Going to Sub
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
                 .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup())
                 .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
                 .lineToY(bumpSpecimen)
+                .afterTime(0.2, RobotActions.setupSpecimenFromFrontWallPickup())
                 .waitSeconds(clampAfterSpecimenWait)
-                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
-        // Intaking 2nd Specimen
+                // Intaking 2nd Specimen
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
                 .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup())
-                .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(wallPickupX,yintakeSpecimen), Math.toRadians(90))
                 .lineToY(bumpSpecimen)
+                .afterTime(0.2, RobotActions.setupSpecimenFromFrontWallPickup())
                 .waitSeconds(clampAfterSpecimenWait)
-                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
                 //Going to Sub+
-                .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(wallPickupX,yintakeSpecimen), Math.toRadians(90))
                 .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
         // Intaking 3rd Specimen
 

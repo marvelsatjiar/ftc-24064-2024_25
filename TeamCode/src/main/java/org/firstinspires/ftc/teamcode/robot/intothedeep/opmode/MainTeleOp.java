@@ -75,7 +75,7 @@ public final class MainTeleOp extends LinearOpMode {
                 x = 0;
             }
 
-            double slowMult = gamepadEx1.isDown(RIGHT_BUMPER) ? 0.2 : 1;
+            double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
 
 //            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
 //                robot.drivetrain.setFieldCentricPowers(
@@ -120,7 +120,7 @@ public final class MainTeleOp extends LinearOpMode {
 
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupFrontWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
-                    if (keyPressed(1, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
                 case EXTENDO_OUT:
                     doExtendoControls();
@@ -165,7 +165,7 @@ public final class MainTeleOp extends LinearOpMode {
     public void doIntakeControls() {
 //        if (robot.intake.getRollerPower() != -1 && ((robot.intake.currentSample == Intake.SampleColor.BLUE && Common.IS_RED) || (robot.intake.currentSample == Intake.SampleColor.RED && !Common.IS_RED))) robot.actionScheduler.addAction(RobotActions.setRollers(-1, 1));
 
-        if (!gamepadEx1.isDown(LEFT_BUMPER)) {
+        if (!gamepadEx1.isDown(RIGHT_BUMPER)) {
             double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             if (trigger != 0) {
                 robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);

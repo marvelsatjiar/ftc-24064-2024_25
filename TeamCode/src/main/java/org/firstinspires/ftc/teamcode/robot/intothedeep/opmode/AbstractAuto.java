@@ -30,7 +30,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     protected final void getAllianceSideData() {
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
         // Get gamepad 1 button input and save "right" and "red" booleans for autonomous configuration:
-        while (opModeInInit() && !(gamepadEx1.isDown(RIGHT_BUMPER) && gamepadEx1.isDown(LEFT_BUMPER))) {
+        while (opModeInInit() && !gamepadEx1.isDown(RIGHT_BUMPER)) {
             gamepadEx1.readButtons();
             if (gamepadEx1.wasJustPressed(B)) Common.IS_RED = true;
             if (gamepadEx1.wasJustPressed(X)) Common.IS_RED = false;

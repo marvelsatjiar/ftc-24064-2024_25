@@ -88,7 +88,7 @@ public class MeepMeepTesting {
                 .setTangent(Math.toRadians(135))
                 //Going to Sub
                 .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(37,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(37,yintakeSpecimen), Math.toRadians(90))
 //                .setTangent(Math.toRadians(135))
 //                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
 //                .splineToLinearHeading(new Pose2d(37,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
