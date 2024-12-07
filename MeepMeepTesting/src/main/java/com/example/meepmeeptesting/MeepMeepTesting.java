@@ -13,20 +13,24 @@ public class MeepMeepTesting {
             startingPositionY = -62,
             scoreSpecimenY = -29,
             scoreSpecimenX = 4,
-            firstSampleAngle = 35,
-            xSample1 = 38,
-            ySample1 = -36,
+            firstSampleAngle = 30,
+            xSample1 = 30,
+            ySample1 = -32,
             xSample2 = 46,
-            ySample2 = -35,
-            xSample3 = 46,
-            ySample3 = -40.5,
+            ySample2 = -42,
+            xSample3 = 54,
+            ySample3 = -31,
             bumpSample = -33.5,
             intakeSampleAngle3 = 29.25,
-            extendoAngleSample3 = 85,
+            extendoAngleSample1 = 85,
             bumpSample3 = 48.5,
             xSubmersibleSpecimen = 7,
-            ySubmersibleSpecimen = -34,
+            ySubmersibleSpecimen = -36,
             xintakeSpecimen = 32.5,
+            giveSample1X = 27,
+            giveSample2X = 44,
+            giveSample3X = 54,
+            giveSampleY = -46,
             yintakeSpecimen = -60;
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
@@ -77,21 +81,19 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder scoreAllSpecimens2(TrajectoryActionBuilder builder) {
         builder = builder
                 // Intaking 1st Specimen
-                .setTangent(Math.toRadians(270))
-                .lineToYLinearHeading(yintakeSpecimen,Math.toRadians(270))
-                .setTangent(Math.toRadians(-35))
+                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .lineToY(-62)
+//                .lineToYLinearHeading(yintakeSpecimen,Math.toRadians(270))
+                .setTangent(Math.toRadians(135))
                 //Going to Sub
-                .lineToYConstantHeading(ySubmersibleSpecimen)
-                // Intaking 2nd Specimen
-                .setTangent(Math.toRadians(-35))
-                .lineToYConstantHeading(yintakeSpecimen)
-                // Going to Sub
-                .lineToYConstantHeading(ySubmersibleSpecimen)
-                // Intaking 3rd Specimen
-                .setTangent(Math.toRadians(-35))
-                .lineToYConstantHeading(yintakeSpecimen)
-                // Going to Sub
-                .lineToYConstantHeading(ySubmersibleSpecimen)
+                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
 
         ;
         return builder;
@@ -134,20 +136,18 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(26,-38),Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(xSample1,ySample1,Math.toRadians(firstSampleAngle)),Math.toRadians(35))
-                .lineToY(bumpSample)
-                .splineToLinearHeading(new Pose2d((xSample2 + xSample1) / 2, ySample2, Math.toRadians(300)), Math.toRadians(300))
-                // Sample 2 intake
-                .splineToLinearHeading(new Pose2d(xSample2,ySample2,Math.toRadians(35)),Math.toRadians(35))
-                .lineToY(bumpSample)
-                .splineToLinearHeading(new Pose2d((xSample2 + xSample1) / 2, ySample2, Math.toRadians(300)), Math.toRadians(300))
-//
-                .splineToLinearHeading(new Pose2d(xSample3, ySample3, Math.toRadians(intakeSampleAngle3)), Math.toRadians(10))
+                .splineToConstantHeading(new Vector2d(26,-40),Math.toRadians(0))
+                .splineToLinearHeading(new Pose2d(xSample1,ySample1, Math.toRadians(firstSampleAngle)), Math.toRadians(35))
+                .splineToLinearHeading(new Pose2d(giveSample1X,giveSampleY, Math.toRadians(0)), Math.toRadians(35))
+                .splineToLinearHeading(new Pose2d(xSample2,ySample2, Math.toRadians(firstSampleAngle)), Math.toRadians(35))
+                .splineToLinearHeading(new Pose2d(giveSample2X,giveSampleY, Math.toRadians(0)), Math.toRadians(35))
+                .splineToLinearHeading(new Pose2d(xSample3,ySample3, Math.toRadians(firstSampleAngle)), Math.toRadians(35))
+                .splineToLinearHeading(new Pose2d(giveSample3X,giveSampleY, Math.toRadians(0)), Math.toRadians(35))
 
-                .lineToX(bumpSample3)
-////                // Intake sample 3
-                .splineToLinearHeading(new Pose2d((xSample2 + xSample1) / 2, ySample2, Math.toRadians(-90)), Math.toRadians(-90))
+
+
+
+
         ;
         return builder;
     }

@@ -4,7 +4,6 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
@@ -14,7 +13,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 
@@ -26,16 +24,16 @@ public class SpecimenAuto extends AbstractAuto {
             startingPositionY = -62,
             scoreSpecimenY = -31,
             scoreSpecimenX = 4,
-            firstSampleAngle = 35,
-            xSample1 = 38,
-            ySample1 = -36,
-            xSample2 = 46,
-            ySample2 = -35,
-            xSample3 = 46,
-            ySample3 = -40.5,
+            firstSampleAngle = 30,
+            xSample1 = 29.5,
+            ySample1 = -32,
+            xSample2 = 40,
+            ySample2 = -31,
+            xSample3 = -24 ,
+            ySample3 = -31,
             bumpSample = -33.5,
-            intakeSampleAngle3 = 29.25,
-            extendoAngleSample3 = 85,
+            thirdSampleAngle3 = 15,
+            extendoAngleSample1 = 65,
             bumpSample3 = -35.5,
             retractExtendoWait = 0.3,
             retractExtendoWaitToWallPickup = 1,
@@ -51,6 +49,10 @@ public class SpecimenAuto extends AbstractAuto {
             setupChamberFromBackWait = 1,
             bumpDelay = 0,
             wristSpecimenWait = 0.3,
+            giveSample1X = 41,
+            giveSample2X = 44,
+            giveSample3X = 54,
+            giveSampleY = -55,
             unclampSpecimenWait = 0.1;
 
     @Override
@@ -74,7 +76,7 @@ public class SpecimenAuto extends AbstractAuto {
 
         builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
-        builder = scoreAllSpecimensWallPickUp(builder);
+//        builder = scoreAllSpecimensWallPickUp(builder);
 //        builder = park(builder);
 
         return builder.build();
@@ -83,27 +85,24 @@ public class SpecimenAuto extends AbstractAuto {
     private TrajectoryActionBuilder scoreAllSpecimensWallPickUp(TrajectoryActionBuilder builder) {
         builder = builder
                 // Intaking 1st Specimen
-                .splineToLinearHeading(new Pose2d(xintakeSpecimen, yintakeSpecimenWall, Math.toRadians(270)), Math.toRadians(138))
-                .waitSeconds(clampAfterSpecimenWait)
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))                .waitSeconds(clampAfterSpecimenWait)
                 .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
                 //Going to Sub
-                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(270)), Math.toRadians(-42))
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
                 .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
         // Intaking 2nd Specimen
-                .splineToLinearHeading(new Pose2d(xintakeSpecimen, yintakeSpecimenWall, Math.toRadians(270)), Math.toRadians(138))
-                .waitSeconds(clampAfterSpecimenWait)
-                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
-                //Going to Sub
-                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(270)), Math.toRadians(-42))
-                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
-        // Intaking 3rd Specimen
-                .splineToLinearHeading(new Pose2d(xintakeSpecimen, yintakeSpecimenWall, Math.toRadians(270)), Math.toRadians(138))
-                .waitSeconds(clampAfterSpecimenWait)
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))                .waitSeconds(clampAfterSpecimenWait)
                 .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
                 //Going to Sub
                 .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(270)), Math.toRadians(-42))
                 .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup());
-
+        // Intaking 3rd Specimen
 
         return builder;
     }
@@ -226,68 +225,25 @@ public class SpecimenAuto extends AbstractAuto {
 
     private TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                //moving to first sample
                 .setTangent(Math.toRadians(270))
-                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.HOVERING, 0))
-                .splineToConstantHeading(new Vector2d(26,-38),Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(xSample1,ySample1,Math.toRadians(firstSampleAngle)),Math.toRadians(35))
-                // Intake 1st sample
-                .stopAndAdd(new SequentialAction(
-                        RobotActions.setRollers(1, 0.1),
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0.1)
-                ))
-                .lineToY(bumpSample)
-                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP, 0.1))
-                // give sampole1
-                .splineToLinearHeading(new Pose2d((xSample2 + xSample1) / 2, ySample2, Math.toRadians(300)), Math.toRadians(300))
-                .stopAndAdd( new SequentialAction(
-                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0),
-                        RobotActions.setRollers(-0.8,0.3),
-                        RobotActions.setRollers(0, 0),
-                        RobotActions.setExtendo(Extendo.LINKAGE_ONE_FOURTH_ANGLE, retractExtendoWait)
+                .splineToConstantHeading(new Vector2d(26,-40),Math.toRadians(0))
 
-                ))
-                // Sample 2 intake
-                .splineToLinearHeading(new Pose2d(xSample2,ySample2,Math.toRadians(25)),Math.toRadians(35))
+                .splineToLinearHeading(new Pose2d(xSample1,ySample1, Math.toRadians(firstSampleAngle)), Math.toRadians(35))
 
-                .stopAndAdd(new SequentialAction(
-                        RobotActions.setExtendo(Extendo.Extension.ONE_FOURTH, 0),
-                        RobotActions.setRollers(1, 0.1),
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0.1)
-                ))
-                .lineToY(bumpSample)
-                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP, 0.2))
-                .splineToLinearHeading(new Pose2d((xSample2 + xSample1) / 2, ySample2, Math.toRadians(300)), Math.toRadians(300))
-                .stopAndAdd(new SequentialAction(
-                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0.1),
-                        RobotActions.setRollers(-0.8,0.3),
-                        RobotActions.setRollers(0, 0.1),
-                        RobotActions.setExtendo(Extendo.LINKAGE_ONE_FOURTH_ANGLE, retractExtendoWait)
+                .afterTime(0,new SequentialAction(
+                        RobotActions.setExtendo(extendoAngleSample1,0.1),
+                        RobotActions.setV4B(Intake.V4BAngle.HOVERING,0)
+                    ))
+                .splineToLinearHeading(new Pose2d(giveSample1X,giveSampleY, Math.toRadians(0)), Math.toRadians(35))
+                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP,0))
+                .splineToLinearHeading(new Pose2d(xSample2,ySample2, Math.toRadians(firstSampleAngle)), Math.toRadians(35))
+                .afterTime(0,RobotActions.setV4B(Intake.V4BAngle.HOVERING,0))
+                .splineToLinearHeading(new Pose2d(giveSample2X,giveSampleY, Math.toRadians(0)), Math.toRadians(35))
+                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP,0))
+                .splineToLinearHeading(new Pose2d(xSample3,ySample3, Math.toRadians(thirdSampleAngle3)), Math.toRadians(35))
+                .afterTime(0,RobotActions.setV4B(Intake.V4BAngle.HOVERING,0))
+                .splineToLinearHeading(new Pose2d(giveSample3X,giveSampleY, Math.toRadians(0)), Math.toRadians(35));
 
-                ))
-
-                .splineToLinearHeading(new Pose2d(xSample3, ySample3, Math.toRadians(intakeSampleAngle3)), Math.toRadians(10))
-                .stopAndAdd(new SequentialAction(
-                        RobotActions.setExtendo(extendoAngleSample3, 0),
-                        RobotActions.setRollers(1, .2),
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0.2)
-                ))
-                .lineToY(bumpSample3)
-                // Intake sample 3
-                .afterTime(0, new ParallelAction(
-                        RobotActions.setV4B(Intake.V4BAngle.UP, 0.2),
-                        RobotActions.setExtendo(Extendo.LINKAGE_MIN_ANGLE, retractExtendoWait)
-
-                ))
-                .afterTime(.5, new SequentialAction(
-                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0.3),
-                        RobotActions.setRollers(-0.8,0.3),
-                        RobotActions.setRollers(0, 0.1),
-                        RobotActions.setExtendo(Extendo.LINKAGE_MIN_ANGLE, retractExtendoWaitToWallPickup),
-                        RobotActions.setupFrontWallPickup()
-                ))
-                .splineToLinearHeading(new Pose2d(34, ySample2, Math.toRadians(300)), Math.toRadians(300));
-                // Given Sample 3;
         return builder;
     }
 
