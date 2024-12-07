@@ -26,7 +26,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -105,8 +104,10 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
                     break;
                 case SETUP_SCORE_BASKET:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasket());
                     break;
+                case SCORED_SAMPLE_HIGH_BASKET:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
                 case SETUP_CHAMBER_FROM_FRONT:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromFrontAndRetract());
                     break;

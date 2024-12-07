@@ -31,7 +31,8 @@ public class MeepMeepTesting {
             giveSample2X = 44,
             giveSample3X = 54,
             giveSampleY = -46,
-            yintakeSpecimen = -60;
+            yintakeSpecimen = -60,
+            bumpWall = -63;
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
         boolean isSpecimenSide = true;
@@ -81,19 +82,19 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder scoreAllSpecimens2(TrajectoryActionBuilder builder) {
         builder = builder
                 // Intaking 1st Specimen
-                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
-                .lineToY(-62)
+                .splineToLinearHeading(new Pose2d(37,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .lineToY(bumpWall)
 //                .lineToYLinearHeading(yintakeSpecimen,Math.toRadians(270))
                 .setTangent(Math.toRadians(135))
                 //Going to Sub
-                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
-                .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
-                .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(37,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
+//                .setTangent(Math.toRadians(135))
+//                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+//                .splineToLinearHeading(new Pose2d(37,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+//                .setTangent(Math.toRadians(135))
+//                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
+//                .splineToLinearHeading(new Pose2d(37,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
 
         ;
         return builder;

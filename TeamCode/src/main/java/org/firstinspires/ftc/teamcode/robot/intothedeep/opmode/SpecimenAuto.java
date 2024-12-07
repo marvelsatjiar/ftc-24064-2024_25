@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 
@@ -25,24 +26,24 @@ public class SpecimenAuto extends AbstractAuto {
             scoreSpecimenY = -31,
             scoreSpecimenX = 4,
             firstSampleAngle = 30,
-            xSample1 = 29.5,
+            xSample1 = 28,
             ySample1 = -32,
-            xSample2 = 40,
+            xSample2 = 37,
             ySample2 = -31,
-            xSample3 = -24 ,
-            ySample3 = -31,
+            xSample3 = 49 ,
+            ySample3 = -26,
             bumpSample = -33.5,
-            thirdSampleAngle3 = 15,
+            thirdSampleAngle3 = 5,
             extendoAngleSample1 = 65,
             bumpSample3 = -35.5,
             retractExtendoWait = 0.3,
-            retractExtendoWaitToWallPickup = 1,
-            clampAfterSpecimenWait = 1,
-            xSubmersibleSpecimen = 7,
-            ySubmersibleSpecimen = -31,
+            retractExtendoWaitToWallPickup = 2,
+            clampAfterSpecimenWait = 0.6,
+            xSubmersibleSpecimen = 5,
+            ySubmersibleSpecimen = -30,
             xintakeSpecimen = 32.5,
-            bumpSpecimen = 19,
-            yintakeSpecimen = -46,
+            bumpSpecimen = -64,
+            yintakeSpecimen = -60,
             yintakeSpecimenWall = -62.5,
             transferSpecimenToClawWait = 0.5,
             rollerIntakeSeconds = 1,
@@ -50,9 +51,10 @@ public class SpecimenAuto extends AbstractAuto {
             bumpDelay = 0,
             wristSpecimenWait = 0.3,
             giveSample1X = 41,
-            giveSample2X = 44,
-            giveSample3X = 54,
-            giveSampleY = -55,
+            giveSample2X = 46,
+            giveSample3X = 49,
+            giveSampleY = -57,
+            wallPickupX = 35,
             unclampSpecimenWait = 0.1;
 
     @Override
@@ -76,7 +78,7 @@ public class SpecimenAuto extends AbstractAuto {
 
         builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
-//        builder = scoreAllSpecimensWallPickUp(builder);
+        builder = scoreAllSpecimensWallPickUp(builder);
 //        builder = park(builder);
 
         return builder.build();
@@ -86,22 +88,29 @@ public class SpecimenAuto extends AbstractAuto {
         builder = builder
                 // Intaking 1st Specimen
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))                .waitSeconds(clampAfterSpecimenWait)
+                .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .lineToY(bumpSpecimen)
+                .waitSeconds(clampAfterSpecimenWait)
                 .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
                 //Going to Sub
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
-                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
+                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup())
+                .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
+                .lineToY(bumpSpecimen)
+                .waitSeconds(clampAfterSpecimenWait)
+                .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
         // Intaking 2nd Specimen
                 .setTangent(Math.toRadians(135))
                 .splineToLinearHeading(new Pose2d(4,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(35,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))                .waitSeconds(clampAfterSpecimenWait)
+                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup())
+                .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
+                .lineToY(bumpSpecimen)
+                .waitSeconds(clampAfterSpecimenWait)
                 .stopAndAdd(RobotActions.setupSpecimenFromFrontWallPickup())
-                //Going to Sub
-                .splineToLinearHeading(new Pose2d(xSubmersibleSpecimen, ySubmersibleSpecimen, Math.toRadians(270)), Math.toRadians(-42))
-                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup());
+                //Going to Sub+
+                .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(90))
+                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
         // Intaking 3rd Specimen
 
         return builder;
@@ -242,7 +251,12 @@ public class SpecimenAuto extends AbstractAuto {
                 .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP,0))
                 .splineToLinearHeading(new Pose2d(xSample3,ySample3, Math.toRadians(thirdSampleAngle3)), Math.toRadians(35))
                 .afterTime(0,RobotActions.setV4B(Intake.V4BAngle.HOVERING,0))
-                .splineToLinearHeading(new Pose2d(giveSample3X,giveSampleY, Math.toRadians(0)), Math.toRadians(35));
+                .splineToLinearHeading(new Pose2d(giveSample3X,giveSampleY, Math.toRadians(0)), Math.toRadians(35))
+                .afterTime(0, new SequentialAction(
+                        RobotActions.setV4B(Intake.V4BAngle.UP,0.1),
+                        RobotActions.setExtendo(Extendo.Extension.RETRACTED, retractExtendoWaitToWallPickup),
+                        RobotActions.setupFrontWallPickup()
+                ));
 
         return builder;
     }

@@ -55,6 +55,7 @@ import org.firstinspires.ftc.teamcode.auto.message.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.auto.message.MecanumLocalizerInputsMessage;
 import org.firstinspires.ftc.teamcode.auto.message.PoseMessage;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
+import org.opencv.core.Mat;
 
 import java.lang.Math;
 import java.util.Arrays;
@@ -518,7 +519,7 @@ public final class MecanumDrive {
                 defaultTurnConstraints,
                 defaultVelConstraint, defaultAccelConstraint,
                 pose -> new Pose2dDual<>(
-                        pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse()));
+                        pose.position.x.unaryMinus(), pose.position.y.unaryMinus(), pose.heading.plus(Math.PI)));
     }
 
     /**

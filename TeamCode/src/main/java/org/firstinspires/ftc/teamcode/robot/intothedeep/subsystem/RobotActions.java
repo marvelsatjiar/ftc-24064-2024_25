@@ -154,13 +154,12 @@ public class RobotActions {
     }
 
     // DONE
-    public static Action scoreBasketAndRetract() {
+    public static Action scoreBasket() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.DEPOSIT, CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT),
-                        retractToNeutral(RETRACT_TO_NEUTRAL_SCORE_BASKET_AND_RETRACT),
-                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                        new InstantAction(() -> robot.currentState = Robot.State.SCORED_SAMPLE_HIGH_BASKET)
                 )
         );
     }
