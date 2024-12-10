@@ -105,43 +105,46 @@ public final class MainTeleOp extends LinearOpMode {
 
 
             switch (robot.getCurrentState()) {
-                case TRANSFERRED:
-                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
-                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
-                    break;
-                case SETUP_SCORE_BASKET:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasketAndRetract());
-                    break;
-                case SETUP_CHAMBER_FROM_FRONT:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromFrontAndRetract());
-                    break;
-                case SETUP_CHAMBER_FROM_BACK:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
-                    break;
+                // MISC ============================================================================
                 case NEUTRAL:
                     doExtendoControls();
                     doIntakeControls();
 
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupFrontWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
-                    if (keyPressed(1, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
                 case EXTENDO_OUT:
                     doExtendoControls();
                     doIntakeControls();
-//
-//                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractForTransfer());
+
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     break;
-                case TO_BE_TRANSFERRED:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                case TRANSFERRED:
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
+                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
                     break;
-                case FRONT_WALL_PICKUP:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupSpecimenFromFrontWallPickup());
+                // BASKET ==========================================================================
+                case SETUP_SCORE_BASKET:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasket());
                     break;
+                case SCORED_SAMPLE_HIGH_BASKET:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
+                // CHAMBER =========================================================================
+                case SETUP_CHAMBER_FROM_FRONT:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromFrontAndRetract());
+                    break;
+                case SETUP_CHAMBER_FROM_BACK:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
+                    break;
+                // WALL PICKUP =====================================================================
                 case SETUP_FRONT_SPECIMEN_FROM_WALL:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreSpecimenFromFrontWallPickup());
                     break;
+                case FRONT_WALL_PICKUP:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.takeSpecimenFromFrontWallPickup());
+                    break;
+                // HANG ============================================================================
                 case SETUP_LEVEL_TWO_HANG:
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
                     break;
@@ -170,7 +173,6 @@ public final class MainTeleOp extends LinearOpMode {
 
     public void doIntakeControls() {
 //        if (robot.intake.getRollerPower() != -1 && ((robot.intake.currentSample == Intake.SampleColor.BLUE && Common.IS_RED) || (robot.intake.currentSample == Intake.SampleColor.RED && !Common.IS_RED))) robot.actionScheduler.addAction(RobotActions.setRollers(-1, 1));
-
         if (!gamepadEx1.isDown(RIGHT_BUMPER) && !gamepadEx2.isDown(RIGHT_BUMPER)) {
             double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             if (trigger != 0) {

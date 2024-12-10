@@ -27,21 +27,6 @@ import org.firstinspires.ftc.teamcode.util.LoopUtil;
 @Disabled
 public abstract class AbstractAuto extends LinearOpMode {
 
-    protected final void getAllianceSideData() {
-        GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
-        // Get gamepad 1 button input and save "right" and "red" booleans for autonomous configuration:
-        while (opModeInInit() && !(gamepadEx1.isDown(RIGHT_BUMPER) && gamepadEx1.isDown(LEFT_BUMPER))) {
-            gamepadEx1.readButtons();
-            if (gamepadEx1.wasJustPressed(B)) Common.IS_RED = true;
-            if (gamepadEx1.wasJustPressed(X)) Common.IS_RED = false;
-            mTelemetry.addLine("| B - RED | X - BLUE |");
-            mTelemetry.addLine();
-            mTelemetry.addLine("Selected " + (Common.IS_RED ? "RED" : "BLUE"));
-            mTelemetry.addLine("Press both shoulder buttons to confirm!");
-            mTelemetry.update();
-        }
-    }
-
     protected final void update() {
         robot.readSensors();
         robot.run();
@@ -56,16 +41,19 @@ public abstract class AbstractAuto extends LinearOpMode {
         mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         onInit();
-        getAllianceSideData();
+        configure();
+        Action action = onRun();
 
         if (isStopRequested()) return;
+
+        waitForStart();
 
         resetRuntime();
         robot.drivetrain.pose = getStartPose();
 
         Actions.runBlocking(
                 new ParallelAction(
-                        onRun(),
+                        action,
                         new org.firstinspires.ftc.teamcode.auto.Actions.RunnableAction(() -> {
                             update();
                             return opModeIsActive();
@@ -77,6 +65,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     }
 
     protected void onInit() {}
+    protected void configure() {}
     protected abstract Pose2d getStartPose();
     protected abstract Action onRun();
 }

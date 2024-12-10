@@ -96,7 +96,7 @@ public class SampleAuto extends AbstractAuto {
                 .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(-135))
                 .waitSeconds(waitToScoreSample1)
 //                // Basket
-                .afterTime(0, RobotActions.scoreBasketAndRetract())
+                .afterTime(0, RobotActions.scoreBasket())
                 // Moving to 2nd sample
                 .setTangent(Math.toRadians(110))
                 .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.HOVERING, 0))
@@ -116,7 +116,7 @@ public class SampleAuto extends AbstractAuto {
                 .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)),Math.toRadians(290))
                 .waitSeconds(waitToScoreSample2)
                 // Basket
-                .afterTime(0, RobotActions.scoreBasketAndRetract())
+                .afterTime(0, RobotActions.scoreBasket())
                 // Moving to 3rd sample
                 .setTangent(Math.toRadians(90))
                 .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.HOVERING, 0))
@@ -139,7 +139,7 @@ public class SampleAuto extends AbstractAuto {
                 .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(255))
                 .waitSeconds(waitToScoreSample3)
                 // Basket
-                .afterTime(0, RobotActions.scoreBasketAndRetract());
+                .afterTime(0, RobotActions.scoreBasket());
         return builder;
     }
 
