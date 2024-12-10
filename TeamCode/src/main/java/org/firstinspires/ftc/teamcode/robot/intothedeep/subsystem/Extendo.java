@@ -21,7 +21,8 @@ public final class Extendo {
         LINKAGE_ONE_FOURTH_ANGLE = 17 + 22.5,
         LINKAGE_ONE_HALF_ANGLE = 17 + 45,
         LINKAGE_THREE_FOURTHS_ANGLE = 17 + 67.5,
-        LINKAGE_MAX_ANGLE = 107;
+        LINKAGE_MAX_ANGLE = 107,
+        STICK_MULT = 0.75;
 
     public enum Extension {
         RETRACTED,
@@ -83,6 +84,10 @@ public final class Extendo {
         else targetExtension = Extension.EXTENDED;
 
         return true;
+    }
+
+    public void setTargetAngleWithStick(double stick) {
+        setTargetAngle(targetAngle + stick * STICK_MULT, false);
     }
 
     public boolean setTargetExtension(Extension extension) {
