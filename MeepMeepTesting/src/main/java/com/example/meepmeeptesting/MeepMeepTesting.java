@@ -1,7 +1,6 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
@@ -9,47 +8,29 @@ import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
+    public static boolean
+                is5plus0 = false,
+                usePartnerSpec = true;
+
+
     public static double
-            startingPositionX = 7.375,
-            startingPositionY = -62,
             scoreSpecimenY = -31,
-            scoreSpecimenX = 4,
-            firstSampleAngle = 30,
-            xSample1 = 28,
-            ySample1 = -32,
-            xSample2 = 37,
-            ySample2 = -31,
-            xSample3 = 47,
-            ySample3 = -26,
-            bumpSample = -33.5,
-            thirdSampleAngle3 = 0,
-            extendoAngleSample1 = 65,
-            bumpSample3 = -35.5,
-            retractExtendoWait = 0.3,
-            retractExtendoWaitToWallPickup = 2,
-            clampAfterSpecimenWait = 0.6,
-            xSubmersibleSpecimen = 5,
-            ySubmersibleSpecimen = -32,
-            xintakeSpecimen = 32.5,
+            sample1X = 48,
+            sample2X = 58,
+            sample3X = 63,
+            startSampleY = -14,
             bumpSpecimen = -64,
             yintakeSpecimen = -60,
-            yintakeSpecimenWall = -62.5,
-            transferSpecimenToClawWait = 0.5,
-            rollerIntakeSeconds = 1,
-            setupChamberFromBackWait = 1,
-            bumpDelay = 0,
-            wristSpecimenWait = 0.3,
-            giveSample1X = 41,
-            giveSample2X = 46,
-            giveSample3X = 52,
-            giveSampleY = -57,
+            giveSample1X = sample1X - 4,
+            giveSample2X = sample2X - 4,
+            giveSample3X = sample3X,
+            giveSampleY = -50,
             wallPickupX = 35,
-            bumpWall = -63,
-            unclampSpecimenWait = 0.1,
-            givingSampleAngle = -10;
+            firstWallPickupX = 58,
+            givingSampleAngle = 270;
 
     public static void main(String[] args) {
-        MeepMeep meepMeep = new MeepMeep(600);
+        MeepMeep meepMeep = new MeepMeep(1200);
         boolean isSpecimenSide = true;
 
         RoadRunnerBotEntity drive = new DefaultBotBuilder(meepMeep)
@@ -59,7 +40,7 @@ public class MeepMeepTesting {
                 .build();
 
         Pose2d startPose;
-        startPose = new Pose2d(7.375,-62,Math.toRadians(-270));
+        startPose = new Pose2d(7.375,-62,Math.toRadians(270));
 
 
         TrajectoryActionBuilder builder = drive.getDrive().actionBuilder(startPose);
@@ -79,8 +60,7 @@ public class MeepMeepTesting {
     public static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offset) {
         return builder
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(4 + offset,ySubmersibleSpecimen,Math.toRadians(270)),Math.toRadians(90))
-//                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup())
+                .splineToLinearHeading(new Pose2d(5 + offset, scoreSpecimenY, Math.toRadians(270)), Math.toRadians(90))
                 .setTangent(Math.toRadians(270))
                 .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
                 .lineToY(bumpSpecimen);
@@ -90,55 +70,37 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder scoreAllSpecimens(TrajectoryActionBuilder builder) {
 
         builder = builder
-                .splineToSplineHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
-                .splineToSplineHeading(new Pose2d(wallPickupX, bumpWall, Math.toRadians(270)), Math.toRadians(270));
+                .splineToSplineHeading(new Pose2d(firstWallPickupX, yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSpecimen, Math.toRadians(270)), Math.toRadians(270));
 
         builder = scoreSpecimen(builder, 0);
         builder = scoreSpecimen(builder, -2);
         builder = scoreSpecimen(builder, -4);
-        return builder;
-    }
+        if (is5plus0)
+            builder = scoreSpecimen(builder, -6);
 
-    private static TrajectoryActionBuilder specimenPark(TrajectoryActionBuilder builder) {
-        builder = builder
-                .lineToYLinearHeading(-48,Math.toRadians(-40))
-                // Extend fully
-        ;
         return builder;
     }
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
+        boolean do3rdSample = is5plus0 || !usePartnerSpec;
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(15,-40),Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(xSample1,ySample1, Math.toRadians(firstSampleAngle)), Math.toRadians(45))
-//                .afterTime(0,new SequentialAction(
-//                        RobotActions.setExtendo(extendoAngleSample1,0.1),
-//                        RobotActions.setV4B(Intake.V4BAngle.HOVERING,0)
-//                ))
-                .splineToLinearHeading(new Pose2d(giveSample1X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
-//                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP,0))
-                .splineToSplineHeading(new Pose2d(xSample2,ySample2, Math.toRadians(firstSampleAngle)), Math.toRadians(90))
-//                .afterTime(0,RobotActions.setV4B(Intake.V4BAngle.HOVERING,0))
-                .splineToLinearHeading(new Pose2d(giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
-//                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP,0))
-                .splineToSplineHeading(new Pose2d(xSample3,ySample3, Math.toRadians(thirdSampleAngle3)), Math.toRadians(90))
-//                .afterTime(0,RobotActions.setV4B(Intake.V4BAngle.HOVERING,0))
-                .splineToLinearHeading(new Pose2d(giveSample3X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
-//                .afterTime(0, new SequentialAction(
-//                        RobotActions.setV4B(Intake.V4BAngle.UP,0.1),
-//                        RobotActions.setExtendo(Extendo.Extension.RETRACTED, retractExtendoWaitToWallPickup),
-//                        RobotActions.setupFrontWallPickup()
-//                ));
-
-        ;
+                .splineToConstantHeading(new Vector2d(33,-35),Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(sample1X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
+//                .splineToLinearHeading(new Pose2d(46, -18, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
+                .splineToSplineHeading(new Pose2d(sample2X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
+        if (do3rdSample)
+            builder = builder
+                    .splineToSplineHeading(new Pose2d(sample3X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                    .splineToLinearHeading(new Pose2d(giveSample3X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270));
         return builder;
     }
 
     private static TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .splineToConstantHeading(new Vector2d(scoreSpecimenX,scoreSpecimenY), Math.toRadians(90))
-                ;
-
+                .lineToY(scoreSpecimenY);
         return builder;
     }
 
