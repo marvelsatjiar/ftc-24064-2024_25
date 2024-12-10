@@ -41,20 +41,20 @@ public class PIDController implements FeedbackController {
         State lastError = error;
         error = target.minus(measurement);
 
-        if (signum(error.p) != signum(lastError.p)) reset();
-        errorIntegral = integrator.getIntegral(error.p);
-        rawErrorDerivative = differentiator.getDerivative(error.p);
+        if (signum(error.x) != signum(lastError.x)) reset();
+        errorIntegral = integrator.getIntegral(error.x);
+        rawErrorDerivative = differentiator.getDerivative(error.x);
         filteredErrorDerivative = derivFilter.calculate(rawErrorDerivative);
 
-        double output = (gains.kP * error.p) + (gains.kI * errorIntegral) + (gains.kD * filteredErrorDerivative);
+        double output = (gains.kP * error.x) + (gains.kI * errorIntegral) + (gains.kD * filteredErrorDerivative);
 
-        stopIntegration(abs(output) >= gains.maxOutputWithIntegral && signum(output) == signum(error.p));
+        stopIntegration(abs(output) >= gains.maxOutputWithIntegral && signum(output) == signum(error.x));
 
         return output;
     }
 
     public boolean isPositionInTolerance(State measurement, double tolerance) {
-        return Math.abs(measurement.minus(target).p) <= tolerance;
+        return Math.abs(measurement.minus(target).x) <= tolerance;
     }
 
     public void setTarget(State target) {

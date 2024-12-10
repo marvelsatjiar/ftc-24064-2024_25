@@ -94,8 +94,8 @@ public final class MainTeleOp extends LinearOpMode {
                         )
                 );
 
-            if (gamepadEx2.getLeftY() != 0) robot.lift.changeTicksByStick(gamepadEx2.getLeftY());
-            if (keyPressed(2, LEFT_STICK_BUTTON)) robot.lift.resetEncoder();
+            robot.lift.runManual(gamepadEx2.getLeftY());
+            if (keyPressed(2, LEFT_STICK_BUTTON)) robot.lift.reset();
 
 //            }
 

@@ -3,8 +3,6 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
@@ -29,6 +27,7 @@ public final class Extendo {
         ONE_FOURTH,
         ONE_HALF,
         THREE_FOURTHS,
+        CUSTOM_EXTENSION,
         EXTENDED;
 
         public double getAngle() {
@@ -81,7 +80,7 @@ public final class Extendo {
         if (isLocked && !isOverride) return false;
         targetAngle = Range.clip(angle, LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE);
         if (targetAngle == LINKAGE_MIN_ANGLE) targetExtension = Extension.RETRACTED;
-        else targetExtension = Extension.EXTENDED;
+        else targetExtension = Extension.CUSTOM_EXTENSION;
 
         return true;
     }

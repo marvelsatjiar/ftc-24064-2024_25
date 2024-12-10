@@ -56,7 +56,8 @@ public final class Lift {
             INTERMEDIARY_WALL_PICKUP_TICKS = 1300,
             CLIMB_TICKS = 1400,
             LEVEL_THREE_CLIMB_TICKS = 2960,
-            UNSAFE_THRESHOLD_TICKS = 1000;
+            UNSAFE_THRESHOLD_TICKS = 1000,
+            RETRACTED_THRESHOLD_TICKS = 100;
 
     public static double
             kG = 0.011065,
@@ -71,7 +72,7 @@ public final class Lift {
 
     private final VoltageSensor batteryVoltageSensor;
 
-    private State currentState = new State();
+    private double position = 0;
 
     public enum Ticks {
         RETRACTED,
@@ -106,6 +107,8 @@ public final class Lift {
             }
         }
 
+
+
         public boolean isArmUnsafe() {
             return toTicks() <= UNSAFE_THRESHOLD_TICKS;
         }
@@ -114,6 +117,8 @@ public final class Lift {
     private Ticks targetTicks = Ticks.RETRACTED;
 
     public boolean isLocked = false;
+
+    private double manualPower;
 
     /**
      * Constructor of Lift class; Sets variables with hw (hardwareMap)
@@ -145,12 +150,16 @@ public final class Lift {
         return true;
     }
 
-    public void changeTicksByStick(double stick) {
-        controller.setTarget(new State(encoder.getPosition() + stick * JOYSTICK_MULTIPLIER));
+    public void runManual(double power) {
+        manualPower = power;
     }
 
-    public void resetEncoder() {
+    public void reset() {
         encoder.reset();
+        controller.reset();
+
+        setTargetTicks(Ticks.RETRACTED, true);
+        position = 0;
     }
 
     public boolean setTargetTicks(Ticks ticks) {
@@ -162,28 +171,30 @@ public final class Lift {
      * Calls another run() method that calculates the motor output proportionally and doesn't compensate for power
      */
     public void run() {
-        currentState = new State(encoder.getPosition());
-        controller.setGains(pidGains);
-        derivFilter.setGains(filterGains);
+        position = encoder.getPosition();
 
-        run(controller.calculate(currentState), false);
-    }
-
-    public void run(double motorPower) {
-        run(motorPower, true);
-    }
-
-    /**
-     * Checks if the voltage is to be saved, if true, use scalar to modify motor power
-     * @param motorPower; The power that is set to be used to set the motor's power
-     * @param voltageCompensate; Boolean that is used if battery is low, and if it needs to compensate (save)
-     */
-    public void run(double motorPower, boolean voltageCompensate) {
         double scalar = MAX_VOLTAGE / batteryVoltageSensor.getVoltage();
+        double output = isExtended() ? kG * scalar : 0;
 
-        if (voltageCompensate) motorPower *= scalar;
+        if (manualPower != 0) {
 
-        for (MotorEx motor : motors) motor.set(motorPower + kG * scalar);
+            controller.setTarget(new State(position));
+            output += manualPower;
+
+        } else {
+            
+            controller.setGains(pidGains);
+            derivFilter.setGains(filterGains);
+
+            output += controller.calculate(new State(position));
+
+        }
+
+        for (MotorEx motor : motors) motor.set(output);
+    }
+
+    private boolean isExtended() {
+        return position >= Ticks.RETRACTED.toTicks();
     }
 
     public void printTelemetry() {
