@@ -85,7 +85,7 @@ public final class Lift {
         WALL_PICKUP,
         FRONT_WALL_SPECIMEN_SETUP,
         CLIMB,
-        LEVEL_THREE_CLIMB_TICKS,
+        LEVEL_THREE_CLIMB,
         INTERMEDIARY_WALL_PICKUP,
         EXTENDED;
 
@@ -101,7 +101,7 @@ public final class Lift {
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SCORE_TICKS;
                 case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
                 case CLIMB:                     return CLIMB_TICKS;
-                case LEVEL_THREE_CLIMB_TICKS:   return Lift.LEVEL_THREE_CLIMB_TICKS;
+                case LEVEL_THREE_CLIMB:         return LEVEL_THREE_CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
             }
@@ -182,7 +182,7 @@ public final class Lift {
             output += manualPower;
 
         } else {
-            
+
             controller.setGains(pidGains);
             derivFilter.setGains(filterGains);
 

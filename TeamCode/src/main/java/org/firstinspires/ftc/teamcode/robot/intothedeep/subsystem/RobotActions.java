@@ -344,7 +344,7 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_LEVEL_THREE_HANG,
                 new SequentialAction(
-                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB_TICKS, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
+                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
                         setSwingCorrector(false, SWING_CORRECTOR_INACTIVE_SETUP_LEVEL_THREE_HANG),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_LEVEL_THREE_HANG)
                 )
