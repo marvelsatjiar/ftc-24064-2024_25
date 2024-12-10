@@ -145,6 +145,14 @@ public final class Lift {
         return true;
     }
 
+    public void changeTicksByStick(double stick) {
+        controller.setTarget(new State(encoder.getPosition() + stick * JOYSTICK_MULTIPLIER));
+    }
+
+    public void resetEncoder() {
+        encoder.reset();
+    }
+
     public boolean setTargetTicks(Ticks ticks) {
         return setTargetTicks(ticks, false);
     }
