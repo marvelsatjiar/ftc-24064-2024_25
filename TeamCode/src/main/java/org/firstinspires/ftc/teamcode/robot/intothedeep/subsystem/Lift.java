@@ -107,8 +107,6 @@ public final class Lift {
             }
         }
 
-
-
         public boolean isArmUnsafe() {
             return toTicks() <= UNSAFE_THRESHOLD_TICKS;
         }
@@ -174,7 +172,7 @@ public final class Lift {
         position = encoder.getPosition();
 
         double scalar = MAX_VOLTAGE / batteryVoltageSensor.getVoltage();
-        double output = isExtended() ? kG * scalar : 0;
+        double output = position >= RETRACTED_THRESHOLD_TICKS ? kG * scalar : 0;
 
         if (manualPower != 0) {
 
@@ -193,12 +191,7 @@ public final class Lift {
         for (MotorEx motor : motors) motor.set(output);
     }
 
-    private boolean isExtended() {
-        return position >= Ticks.RETRACTED.toTicks();
-    }
-
     public void printTelemetry() {
-        mTelemetry.addData("Actual position (ticks)", encoder.getPosition());
         mTelemetry.addData("Target position (ticks)", getTargetTicks().toTicks());
         mTelemetry.addData("Current state (name)", getTargetTicks().name());
     }
