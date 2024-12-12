@@ -12,11 +12,14 @@ import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 
 @Autonomous(name = "Specimen Side")
@@ -26,6 +29,7 @@ public class SpecimenAuto extends AbstractAuto {
             is5plus0 = false,
             usePartnerSpec = false;
     public static double
+            slowDownConstraint = 25,
             startingPositionX = 7.375,
             startingPositionY = -62,
             scoreSpecimenY = -31,
@@ -43,6 +47,14 @@ public class SpecimenAuto extends AbstractAuto {
             firstWallPickupX = 58,
             startBumpToClampTime = 0,
             givingSampleAngle = 270;
+
+    private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
+        if (robotPose.position.y.value() > -17) {
+            return slowDownConstraint;
+        } else {
+            return 60.0;
+        }
+    };
 
     @Override
     protected void configure() {
@@ -73,9 +85,11 @@ public class SpecimenAuto extends AbstractAuto {
         robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         robot.arm.setWristAngle(Arm.WristAngle.CHAMBER_FRONT);
         robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
+        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
 
         robot.arm.run(false);
         robot.claw.run();
+        robot.intake.run();
     }
 
     @Override
@@ -92,7 +106,7 @@ public class SpecimenAuto extends AbstractAuto {
     private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offset, boolean doPark) {
          builder = builder
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(5 + offset, scoreSpecimenY, Math.toRadians(270)), Math.toRadians(90))
+                .splineTo(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
                 .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
 
          if (!doPark) {
@@ -101,7 +115,7 @@ public class SpecimenAuto extends AbstractAuto {
 
          builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(270)), Math.toRadians(270));
+                .splineTo(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270));
 
          if (!doPark) {
              builder = builder.afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup());
@@ -132,17 +146,19 @@ public class SpecimenAuto extends AbstractAuto {
         builder = builder
                 .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(33,-35),Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(sample1X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.HOVERING, 0))
+                .splineToSplineHeading(new Pose2d(sample1X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270), giveSampleVelConstraint)
                 .afterTime(0, RobotActions.setupFrontWallPickup())
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
-//                .splineToLinearHeading(new Pose2d(46, -18, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(sample2X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                .splineToSplineHeading(new Pose2d(sample2X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270), giveSampleVelConstraint)
                 .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
+
         if (do3rdSample)
             builder = builder
-                    .splineToSplineHeading(new Pose2d(sample3X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                    .splineToSplineHeading(new Pose2d(sample3X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270), giveSampleVelConstraint)
                     .splineToLinearHeading(new Pose2d(giveSample3X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270));
-        return builder;
+
+        return builder.afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP, 0));
     }
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {

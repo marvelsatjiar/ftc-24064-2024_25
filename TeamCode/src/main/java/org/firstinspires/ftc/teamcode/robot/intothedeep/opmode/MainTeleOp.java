@@ -93,12 +93,12 @@ public final class MainTeleOp extends LinearOpMode {
                                 -gamepadEx1.getRightX() * slowTurningMult
                         )
                 );
+//            }
 
             robot.lift.runManual(gamepadEx2.getLeftY());
             if (keyPressed(2, LEFT_STICK_BUTTON)) robot.lift.reset();
 
-//            }
-
+            
 //            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE));
 //            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP));
 //            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB));

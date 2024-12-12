@@ -3,17 +3,20 @@ package com.example.meepmeeptesting;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.VelConstraint;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting {
     public static boolean
-                is5plus0 = false,
-                usePartnerSpec = true;
+                is5plus0 = true,
+                usePartnerSpec = false;
+
 
 
     public static double
+            slowDownConstraint = 25,
             scoreSpecimenY = -31,
             sample1X = 48,
             sample2X = 58,
@@ -28,6 +31,14 @@ public class MeepMeepTesting {
             wallPickupX = 35,
             firstWallPickupX = 58,
             givingSampleAngle = 270;
+
+    private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
+        if (robotPose.position.y.value() > -17) {
+            return slowDownConstraint;
+        } else {
+            return 60.0;
+        }
+    };
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(1200);
@@ -60,9 +71,9 @@ public class MeepMeepTesting {
     public static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offset) {
         return builder
                 .setTangent(Math.toRadians(90))
-                .splineToLinearHeading(new Pose2d(5 + offset, scoreSpecimenY, Math.toRadians(270)), Math.toRadians(90))
+                .splineTo(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
                 .setTangent(Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(wallPickupX,yintakeSpecimen, Math.toRadians(270)), Math.toRadians(270))
+                .splineTo(new Vector2d(wallPickupX,yintakeSpecimen), Math.toRadians(270))
                 .lineToY(bumpSpecimen);
 
     }
@@ -86,14 +97,14 @@ public class MeepMeepTesting {
         builder = builder
                 .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(33,-35),Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(sample1X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                .splineToSplineHeading(new Pose2d(sample1X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270), giveSampleVelConstraint)
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
 //                .splineToLinearHeading(new Pose2d(46, -18, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
-                .splineToSplineHeading(new Pose2d(sample2X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                .splineToSplineHeading(new Pose2d(sample2X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270), giveSampleVelConstraint)
                 .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
         if (do3rdSample)
             builder = builder
-                    .splineToSplineHeading(new Pose2d(sample3X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270))
+                    .splineToSplineHeading(new Pose2d(sample3X, startSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270), giveSampleVelConstraint)
                     .splineToLinearHeading(new Pose2d(giveSample3X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270));
         return builder;
     }
