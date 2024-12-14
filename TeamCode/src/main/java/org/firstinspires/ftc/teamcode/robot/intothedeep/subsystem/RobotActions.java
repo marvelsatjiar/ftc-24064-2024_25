@@ -225,11 +225,26 @@ public class RobotActions {
     }
 
 
-    public static Action takeSpecimenFromFrontWallPickup() {
+    public static Action takeSpecimenFromFrontWallPickup(boolean doSetup) {
+        if (doSetup) {
+            return new Actions.SingleCheckAction(
+                    () -> robot.currentState != Robot.State.SETUP_FRONT_SPECIMEN_FROM_WALL,
+                    new SequentialAction(
+                            setupFrontWallPickup(),
+                            setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
+                            new ParallelAction(
+                                    setArm(Arm.ArmAngle.FRONT_WALL_SPECIMEN_SETUP, ARM_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
+                                    setWrist(Arm.WristAngle.FRONT_WALL_SPECIMEN_SETUP, WRIST_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
+                                    setLift(Lift.Ticks.FRONT_WALL_SPECIMEN_SETUP, LIFT_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP)
+                            ),
+                            new InstantAction(() -> robot.currentState = Robot.State.SETUP_FRONT_SPECIMEN_FROM_WALL)
+                    )
+            );
+        }
+
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_FRONT_SPECIMEN_FROM_WALL,
                 new SequentialAction(
-                        setupFrontWallPickup(),
                         setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
                         new ParallelAction(
                                 setArm(Arm.ArmAngle.FRONT_WALL_SPECIMEN_SETUP, ARM_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),

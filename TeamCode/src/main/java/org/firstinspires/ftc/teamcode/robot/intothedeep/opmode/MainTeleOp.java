@@ -142,7 +142,7 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreSpecimenFromFrontWallPickup());
                     break;
                 case FRONT_WALL_PICKUP:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.takeSpecimenFromFrontWallPickup());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.takeSpecimenFromFrontWallPickup(true));
                     break;
                 // HANG ============================================================================
                 case SETUP_LEVEL_TWO_HANG:
