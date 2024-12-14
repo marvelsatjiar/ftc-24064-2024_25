@@ -22,9 +22,9 @@ public class MeepMeepTesting {
             startingPositionX = 7.375,
             startingPositionY = -62,
             scoreSpecimenY = -31,
-            sample1X = 44,
-            sample2X = 52,
-            sample3X = 57,
+            sample1X = 47,
+            sample2X = 55,
+            sample3X = 63,
             startSampleY = -14,
             slowDownStartY = -25,
             bumpSpecimen = -60,
@@ -78,10 +78,13 @@ public class MeepMeepTesting {
 
     public static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offset) {
         return builder
-                .setTangent(Math.toRadians(90))
-                .splineTo(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
-                .setTangent(Math.toRadians(270))
-                .splineTo(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270))
+                .strafeToConstantHeading(new Vector2d(5 + offset, scoreSpecimenY))
+//                .setTangent(Math.toRadians(90))
+//
+//                .splineTo(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
+//                .setTangent(Math.toRadians(270))
+                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY))
+//                .splineTo(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270))
                 .lineToY(bumpSpecimen);
 
     }
@@ -106,16 +109,13 @@ public class MeepMeepTesting {
                 .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(35,-35),Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(sample1X, startSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
-                .waitSeconds(0.2)
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
 //                .splineToLinearHeading(new Pose2d(46, -18, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270), giveSampleVelConstraint)
-                .waitSeconds(0.2)
                 .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
         if (do3rdSample)
             builder = builder
                     .splineToConstantHeading(new Vector2d(sample3X, startSampleY), Math.toRadians(270), giveSampleVelConstraint)
-                    .waitSeconds(0.2)
                     .splineToLinearHeading(new Pose2d(giveSample3X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270));
         return builder;
     }

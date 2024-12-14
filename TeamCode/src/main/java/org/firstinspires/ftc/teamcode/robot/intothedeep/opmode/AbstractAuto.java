@@ -17,9 +17,11 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.auto.localizer.SparkFunOTOSLocalizer;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.util.LoopUtil;
@@ -49,7 +51,12 @@ public abstract class AbstractAuto extends LinearOpMode {
         waitForStart();
 
         resetRuntime();
-        robot.drivetrain.pose = getStartPose();
+        Pose2d startPose = getStartPose();
+        robot.drivetrain.pose = startPose;
+
+        if (robot.drivetrain.localizer instanceof SparkFunOTOSLocalizer) {
+            ((SparkFunOTOSLocalizer) robot.drivetrain.localizer).otos.setPosition(new SparkFunOTOS.Pose2D(startPose.position.x, startPose.position.y, startPose.heading.toDouble()));
+        }
 
         Actions.runBlocking(
                 new ParallelAction(

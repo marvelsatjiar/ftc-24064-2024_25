@@ -7,21 +7,32 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
+import com.acmerobotics.roadrunner.Arclength;
+import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.MecanumKinematics;
+import com.acmerobotics.roadrunner.MinVelConstraint;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SleepAction;
+import com.acmerobotics.roadrunner.Pose2dDual;
+import com.acmerobotics.roadrunner.PosePath;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.auto.localizer.ThreeDeadWheelLocalizer;
+import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
+
+import java.util.Arrays;
 
 @Autonomous(name = "Specimen Side")
 @Config
@@ -31,27 +42,38 @@ public class SpecimenAuto extends AbstractAuto {
             usePartnerSpec = false;
     public static double
             slowDownConstraint = 20,
+            bumpSpecimenVelocityConstraint = 12.5,
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -31,
-            sample1X = 44,
-            sample2X = 52,
-            sample3X = 57,
+            scoreFirstSpecimenY = -31,
+            scoreLastSpecimensY = -23,
+            sample1X = 45,
+            sample2X = 55,
+            sample3X = 63,
             startSampleY = -14,
             slowDownStartY = -25,
-            bumpSpecimen = -60,
-            intakeSpecimenY = -58,
+            bumpSpecimen = -57.5,
+            intakeSpecimenY = -46,
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 4,
             giveSample3X = sample3X,
-            giveSampleY = -50,
+            giveSampleY = -45,
             wallPickupX = 35,
             firstWallPickupX = 58,
-            startBumpToClampTime = 0,
+            startBumpToClampTime = 0.8,
             givingSampleAngle = 270,
-            regularGivingConstraint = 40,
+            regularGivingConstraint = 45,
             setupFrontWallPickupWait = 0.2,
             giveSampleWait = 0.2;
+
+    // Odometry tuning values
+    public static double
+            inPerTick = 60.0/20423,
+            lateralInPerTick = 0.0016964481753894158,
+            kV = 0.00035263026325329437,
+            kA = 0.0001,
+            kS = 1.8355146888001412;
+
 
     private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
         if (robotPose.position.y.value() > slowDownStartY) {
@@ -111,8 +133,9 @@ public class SpecimenAuto extends AbstractAuto {
     private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offset, boolean doPark) {
          builder = builder
                 .setTangent(Math.toRadians(90))
-                .splineTo(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
-                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
+                .splineTo(new Vector2d(5 + offset, scoreLastSpecimensY), Math.toRadians(90))
+//                 .strafeToConstantHeading(new Vector2d(5 + offset, scoreSpecimenY))
+                 .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
 
          if (!doPark) {
              builder = builder.afterTime(setupFrontWallPickupWait, RobotActions.setupFrontWallPickup());
@@ -121,12 +144,13 @@ public class SpecimenAuto extends AbstractAuto {
          builder = builder
                 .setTangent(Math.toRadians(270))
                 .splineTo(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270));
+//                 .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY));
 
          if (!doPark) {
              builder = builder.afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true));
          }
 
-         builder = builder.lineToY(bumpSpecimen);
+         builder = builder.lineToY(bumpSpecimen, (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
 
          return builder;
     }
@@ -136,7 +160,8 @@ public class SpecimenAuto extends AbstractAuto {
         builder = builder
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, intakeSpecimenY, Math.toRadians(270)), Math.toRadians(270))
                 .afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true))
-                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSpecimen, Math.toRadians(270)), Math.toRadians(270));
+                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSpecimen, Math.toRadians(270)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint)
+                .stopAndAdd(new InstantAction(this::changeToOdometry));
 
         builder = scoreSpecimen(builder, 0, false);
         builder = scoreSpecimen(builder, -2, false);
@@ -169,8 +194,26 @@ public class SpecimenAuto extends AbstractAuto {
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.takeSpecimenFromFrontWallPickup(false))
-                .lineToY(scoreSpecimenY)
+                .lineToY(scoreFirstSpecimenY)
                 .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
         return builder;
+    }
+
+    private void changeToOdometry() {
+        MecanumDrive.PARAMS.kV = kV;
+        MecanumDrive.PARAMS.kA = kA;
+        MecanumDrive.PARAMS.kS = kS;
+        MecanumDrive.PARAMS.inPerTick = inPerTick;
+        MecanumDrive.PARAMS.trackWidthTicks = 11.75 / inPerTick;
+        MecanumDrive.PARAMS.lateralInPerTick = lateralInPerTick;
+        robot.drivetrain.kinematics = new MecanumKinematics(
+                inPerTick * MecanumDrive.PARAMS.trackWidthTicks, inPerTick / lateralInPerTick);
+        robot.drivetrain.defaultVelConstraint =
+                new MinVelConstraint(Arrays.asList(
+                        robot.drivetrain.kinematics.new WheelVelConstraint(MecanumDrive.PARAMS.maxWheelVel),
+                        new AngularVelConstraint(MecanumDrive.PARAMS.maxAngVel)
+                ));
+        robot.drivetrain.localizer = new ThreeDeadWheelLocalizer(hardwareMap, inPerTick);
+
     }
 }

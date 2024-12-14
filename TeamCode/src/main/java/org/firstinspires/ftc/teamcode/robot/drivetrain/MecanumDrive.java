@@ -77,7 +77,7 @@ public final class MecanumDrive {
         // drive model parameters
         public double inPerTick = 1; // 60.0/20423; //0.0029606967506353; // 60 in / 20545 ticks
         public double lateralInPerTick = inPerTick;//0.0016964481753894158;
-        public double trackWidthTicks = 11.75/inPerTick;//4973.2616142295365;
+        public double trackWidthTicks = 11.75 / inPerTick;//4973.2616142295365;
 
         // feedforward parameters (in tick units)
         public double kS = 0.5;
@@ -85,7 +85,7 @@ public final class MecanumDrive {
         public double kA = 0.03;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 60;
+        public double maxWheelVel = 45;
         public double minProfileAccel = -30;
         public double maxProfileAccel = 60;
 
@@ -105,12 +105,12 @@ public final class MecanumDrive {
 
     public static Params PARAMS = new Params();
 
-    public final MecanumKinematics kinematics = new MecanumKinematics(
+    public MecanumKinematics kinematics = new MecanumKinematics(
             PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
 
     public final TurnConstraints defaultTurnConstraints = new TurnConstraints(
             PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
-    public final VelConstraint defaultVelConstraint =
+    public VelConstraint defaultVelConstraint =
             new MinVelConstraint(Arrays.asList(
                     kinematics.new WheelVelConstraint(PARAMS.maxWheelVel),
                     new AngularVelConstraint(PARAMS.maxAngVel)
@@ -125,7 +125,7 @@ public final class MecanumDrive {
     public final LazyImu lazyImu;
 //    public final LimelightEx limelight;
 
-    public final Localizer localizer;
+    public Localizer localizer;
     public final Estimator estimator;
     public Pose2d pose;
     public double headingOffset = 0;
