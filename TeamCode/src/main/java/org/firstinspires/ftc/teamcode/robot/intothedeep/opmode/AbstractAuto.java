@@ -51,12 +51,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         waitForStart();
 
         resetRuntime();
-        Pose2d startPose = getStartPose();
-        robot.drivetrain.pose = startPose;
-
-        if (robot.drivetrain.localizer instanceof SparkFunOTOSLocalizer) {
-            ((SparkFunOTOSLocalizer) robot.drivetrain.localizer).otos.setPosition(new SparkFunOTOS.Pose2D(startPose.position.x, startPose.position.y, startPose.heading.toDouble()));
-        }
+        robot.drivetrain.pose = getStartPose();
 
         Actions.runBlocking(
                 new ParallelAction(

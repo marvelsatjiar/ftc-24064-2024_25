@@ -35,7 +35,6 @@ public final class Robot {
     public enum State {
         NEUTRAL,
         EXTENDO_OUT,
-        BACK_WALL_PICKUP,
         FRONT_WALL_PICKUP,
         SETUP_FRONT_SPECIMEN_FROM_WALL,
         TO_BE_TRANSFERRED,
@@ -47,7 +46,8 @@ public final class Robot {
         CLIMB_LEVEL_TWO_HANG,
         SETUP_LEVEL_THREE_HANG,
         CLIMB_LEVEL_THREE_HANG,
-        SCORED_SAMPLE_HIGH_BASKET
+        SCORED_SAMPLE_HIGH_BASKET,
+        SETUP_DROP_SAMPLE,
     }
 
     State currentState = State.NEUTRAL;

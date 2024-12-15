@@ -20,7 +20,7 @@ public final class Extendo {
         LINKAGE_ONE_HALF_ANGLE = 17 + 45,
         LINKAGE_THREE_FOURTHS_ANGLE = 17 + 67.5,
         LINKAGE_MAX_ANGLE = 107,
-        STICK_MULT = 0.75;
+        STICK_MULT = 4;
 
     public enum Extension {
         RETRACTED,

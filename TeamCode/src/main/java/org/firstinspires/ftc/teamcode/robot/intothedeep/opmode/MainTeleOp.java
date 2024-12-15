@@ -19,6 +19,7 @@ import static java.lang.Math.hypot;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -76,7 +77,7 @@ public final class MainTeleOp extends LinearOpMode {
                 x = 0;
             }
 
-            double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.4 : 1;
+            double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
             double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.15 : 1;
 
 //            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
@@ -95,8 +96,10 @@ public final class MainTeleOp extends LinearOpMode {
                 );
 //            }
 
-            robot.lift.runManual(gamepadEx2.getLeftY());
-            if (keyPressed(2, LEFT_STICK_BUTTON)) robot.lift.reset();
+            if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.3) {
+                robot.lift.runManual(gamepadEx2.getLeftY());
+                robot.lift.reset();
+            }
 
             
 //            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE));
@@ -119,10 +122,12 @@ public final class MainTeleOp extends LinearOpMode {
                     doIntakeControls();
 
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractExtendo());
                     break;
                 case TRANSFERRED:
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupDropSample());
                     break;
                 // BASKET ==========================================================================
                 case SETUP_SCORE_BASKET:
@@ -147,13 +152,18 @@ public final class MainTeleOp extends LinearOpMode {
                 // HANG ============================================================================
                 case SETUP_LEVEL_TWO_HANG:
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
                     break;
                 case CLIMB_LEVEL_TWO_HANG:
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelThreeHang());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
                     break;
                 case SETUP_LEVEL_THREE_HANG:
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelThreeHang());
                     break;
+                // DROP SAMPLE =====================================================================
+                case SETUP_DROP_SAMPLE:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.dropSample());
             }
 
             robot.drivetrain.updatePoseEstimate();
@@ -168,7 +178,7 @@ public final class MainTeleOp extends LinearOpMode {
         if (keyPressed(2, DPAD_DOWN)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_HALF));
         if (keyPressed(2, DPAD_RIGHT)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS));
 
-        if (gamepadEx2.getRightY() != 0) robot.extendo.setTargetAngleWithStick(gamepadEx2.getRightY());
+        if (gamepadEx2.getRightY() != 0) robot.extendo.setTargetAngleWithStick(-gamepadEx2.getRightY());
     }
 
     public void doIntakeControls() {

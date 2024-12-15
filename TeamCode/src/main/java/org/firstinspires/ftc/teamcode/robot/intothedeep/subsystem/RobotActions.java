@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.auto.Actions;
 
 @Config
@@ -74,10 +75,11 @@ public class RobotActions {
             WRIST_FRONT_WALL_SPECIMEN_SCORE_SCORE_SPECIMEN_FROM_FRONT_WALL_PICKUP = 0,
             ARM_FRONT_WALL_SPECIMEN_SCORE_SCORE_SPECIMEN_FROM_FRONT_WALL_PICKUP = 0.2,
             CLAW_UNCLAMPED_SCORE_SPECIMEN_FROM_FRONT_WALL_PICKUP = 0,
-            RETRACT_TO_NEUTRAL_FRONT_WALL_SPECIMEN_SCORE_SCORE_SPECIMEN_FROM_FRONT_WALL_PICKUP = 0;
-
-
-
+            RETRACT_TO_NEUTRAL_FRONT_WALL_SPECIMEN_SCORE_SCORE_SPECIMEN_FROM_FRONT_WALL_PICKUP = 0,
+            WRIST_BASKET_SETUP_DROP_SAMPLE = 0.15,
+            ARM_BASKET_SETUP_DROP_SAMPLE = 0.15,
+            CLAW_UNCLAMPED_DROP_SAMPLE = 0.3,
+            RETRACT_TO_NEUTRAL_DROP_SAMPLE = 0.4;
 
     // DONE
     public static Action extendIntake(Extendo.Extension extension) {
@@ -377,6 +379,37 @@ public class RobotActions {
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_THREE_HANG)
                 )
+        );
+    }
+
+    public static Action setupDropSample() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_DROP_SAMPLE,
+                new SequentialAction(
+                        new ParallelAction(
+                                setWrist(Arm.WristAngle.BASKET, WRIST_BASKET_SETUP_DROP_SAMPLE),
+                                setArm(Arm.ArmAngle.BASKET, ARM_BASKET_SETUP_DROP_SAMPLE)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_DROP_SAMPLE)
+                )
+        );
+    }
+
+    public static Action dropSample() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.NEUTRAL,
+                new SequentialAction(
+                        setClaw(Claw.ClawAngles.DEPOSIT, CLAW_UNCLAMPED_DROP_SAMPLE),
+                        retractToNeutral(RETRACT_TO_NEUTRAL_DROP_SAMPLE),
+                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                )
+        );
+    }
+
+    public static Action retractExtendo() {
+        return new ParallelAction(
+                new InstantAction(() -> robot.extendo.setTargetExtension(Extendo.Extension.RETRACTED, true)),
+                new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
         );
     }
 /*
