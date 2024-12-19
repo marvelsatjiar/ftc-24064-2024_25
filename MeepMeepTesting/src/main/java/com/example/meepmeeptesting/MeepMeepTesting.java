@@ -27,7 +27,7 @@ public class MeepMeepTesting {
             sample3X = 63,
             startSampleY = -14,
             slowDownStartY = -25,
-            bumpSpecimen = -60,
+            bumpSpecimen = -63,
             intakeSpecimenY = -58,
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 4,
@@ -38,7 +38,8 @@ public class MeepMeepTesting {
             startBumpToClampTime = 0,
             givingSampleAngle = 270,
             regularGivingConstraint = 40,
-            setupFrontWallPickupWait = 0.2;
+            setupFrontWallPickupWait = 0.2,
+            bumpSpecimenVelocityConstraint = 12.5;
 
     private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
         if (robotPose.position.y.value() > -17) {
@@ -54,7 +55,7 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity drive = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(60, 60, Math.toRadians(180), Math.toRadians(180), 11.75)
+                .setConstraints(50, 60, Math.toRadians(180), Math.toRadians(180), 11.75)
                 .setDimensions(14,  16.5)
                 .build();
 
@@ -78,14 +79,14 @@ public class MeepMeepTesting {
 
     public static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offset) {
         return builder
-                .strafeToConstantHeading(new Vector2d(5 + offset, scoreSpecimenY))
-//                .setTangent(Math.toRadians(90))
+//                .strafeToConstantHeading(new Vector2d(5 + offset, scoreSpecimenY))
+                .setTangent(Math.toRadians(90))
 //
-//                .splineTo(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
-//                .setTangent(Math.toRadians(270))
-                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY))
-//                .splineTo(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270))
-                .lineToY(bumpSpecimen);
+                .splineToConstantHeading(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
+                .setTangent(Math.toRadians(270))
+//                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY))
+                .splineToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270))
+                .lineToY(bumpSpecimen, (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
 
     }
 
@@ -93,7 +94,7 @@ public class MeepMeepTesting {
 
         builder = builder
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, intakeSpecimenY, Math.toRadians(270)), Math.toRadians(270))
-                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSpecimen, Math.toRadians(270)), Math.toRadians(270));
+                .splineToConstantHeading(new Vector2d(firstWallPickupX, bumpSpecimen), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
 
         builder = scoreSpecimen(builder, 0);
         builder = scoreSpecimen(builder, -2);

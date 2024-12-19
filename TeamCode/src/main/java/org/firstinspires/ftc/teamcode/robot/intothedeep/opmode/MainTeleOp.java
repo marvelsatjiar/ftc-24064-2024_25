@@ -177,7 +177,6 @@ public final class MainTeleOp extends LinearOpMode {
         if (keyPressed(2, DPAD_LEFT)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH));
         if (keyPressed(2, DPAD_DOWN)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_HALF));
         if (keyPressed(2, DPAD_RIGHT)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS));
-
         if (gamepadEx2.getRightY() != 0) robot.extendo.setTargetAngleWithStick(-gamepadEx2.getRightY());
     }
 

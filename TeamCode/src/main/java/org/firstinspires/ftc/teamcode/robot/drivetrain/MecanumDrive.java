@@ -75,17 +75,17 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
-        public double inPerTick = 1; // 60.0/20423; //0.0029606967506353; // 60 in / 20545 ticks
-        public double lateralInPerTick = inPerTick;//0.0016964481753894158;
+        public double inPerTick = 60.0/20423; //0.0029606967506353; // 60 in / 20545 ticks
+        public double lateralInPerTick = 0.0016964481753894158;
         public double trackWidthTicks = 11.75 / inPerTick;//4973.2616142295365;
 
         // feedforward parameters (in tick units)
-        public double kS = 0.5;
-        public double kV = 0.153;
-        public double kA = 0.03;
+        public double kS = 1.5355146888001412; //0.5;
+        public double kV = 0.00030; //0.153;
+        public double kA = 0.00012; //0.03;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 40;
+        public double maxWheelVel = 55;
         public double minProfileAccel = -30;
         public double maxProfileAccel = 60;
 
@@ -94,11 +94,11 @@ public final class MecanumDrive {
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 8.0;
-        public double lateralGain = 8.0;
-        public double headingGain = 4.0; // shared with turn
+        public double axialGain = 3.0;
+        public double lateralGain = 3.0;
+        public double headingGain = 3.0; // shared with turn
 
-        public double axialVelGain = 0.5;
+        public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
         public double headingVelGain = 0.0; // shared with turn
     }
@@ -254,7 +254,7 @@ public final class MecanumDrive {
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
-        localizer = new SparkFunOTOSLocalizer(hardwareMap);
+        localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
         estimator = new NoEstimator();
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
