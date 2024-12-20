@@ -23,11 +23,13 @@ public final class Intake {
             pin1;
 
     public static int
-            V4B_DOWN_ANGLE = 150,
-            V4B_CLEARING_ANGLE = 119,
-            V4B_UP_ANGLE = 95,
+            V4B_DOWN_ANGLE = 101,
+            V4B_FRONT_WALL_PICKUP_ANGLE = 33,
+            V4B_CLEARING_ANGLE = 90,
+            V4B_UP_ANGLE = 70,
             V4B_UNSAFE_THRESHOLD_ANGLE = 101,
-            V4B_HOVERING_ANGLE = 145;
+            V4B_TRANSFER_ANGLE = 30,
+            V4B_HOVERING_ANGLE = 90;
 
     private V4BAngle targetAngle = V4BAngle.UP;
 
@@ -42,16 +44,20 @@ public final class Intake {
 
     public enum V4BAngle {
         DOWN,
+        FRONT_WALL_PICKUP,
         CLEARING,
         UP,
         UNSAFE,
+        TRANSFER,
         HOVERING;
 
         private int getAngle() {
             switch (this) {
                 case DOWN: return  V4B_DOWN_ANGLE;
+                case FRONT_WALL_PICKUP: return V4B_FRONT_WALL_PICKUP_ANGLE;
                 case CLEARING: return V4B_CLEARING_ANGLE;
                 case UNSAFE: return V4B_UNSAFE_THRESHOLD_ANGLE;
+                case TRANSFER: return V4B_TRANSFER_ANGLE;
                 case HOVERING: return V4B_HOVERING_ANGLE;
                 default: return V4B_UP_ANGLE;
             }
@@ -74,7 +80,7 @@ public final class Intake {
         ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
         ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
 
-        intakeMaster.setInverted(true);
+        intakeFollower.setInverted(true);
         intakeGearMaster.setInverted(true);
 
         pin0 = hardwareMap.digitalChannel.get("digital0");

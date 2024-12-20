@@ -24,6 +24,7 @@ public final class Robot {
     public final Lift lift;
     public final Arm arm;
     public final ActionScheduler actionScheduler;
+    public final Sweeper sweeper;
 //    public final AutoAligner autoAligner;
 
     public final double
@@ -75,6 +76,7 @@ public final class Robot {
         claw = new Claw(hardwareMap);
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
+        sweeper = new Sweeper(hardwareMap);
 //        autoAligner = new AutoAligner(hardwareMap);
         actionScheduler = new ActionScheduler();
     }
@@ -89,6 +91,7 @@ public final class Robot {
 
         actionScheduler.run();
         extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
+        sweeper.run();
         intake.run();
         lift.run();
         claw.run();

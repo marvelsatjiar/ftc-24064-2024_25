@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
@@ -33,6 +34,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 
 @TeleOp(group = "24064 Main")
 public final class MainTeleOp extends LinearOpMode {
@@ -78,7 +80,14 @@ public final class MainTeleOp extends LinearOpMode {
             }
 
             double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
+
             double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.15 : 1;
+
+            if (robot.getCurrentState() == Robot.State.EXTENDO_OUT) {
+                slowMult = 0.3;
+                slowTurningMult = 0.15;
+            }
+
 
 //            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
 //                robot.drivetrain.setFieldCentricPowers(
@@ -113,6 +122,7 @@ public final class MainTeleOp extends LinearOpMode {
                     doExtendoControls();
                     doIntakeControls();
 
+                    if (keyPressed(1, A)) robot.sweeper.toggleSweeper();
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupFrontWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());

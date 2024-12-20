@@ -21,25 +21,30 @@ public class MeepMeepTesting {
             slowDownConstraint = 20,
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -31,
+            scoreSpecimenY = -30,
+            secondSpecimenOffsetY = 2,
+            fifthSpecimenOffsetY = 4.75,
             sample1X = 47,
             sample2X = 55,
-            sample3X = 63,
+            sample3X = 62,
             startSampleY = -14,
             slowDownStartY = -25,
-            bumpSpecimen = -63,
-            intakeSpecimenY = -58,
+            bumpSpecimen = -60,
+            bumpSecondSpecimen = -62,
+            intakeSpecimenY = -56,
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 4,
             giveSample3X = sample3X,
             giveSampleY = -50,
             wallPickupX = 35,
-            firstWallPickupX = 58,
-            startBumpToClampTime = 0,
+            firstWallPickupX = 55,
+            sweeperSleep = 1,
+            startBumpToClampTime = 0.35,
             givingSampleAngle = 270,
             regularGivingConstraint = 40,
             setupFrontWallPickupWait = 0.2,
-            bumpSpecimenVelocityConstraint = 12.5;
+            bumpSpecimenVelocityConstraint = 15,
+            scoreSpecimenVelocityConstraint = 70;
 
     private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
         if (robotPose.position.y.value() > -17) {
@@ -67,6 +72,7 @@ public class MeepMeepTesting {
         builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
+        builder = park(builder);
 
         drive.runAction(builder.build());
 
@@ -77,30 +83,51 @@ public class MeepMeepTesting {
                 .start();
     }
 
-    public static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offset) {
-        return builder
-//                .strafeToConstantHeading(new Vector2d(5 + offset, scoreSpecimenY))
+    private static TrajectoryActionBuilder park(TrajectoryActionBuilder builder) {
+        builder = builder
+//                .setTangent(Math.toRadians(270))
+                .strafeToSplineHeading(new Vector2d(12.0, -41.1), Math.toRadians(315));
+        return builder;
+    }
+
+    public static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark) {
+        builder = builder
                 .setTangent(Math.toRadians(90))
-//
-                .splineToConstantHeading(new Vector2d(5 + offset, scoreSpecimenY), Math.toRadians(90))
-                .setTangent(Math.toRadians(270))
-//                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY))
-                .splineToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270))
-                .lineToY(bumpSpecimen, (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
+                .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90));
+//                .strafeToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY))
+//                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
+
+        if (!doPark) {
+//            builder = builder.afterTime(setupFrontWallPickupWait, RobotActions.setupFrontWallPickup());
+            builder = builder
+                    .setTangent(Math.toRadians(270))
+                    .splineToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270));
+        }
+
+
+//                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY));
+
+        if (!doPark) {
+//            builder = builder.afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true));
+            builder = builder.lineToY(bumpSpecimen, (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
+        }
+
+
+        return builder;
 
     }
 
     private static TrajectoryActionBuilder scoreAllSpecimens(TrajectoryActionBuilder builder) {
-
         builder = builder
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, intakeSpecimenY, Math.toRadians(270)), Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(firstWallPickupX, bumpSpecimen), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
+//                .afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true))
+                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSecondSpecimen, Math.toRadians(270)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
 
-        builder = scoreSpecimen(builder, 0);
-        builder = scoreSpecimen(builder, -2);
-        builder = scoreSpecimen(builder, -4);
+        builder = scoreSpecimen(builder, 0, secondSpecimenOffsetY, false);
+        builder = scoreSpecimen(builder, -2.5, 2, false);
+        builder = scoreSpecimen(builder, -5, 3.75, !is5plus0);
         if (is5plus0)
-            builder = scoreSpecimen(builder, -6);
+            builder = scoreSpecimen(builder, -7.5,fifthSpecimenOffsetY, true);
 
         return builder;
     }

@@ -9,22 +9,23 @@ import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.auto.Actions;
 
 @Config
 public class RobotActions {
     public static double
-            LIFT_EXTEND_SETUP_SCORE_BASKET = 2,
+            LIFT_EXTEND_SETUP_SCORE_BASKET = 1,
             V4B_UP_EXTEND_INTAKE = 0,
             CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT = 0.2,
             ARM_CHAMBER_BACK_SETUP_SETUP_CHAMBER_FROM_BACK = 1,
             LIFT_HIGH_CHAMBER_SETUP_BACK_SETUP_CHAMBER_FROM_BACK = 1,
             ARM_BASKET_SETUP_SCORE_BASKET = 0.7,
-            ROLLERS_STOP_TRANSFER_TO_CLAW = 0,
-            WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.3,
-            ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.3,
-            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.5,
+            ROLLERS_STOP_TRANSFER_TO_CLAW = 0.5,
+            V4B_UP_TRANSFER_TO_CLAW = 0.5,
+            WRIST_NEUTRAL_TRANSFER_TO_CLAW = 0.25,
+            ARM_NEUTRAL_TRANSFER_TO_CLAW = 0.25,
+            ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.25,
+            V4B_TRANSFER_TRANSFER_TO_CLAW = 0.25,
             CLAW_CLAMPED_TRANSFER_TO_CLAW = 0.2,
             ARM_COLLECTING_TRANSFER_TO_CLAW = 0.3,
             WRIST_COLLECTING_TRANSFER_TO_CLAW = 0,
@@ -65,6 +66,7 @@ public class RobotActions {
             LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG = 3,
 
             RETRACT_TO_NEUTRAL_SETUP_FRONT_WALL_PICKUP = 1,
+            V4B_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = 0.1,
             WRIST_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = .1,
             ARM_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = .1,
             CLAW_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = .1,
@@ -79,7 +81,9 @@ public class RobotActions {
             WRIST_BASKET_SETUP_DROP_SAMPLE = 0.15,
             ARM_BASKET_SETUP_DROP_SAMPLE = 0.15,
             CLAW_UNCLAMPED_DROP_SAMPLE = 0.3,
-            RETRACT_TO_NEUTRAL_DROP_SAMPLE = 0.4;
+            RETRACT_TO_NEUTRAL_DROP_SAMPLE = 0.4,
+
+            SWEEPER_ACTIVE_SWEEP_SUBMERSIBLE = 0.2;
 
     // DONE
     public static Action extendIntake(Extendo.Extension extension) {
@@ -131,13 +135,16 @@ public class RobotActions {
                         setWrist(Arm.WristAngle.COLLECTING, WRIST_COLLECTING_TRANSFER_TO_CLAW),
                         setArm(Arm.ArmAngle.COLLECTING, ARM_COLLECTING_TRANSFER_TO_CLAW),
                         setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TRANSFER_TO_CLAW),
-                        setRollers(-0.75, ROLLERS_OUTTAKE_TRANSFER_TO_CLAW),
                         new ParallelAction(
+                                setV4B(Intake.V4BAngle.TRANSFER, V4B_TRANSFER_TRANSFER_TO_CLAW),
+                                setRollers(-0.75, ROLLERS_OUTTAKE_TRANSFER_TO_CLAW),
                                 setWrist(Arm.WristAngle.TRANSFERRED, WRIST_NEUTRAL_TRANSFER_TO_CLAW),
                                 setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_TRANSFER_TO_CLAW)
                         ),
-                        setRollers(0, ROLLERS_STOP_TRANSFER_TO_CLAW),
-
+                        new ParallelAction(
+                                setRollers(0, ROLLERS_STOP_TRANSFER_TO_CLAW),
+                                setV4B(Intake.V4BAngle.UP, V4B_UP_TRANSFER_TO_CLAW)
+                        ),
                         new InstantAction(() -> robot.currentState = Robot.State.TRANSFERRED)
                 )
         );
@@ -217,6 +224,7 @@ public class RobotActions {
                 new SequentialAction(
                         retractToNeutral(RETRACT_TO_NEUTRAL_SETUP_FRONT_WALL_PICKUP),
                         new ParallelAction(
+                                setV4B(Intake.V4BAngle.FRONT_WALL_PICKUP, V4B_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
                                 setWrist(Arm.WristAngle.FRONT_WALL_PICKUP, WRIST_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
                                 setArm(Arm.ArmAngle.FRONT_WALL_PICKUP, ARM_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
                                 setWallPickupClaw(CLAW_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP)
@@ -412,6 +420,7 @@ public class RobotActions {
                 new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
         );
     }
+
 /*
 
 ----------------------------------------------------------------------------------------------------
@@ -483,6 +492,16 @@ public class RobotActions {
                 () -> robot.claw.getClawAngle() != clawAngle,
                 new ParallelAction(
                         new InstantAction(() -> robot.claw.setAngle(clawAngle, true)),
+                        new SleepAction(sleepSeconds)
+                )
+        );
+    }
+
+    public static Action setSweeper(Sweeper.SweeperAngles sweeperAngle, double sleepSeconds) {
+        return new Actions.SingleCheckAction(
+                () -> robot.sweeper.getSweeperAngle() != sweeperAngle,
+                new ParallelAction(
+                        new InstantAction(() -> robot.sweeper.setAngle(sweeperAngle, true)),
                         new SleepAction(sleepSeconds)
                 )
         );
