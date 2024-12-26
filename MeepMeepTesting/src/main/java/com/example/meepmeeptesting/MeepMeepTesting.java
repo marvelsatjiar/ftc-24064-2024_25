@@ -1,6 +1,8 @@
 package com.example.meepmeeptesting;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
@@ -44,7 +46,27 @@ public class MeepMeepTesting {
             regularGivingConstraint = 40,
             setupFrontWallPickupWait = 0.2,
             bumpSpecimenVelocityConstraint = 15,
-            scoreSpecimenVelocityConstraint = 70;
+            scoreSpecimenVelocityConstraint = 70,
+
+//            Sample variables start here
+            bumpSample = -36,
+            startingSamplePositionX = 7.375,
+            startingSamplePositionY = -62,
+            scoreSampleY = -29,
+            scoreSpecimenX = -4,
+            waitToScoreSample1 = 4,
+            waitToScoreSample2 = 4,
+            waitToScoreSample3 = 4,
+            robotAngle = 97,
+            thirdSampleangle = 148,
+            xSample1 = -45.6,
+            ySample1 = -34,
+            xSample2 = -57.5,
+            ySample2 = -36,
+            xSample3 = -46.75,
+            ySample3 = -40,
+            xBasket = -54.25,
+            yBasket = -54.25;
 
     private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
         if (robotPose.position.y.value() > -17) {
@@ -65,14 +87,19 @@ public class MeepMeepTesting {
                 .build();
 
         Pose2d startPose;
-        startPose = new Pose2d(7.375,-62,Math.toRadians(270));
+        startPose = new Pose2d(7.375,-62, Math.toRadians(270));
+
+        Pose2d startSamplePose;
+        startSamplePose = new Pose2d(-31.85,-63.375, Math.toRadians(0));
 
 
-        TrajectoryActionBuilder builder = drive.getDrive().actionBuilder(startPose);
-        builder = scoreFirstSpecimen(builder);
-        builder = giveSamples(builder);
-        builder = scoreAllSpecimens(builder);
-        builder = park(builder);
+        TrajectoryActionBuilder builder = drive.getDrive().actionBuilder(startSamplePose);
+//        builder = scoreFirstSpecimen(builder);
+//        builder = giveSamples(builder);
+//        builder = scoreAllSpecimens(builder);
+//        builder = park(builder);
+        builder = scoreSpecimen(builder);
+
 
         drive.runAction(builder.build());
 
@@ -81,6 +108,28 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
                 .addEntity(drive)
                 .start();
+    }
+
+    private static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder) {
+        builder = builder
+                .setTangent(Math.toRadians(180))
+                .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(-135))
+                .setTangent(Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(-55.0, -37.6, Math.toRadians(60)), Math.toRadians(45))
+                .lineToY(bumpSample)
+                .setTangent(Math.toRadians(-135))
+                .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(-45))
+                .setTangent(Math.toRadians(110))
+                .splineToLinearHeading(new Pose2d(xSample2, ySample2, Math.toRadians(robotAngle)),Math.toRadians(110))
+                .setTangent(Math.toRadians(-110))
+                .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)),Math.toRadians(290))
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(xSample3, ySample3, Math.toRadians(thirdSampleangle)), Math.toRadians(thirdSampleangle))
+                .setTangent(Math.toRadians(135))
+                .splineToConstantHeading(new Vector2d(xSample3 - 2, ySample3 + 2), Math.toRadians(135))
+                .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(255))         ;
+        // Basket
+        return builder;
     }
 
     private static TrajectoryActionBuilder park(TrajectoryActionBuilder builder) {

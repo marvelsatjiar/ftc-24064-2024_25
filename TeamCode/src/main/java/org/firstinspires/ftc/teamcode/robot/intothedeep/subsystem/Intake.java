@@ -12,35 +12,26 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
+import org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx;
 
 @Config
 public final class Intake {
     private final CRServo[] intakeGroup;
     private final ServoEx[] intakeLinkGroup;
 
-    public final DigitalChannel
-            pin0,
-            pin1;
-
     public static int
-            V4B_DOWN_ANGLE = 101,
-            V4B_FRONT_WALL_PICKUP_ANGLE = 33,
-            V4B_CLEARING_ANGLE = 90,
-            V4B_UP_ANGLE = 70,
+            V4B_DOWN_ANGLE = 95,
+            V4B_FRONT_WALL_PICKUP_ANGLE = 15,
+            V4B_CLEARING_ANGLE = 85,
+            V4B_UP_ANGLE = 69,
             V4B_UNSAFE_THRESHOLD_ANGLE = 101,
             V4B_TRANSFER_ANGLE = 30,
-            V4B_HOVERING_ANGLE = 90;
+            V4B_HOVERING_ANGLE = 45;
 
     private V4BAngle targetAngle = V4BAngle.UP;
 
-    public enum SampleColor {
-        YELLOW,
-        BLUE,
-        RED,
-        NOTHING;
-    }
+    private final ColorRangefinderEx rangefinder;
 
-    public SampleColor currentSample = SampleColor.NOTHING;
 
     public enum V4BAngle {
         DOWN,
@@ -83,8 +74,7 @@ public final class Intake {
         intakeFollower.setInverted(true);
         intakeGearMaster.setInverted(true);
 
-        pin0 = hardwareMap.digitalChannel.get("digital0");
-        pin1 = hardwareMap.digitalChannel.get("digital1");
+        rangefinder = new ColorRangefinderEx(hardwareMap);
 
         intakeGroup = new CRServo[] {intakeFollower, intakeMaster};
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
@@ -120,31 +110,30 @@ public final class Intake {
         return rollerPower;
     }
 
-    public SampleColor convertToEnum() {
-        if (pin0.getState()) {
-            if (pin1.getState()) return SampleColor.YELLOW;
-            if (!pin1.getState()) return SampleColor.BLUE;
-        }
 
-        if (pin1.getState()) {
-            if (!pin0.getState()) return SampleColor.RED;
-        }
-        return SampleColor.NOTHING;
-    }
 
     public boolean setRollerPower(double power) {
         return setRollerPower(power, false);
     }
 
     public void run() {
-        currentSample = convertToEnum();
+        rangefinder.run();
 
         for (ServoEx servos : intakeLinkGroup)
             servos.turnToAngle(targetAngle.getAngle());
     }
 
+    public ColorRangefinderEx.SampleColor getCurrentSample() {
+        return rangefinder.getReading();
+    }
+    public ColorRangefinderEx.SampleColor getRawColor(){
+        return rangefinder.getRawReading();
+    }
+
+
     public void printTelemetry() {
-        mTelemetry.addData("Sample Color", currentSample.name());
+        mTelemetry.addData("Sample Color", getCurrentSample());
         mTelemetry.addData("V4B State", targetAngle.name());
+        mTelemetry.addData("Raw Color", getRawColor());
     }
 }

@@ -27,13 +27,13 @@ public class RobotActions {
             ROLLERS_OUTTAKE_TRANSFER_TO_CLAW = 0.25,
             V4B_TRANSFER_TRANSFER_TO_CLAW = 0.25,
             CLAW_CLAMPED_TRANSFER_TO_CLAW = 0.2,
-            ARM_COLLECTING_TRANSFER_TO_CLAW = 0.3,
+            ARM_COLLECTING_TRANSFER_TO_CLAW = 0.1,
             WRIST_COLLECTING_TRANSFER_TO_CLAW = 0,
             CLAW_UNCLAMPED_RETRACT_FOR_TRANSFER = 0,
             LIFT_RETRACTED_RETRACT_FOR_TRANSFER = 1,
             ARM_NEUTRAL_RETRACT_FOR_TRANSFER = 0.4,
             EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER = 0.7,
-            V4B_UP_RETRACT_FOR_TRANSFER = 0.33,
+            V4B_UP_RETRACT_FOR_TRANSFER = 0.2,
             EXTENDO_EXTENDED_EXTEND_INTAKE = 0.1,
             WRIST_CHAMBER_BACK_SETUP_CHAMBER_FROM_BACK = 1,
             LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT = 0.5,
@@ -66,7 +66,7 @@ public class RobotActions {
             LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG = 3,
 
             RETRACT_TO_NEUTRAL_SETUP_FRONT_WALL_PICKUP = 1,
-            V4B_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = 0.1,
+            V4B_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = 0.3,
             WRIST_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = .1,
             ARM_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = .1,
             CLAW_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP = .1,
@@ -126,6 +126,16 @@ public class RobotActions {
         );
     }
 
+    public static Action retractTransferAndSetupBasket() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_SCORE_BASKET,
+                new SequentialAction(
+                        transferToClaw(),
+                        setupScoreBasket(true)
+                )
+        );
+    }
+
     // DONE
     public static Action transferToClaw() {
         return new Actions.SingleCheckAction(
@@ -165,7 +175,7 @@ public class RobotActions {
     // DONE
     public static Action scoreBasket() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.NEUTRAL,
+                () -> robot.currentState != Robot.State.SCORED_SAMPLE_HIGH_BASKET,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.DEPOSIT, CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT),
                         new InstantAction(() -> robot.currentState = Robot.State.SCORED_SAMPLE_HIGH_BASKET)
@@ -224,11 +234,11 @@ public class RobotActions {
                 new SequentialAction(
                         retractToNeutral(RETRACT_TO_NEUTRAL_SETUP_FRONT_WALL_PICKUP),
                         new ParallelAction(
-                                setV4B(Intake.V4BAngle.FRONT_WALL_PICKUP, V4B_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
                                 setWrist(Arm.WristAngle.FRONT_WALL_PICKUP, WRIST_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
-                                setArm(Arm.ArmAngle.FRONT_WALL_PICKUP, ARM_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
+                                setV4B(Intake.V4BAngle.FRONT_WALL_PICKUP, V4B_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
                                 setWallPickupClaw(CLAW_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP)
                         ),
+                        setArm(Arm.ArmAngle.FRONT_WALL_PICKUP, ARM_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
                         new InstantAction(() -> robot.currentState = Robot.State.FRONT_WALL_PICKUP)
                 )
         );
@@ -344,9 +354,8 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.SETUP_LEVEL_TWO_HANG,
                 new SequentialAction(
                         new ParallelAction(
-                                setLift(Lift.Ticks.CLIMB, LIFT_CLIMB_LEVEL_TWO_HANG),
-                                setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_LEVEL_TWO_HANG),
-                                setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_LEVEL_TWO_HANG)
+                                setLift(Lift.Ticks.LEVEL_TWO_CLIMB_SETUP, LIFT_CLIMB_LEVEL_TWO_HANG),
+                                setArm(Arm.ArmAngle.NEUTRAL, ARM_NEUTRAL_LEVEL_TWO_HANG)
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_LEVEL_TWO_HANG)
                 )
@@ -358,7 +367,8 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.CLIMB_LEVEL_TWO_HANG,
                 new SequentialAction(
-                        setLift(Lift.Ticks.RETRACTED, LIFT_RETRACTED_CLIMB_LEVEL_TWO_HANG),
+                        setLift(Lift.Ticks.LEVEL_TWO_CLIMB, LIFT_RETRACTED_CLIMB_LEVEL_TWO_HANG),
+                        setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_LEVEL_TWO_HANG),
                         new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_TWO_HANG)
                 )
         );
@@ -369,8 +379,7 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_LEVEL_THREE_HANG,
                 new SequentialAction(
-                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
-                        setSwingCorrector(false, SWING_CORRECTOR_INACTIVE_SETUP_LEVEL_THREE_HANG),
+                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB_SETUP, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_LEVEL_THREE_HANG)
                 )
         );
@@ -383,7 +392,7 @@ public class RobotActions {
                 new SequentialAction(
                         new ParallelAction (
                                 setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_CLIMB_LEVEL_THREE_HANG),
-                                setLift(Lift.Ticks.RETRACTED, LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG)
+                                setLift(Lift.Ticks.LEVEL_THREE_CLIMB, LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG)
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_THREE_HANG)
                 )
@@ -416,7 +425,8 @@ public class RobotActions {
 
     public static Action retractExtendo() {
         return new ParallelAction(
-                new InstantAction(() -> robot.extendo.setTargetExtension(Extendo.Extension.RETRACTED, true)),
+                setV4B(Intake.V4BAngle.UP, V4B_UP_RETRACT_FOR_TRANSFER),
+                setExtendo(Extendo.Extension.RETRACTED, EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER),
                 new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
         );
     }

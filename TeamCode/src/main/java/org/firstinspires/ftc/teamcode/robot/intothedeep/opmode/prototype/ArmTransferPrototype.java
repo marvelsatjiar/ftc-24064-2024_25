@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
@@ -121,15 +120,15 @@ public final class ArmTransferPrototype extends LinearOpMode {
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SETUP_FRONT;
                     break;
                 case WALL_PICKUP:
-                    if (isDPADUpPressed) targetTicks = Lift.Ticks.CLIMB;
+                    if (isDPADUpPressed) targetTicks = Lift.Ticks.LEVEL_TWO_CLIMB_SETUP;
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.HIGH_CHAMBER_SCORE_FRONT;
                     break;
-                case CLIMB:
+                case LEVEL_TWO_CLIMB_SETUP:
                     if (isDPADUpPressed) targetTicks = Lift.Ticks.EXTENDED;
                     if (isDPADDownPressed) targetTicks = Lift.Ticks.WALL_PICKUP;
                     break;
                 case EXTENDED:
-                    if (isDPADDownPressed) targetTicks = Lift.Ticks.CLIMB;
+                    if (isDPADDownPressed) targetTicks = Lift.Ticks.LEVEL_TWO_CLIMB_SETUP;
                     break;
             }
 

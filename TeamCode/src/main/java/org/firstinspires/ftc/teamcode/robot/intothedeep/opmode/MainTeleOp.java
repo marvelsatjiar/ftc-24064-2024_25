@@ -12,8 +12,11 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.BLUE;
+import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.RED;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.hypot;
@@ -81,11 +84,11 @@ public final class MainTeleOp extends LinearOpMode {
 
             double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
 
-            double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.15 : 1;
+            double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
 
-            if (robot.getCurrentState() == Robot.State.EXTENDO_OUT) {
+            if (robot.extendo.getTargetExtension() != Extendo.Extension.RETRACTED) {
                 slowMult = 0.3;
-                slowTurningMult = 0.15;
+                slowTurningMult = 0.3;
             }
 
 
@@ -122,9 +125,9 @@ public final class MainTeleOp extends LinearOpMode {
                     doExtendoControls();
                     doIntakeControls();
 
-                    if (keyPressed(1, A)) robot.sweeper.toggleSweeper();
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupFrontWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
                 case EXTENDO_OUT:
@@ -133,6 +136,7 @@ public final class MainTeleOp extends LinearOpMode {
 
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractExtendo());
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
                     break;
                 case TRANSFERRED:
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
@@ -191,7 +195,9 @@ public final class MainTeleOp extends LinearOpMode {
     }
 
     public void doIntakeControls() {
-//        if (robot.intake.getRollerPower() != -1 && ((robot.intake.currentSample == Intake.SampleColor.BLUE && Common.IS_RED) || (robot.intake.currentSample == Intake.SampleColor.RED && !Common.IS_RED))) robot.actionScheduler.addAction(RobotActions.setRollers(-1, 1));
+        if (robot.intake.getRollerPower() != -1 && ((robot.intake.getCurrentSample() == BLUE && IS_RED) || (robot.intake.getCurrentSample() == RED && !IS_RED))) robot.actionScheduler.addAction(RobotActions.setRollers(-1, 0.4));
+        if (keyPressed(1, A)) robot.sweeper.toggleSweeper();
+
         if (!gamepadEx1.isDown(RIGHT_BUMPER) && !gamepadEx2.isDown(RIGHT_BUMPER)) {
             double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             if (trigger != 0) {

@@ -113,4 +113,7 @@ public final class Robot {
     public Robot.State getCurrentState() {
         return currentState;
     }
+    public void setCurrentState(Robot.State state) {
+        this.currentState = state;
+    }
 }

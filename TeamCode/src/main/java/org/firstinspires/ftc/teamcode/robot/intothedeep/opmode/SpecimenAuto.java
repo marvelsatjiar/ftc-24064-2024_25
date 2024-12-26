@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
@@ -20,6 +22,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -81,10 +84,14 @@ public class SpecimenAuto extends AbstractAuto {
 //         Get gamepad 1 button input and save "right" and "red" booleans for autonomous configuration:
         while (opModeInInit() && !(gamepadEx1.isDown(RIGHT_BUMPER) && gamepadEx1.isDown(LEFT_BUMPER))) {
             gamepadEx1.readButtons();
-            if (gamepadEx1.wasJustPressed(B)) is5plus0 = !is5plus0;
-            if (gamepadEx1.wasJustPressed(X)) usePartnerSpec = !usePartnerSpec;
-            mTelemetry.addLine("| B - Toggle 5+0 | X - Toggle using partner specimen |");
+            if (gamepadEx1.wasJustPressed(A)) is5plus0 = !is5plus0;
+            if (gamepadEx1.wasJustPressed(Y)) usePartnerSpec = !usePartnerSpec;
+            if (gamepadEx1.wasJustPressed(B)) Common.IS_RED = true;
+            if (gamepadEx1.wasJustPressed(X)) Common.IS_RED = false;
+            mTelemetry.addLine("| B - Red alliance | X - Blue alliance |");
+            mTelemetry.addLine("| A - Toggle 5+0 | Y - Toggle using partner specimen |");
             mTelemetry.addLine();
+            mTelemetry.addLine("Selected alliance : " + (Common.IS_RED ? "Red" : "Blue"));
             mTelemetry.addLine("5+0 : " + (is5plus0 ? "enabled" : "disabled"));
             mTelemetry.addLine("Using partner specimen : " + (usePartnerSpec ? "enabled" : "disabled"));
             mTelemetry.addLine("Press both shoulder buttons to confirm!");

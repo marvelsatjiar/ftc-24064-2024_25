@@ -54,8 +54,10 @@ public final class Lift {
             WALL_PICKUP_TICKS = 1150,
             FRONT_WALL_SPECIMEN_SCORE_TICKS = 400,
             INTERMEDIARY_WALL_PICKUP_TICKS = 1300,
-            CLIMB_TICKS = 1400,
-            LEVEL_THREE_CLIMB_TICKS = 2960,
+            LEVEL_TWO_CLIMB_SETUP_TICKS = 2970,
+            LEVEL_TWO_CLIMB_TICKS = 2070,
+            LEVEL_THREE_CLIMB_SETUP_TICKS = 2970,
+            LEVEL_THREE_CLIMB_TICKS = 2770,
             UNSAFE_THRESHOLD_TICKS = 1000,
             RETRACTED_THRESHOLD_TICKS = 100;
 
@@ -84,7 +86,9 @@ public final class Lift {
         HIGH_CHAMBER_SETUP_FRONT,
         WALL_PICKUP,
         FRONT_WALL_SPECIMEN_SETUP,
-        CLIMB,
+        LEVEL_TWO_CLIMB_SETUP,
+        LEVEL_TWO_CLIMB,
+        LEVEL_THREE_CLIMB_SETUP,
         LEVEL_THREE_CLIMB,
         INTERMEDIARY_WALL_PICKUP,
         EXTENDED;
@@ -100,7 +104,9 @@ public final class Lift {
                 case WALL_PICKUP:               return WALL_PICKUP_TICKS;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SCORE_TICKS;
                 case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
-                case CLIMB:                     return CLIMB_TICKS;
+                case LEVEL_TWO_CLIMB_SETUP:     return LEVEL_TWO_CLIMB_SETUP_TICKS;
+                case LEVEL_TWO_CLIMB:           return LEVEL_TWO_CLIMB_TICKS;
+                case LEVEL_THREE_CLIMB_SETUP:   return LEVEL_THREE_CLIMB_SETUP_TICKS;
                 case LEVEL_THREE_CLIMB:         return LEVEL_THREE_CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
