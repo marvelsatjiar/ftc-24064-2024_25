@@ -8,8 +8,10 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.MainTeleOp;
 
 @Config
 public class RobotActions {
@@ -339,14 +341,13 @@ public class RobotActions {
         );
     }
 
-    // TODO
-//    public static Action alignRobotWithSensor(AutoAligner.TargetDistance target) {
-//        return new SequentialAction(
-//                new InstantAction(() -> robot.autoAligner.setTargetDistance(target)),
-//                new Actions.RunnableAction(() -> !robot.autoAligner.isPositionInTolerance()),
-//                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
-//        );
-//    }
+    public static Action alignRobotWithSensor(AutoAligner.TargetDistance target, GamepadKeys.Button button) {
+        return new SequentialAction(
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(target)),
+                new Actions.RunnableAction(() -> MainTeleOp.gamepadEx1.isDown(button)),
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
+        );
+    }
 
     // TODO
     public static Action setupLevelTwoHang() {

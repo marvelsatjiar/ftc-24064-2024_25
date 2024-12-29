@@ -32,6 +32,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -92,11 +93,11 @@ public final class MainTeleOp extends LinearOpMode {
             }
 
 
-//            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
-//                robot.drivetrain.setFieldCentricPowers(
-//                                robot.autoAligner.run(gamepadEx1.getLeftX())
-//                );
-//            } else {
+            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
+                robot.drivetrain.setDrivePowers(
+                                robot.autoAligner.run(gamepadEx1.getLeftX())
+                );
+            } else {
                 robot.drivetrain.setFieldCentricPowers(
                         new PoseVelocity2d(
                                 new Vector2d(
@@ -106,17 +107,16 @@ public final class MainTeleOp extends LinearOpMode {
                                 -gamepadEx1.getRightX() * slowTurningMult
                         )
                 );
-//            }
+            }
 
             if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.3) {
                 robot.lift.runManual(gamepadEx2.getLeftY());
                 robot.lift.reset();
             }
-
             
-//            if (keyPressed(1, A)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE));
-//            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP));
-//            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB));
+            if (keyPressed(1, Y)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE, Y));
+            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP, B));
+            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB, X));
 
 
             switch (robot.getCurrentState()) {

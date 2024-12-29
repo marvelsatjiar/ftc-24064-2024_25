@@ -25,7 +25,7 @@ public final class Robot {
     public final Arm arm;
     public final ActionScheduler actionScheduler;
     public final Sweeper sweeper;
-//    public final AutoAligner autoAligner;
+    public final AutoAligner autoAligner;
 
     public final double
         SWING_CORRECTOR_INACTIVE = 0,
@@ -77,7 +77,7 @@ public final class Robot {
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
         sweeper = new Sweeper(hardwareMap);
-//        autoAligner = new AutoAligner(hardwareMap);
+        autoAligner = new AutoAligner(hardwareMap);
         actionScheduler = new ActionScheduler();
     }
 
@@ -106,7 +106,7 @@ public final class Robot {
 //        lift.printTelemetry();
 //        arm.printTelemetry();
         intake.printTelemetry();
-//        autoAligner.printTelemetry();
+        autoAligner.printTelemetry();
         mTelemetry.update();
     }
 

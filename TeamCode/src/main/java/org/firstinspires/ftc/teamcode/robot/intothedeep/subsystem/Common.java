@@ -24,9 +24,6 @@ public final class Common {
 
     public static final double MAX_VOLTAGE = 13;
 
-    public static double leftSensorPID;
-    public static double rightSensorPID;
-
     public static Robot robot;
     public static MultipleTelemetry mTelemetry;
 
