@@ -20,8 +20,8 @@ public final class Intake {
     private final ServoEx[] intakeLinkGroup;
 
     public static int
-            V4B_DOWN_ANGLE = 95,
-            V4B_FRONT_WALL_PICKUP_ANGLE = 15,
+            V4B_DOWN_ANGLE = 107,
+            V4B_FRONT_WALL_PICKUP_ANGLE = 35,
             V4B_CLEARING_ANGLE = 85,
             V4B_UP_ANGLE = 69,
             V4B_UNSAFE_THRESHOLD_ANGLE = 101,
@@ -124,16 +124,16 @@ public final class Intake {
     }
 
     public ColorRangefinderEx.SampleColor getCurrentSample() {
-        return rangefinder.getReading();
-    }
-    public ColorRangefinderEx.SampleColor getRawColor(){
         return rangefinder.getRawReading();
     }
+//    public ColorRangefinderEx.SampleColor getRawColor(){
+//        return rangefinder.getRawReading();
+//    }
 
 
     public void printTelemetry() {
         mTelemetry.addData("Sample Color", getCurrentSample());
         mTelemetry.addData("V4B State", targetAngle.name());
-        mTelemetry.addData("Raw Color", getRawColor());
+//        mTelemetry.addData("Raw Color", getRawColor());
     }
 }

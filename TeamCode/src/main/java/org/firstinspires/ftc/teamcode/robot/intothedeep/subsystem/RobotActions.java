@@ -110,7 +110,7 @@ public class RobotActions {
     // DONE
     public static Action retractForTransfer() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.TO_BE_TRANSFERRED,
+                () -> robot.currentState != Robot.State.TRANSFERRED,
                 new SequentialAction(
                         new ParallelAction(
                                 new SequentialAction(
@@ -341,11 +341,11 @@ public class RobotActions {
         );
     }
 
-    public static Action alignRobotWithSensor(AutoAligner.TargetDistance target, GamepadKeys.Button button) {
+    public static Action alignRobotWithSensor(AutoAligner.TargetDistance targetDistance, AutoAligner.TargetHeading targetHeading, GamepadKeys.Button button) {
         return new SequentialAction(
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(target)),
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(targetDistance, targetHeading)),
                 new Actions.RunnableAction(() -> MainTeleOp.gamepadEx1.isDown(button)),
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE, AutoAligner.TargetHeading.INACTIVE))
         );
     }
 

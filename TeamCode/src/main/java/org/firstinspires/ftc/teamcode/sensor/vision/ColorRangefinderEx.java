@@ -55,15 +55,15 @@ public class ColorRangefinderEx {
         return rawReading;
     }
     public SampleColor run() {
-        readings.add(convertToEnum());
-        rawReading = readings.get(readings.size() - 1);
+//        readings.add(convertToEnum());
+        rawReading = convertToEnum();//readings.get(readings.size() - 1);
 
-        if (readings.size() > QUEUE_LENGTH) {
-            readings.remove(0);
-        }
-
-        reading = interpretReadings();
-        return reading;
+//        if (readings.size() > QUEUE_LENGTH) {
+//            readings.remove(0);
+//        }
+//
+//        reading = interpretReadings();
+        return rawReading;
     }
 
     private SampleColor interpretReadings() {

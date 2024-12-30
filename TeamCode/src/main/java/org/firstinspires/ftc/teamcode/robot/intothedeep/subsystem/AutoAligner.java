@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -28,28 +29,34 @@ public class AutoAligner {
     private final PIDController headingPIDController = new PIDController();
 
     public static PIDGains xyPIDGains = new PIDGains(
-            0.0525,
-            0,
-            0.000002,
+            0.0275,
+            0.0002,
+            0.0006,
             Double.POSITIVE_INFINITY
     );
 
     public static PIDGains headingPIDGains = new PIDGains(
-            0.4,
-            0,
-            0.0000000125,
+            0.00825,
+            0.0002,
+            0.0005,
             Double.POSITIVE_INFINITY
     );
 
     public static double
         SUBMERSIBLE_TARGET = 4,
         WALL_PICKUP_TARGET = 1,
-        CLIMB_TARGET = 2;
+        CLIMB_TARGET = 2,
+        SUBMERSIBLE_DIRECTION = -90,
+        WALL_PICKUP_DIRECTION = -90,
+        CLIMB_DIRECTION = 180;
 
-    private static State
+    private static final State
             SUBMERSIBLE_STATE = new State(SUBMERSIBLE_TARGET),
             WALL_PICKUP_STATE = new State(WALL_PICKUP_TARGET),
-            CLIMB_STATE = new State(CLIMB_TARGET);
+            CLIMB_STATE = new State(CLIMB_TARGET),
+            SUBMERSIBLE_HEADING_STATE = new State(SUBMERSIBLE_DIRECTION),
+            WALL_PICKUP_HEADING_STATE = new State(WALL_PICKUP_DIRECTION),
+            CLIMB_HEADING_STATE = new State(CLIMB_DIRECTION);
 
     public enum TargetDistance {
         SUBMERSIBLE,
@@ -67,9 +74,28 @@ public class AutoAligner {
         }
     }
 
+    public enum TargetHeading {
+        SUBMERSIBLE,
+        WALL_PICKUP,
+        CLIMB,
+        INACTIVE;
+
+        private State toState() {
+            switch (this) {
+                case SUBMERSIBLE: return SUBMERSIBLE_HEADING_STATE;
+                case WALL_PICKUP: return WALL_PICKUP_HEADING_STATE;
+                case CLIMB: return CLIMB_HEADING_STATE;
+                case INACTIVE: default: return null;
+            }
+        }
+    }
+
+
     public static final double SENSOR_DISTANCE = 2.5625;
 
     private TargetDistance targetDistance = TargetDistance.INACTIVE;
+    private TargetHeading targetHeading = TargetHeading.INACTIVE;
+
 
     private State currentXYState = new State(0);
     private State currentHeadingState = new State(0);
@@ -77,7 +103,6 @@ public class AutoAligner {
     public AutoAligner(HardwareMap hardwareMap) {
         xyPIDController.setGains(xyPIDGains);
         headingPIDController.setGains(headingPIDGains);
-        headingPIDController.setTarget(new State(0));
 
         leftDistanceSensor = new DistanceSensorEx(hardwareMap.get(DistanceSensor.class, "left distance"));
         rightDistanceSensor = new DistanceSensorEx(hardwareMap.get(DistanceSensor.class, "right distance"));
@@ -86,10 +111,18 @@ public class AutoAligner {
     public TargetDistance getTargetDistance() {
         return targetDistance;
     }
+    public TargetHeading getTargetHeading() {
+        return targetHeading;
+    }
 
-    public void setTargetDistance(TargetDistance distance) {
+    public boolean setTargetDistance(TargetDistance distance, TargetHeading heading) {
         targetDistance = distance;
+        targetHeading = heading;
+
+        headingPIDController.setTarget(heading.toState());
         xyPIDController.setTarget(distance.toState());
+
+        return true;
     }
 
     private double getXYDistance() {
@@ -111,8 +144,8 @@ public class AutoAligner {
         double leftCalculatedDistance = leftDistanceSensor.calculateDistance();
         double rightCalculatedDistance = rightDistanceSensor.calculateDistance();
 
-        double theta = Math.atan2(rightCalculatedDistance - leftCalculatedDistance, SENSOR_DISTANCE);
-        currentXYState = new State(Math.min(rightCalculatedDistance, leftCalculatedDistance) * Math.cos(theta));
+        double theta = Math.toDegrees(robot.drivetrain.pose.heading.toDouble());
+        currentXYState = new State((rightCalculatedDistance + leftCalculatedDistance) / 2);
         currentHeadingState = new State(theta);
 
         return new PoseVelocity2d(
@@ -125,11 +158,17 @@ public class AutoAligner {
     }
 
     public void printTelemetry() {
+        mTelemetry.addData("left distance", leftDistanceSensor.calculateDistance());
+        mTelemetry.addData("right distance", rightDistanceSensor.calculateDistance());
         mTelemetry.addData("current xy", currentXYState.x);
-        mTelemetry.addData("current heading", Math.toDegrees(currentHeadingState.x));
-        mTelemetry.addData("target xy", (getTargetDistance().toState() == null ? "no target" : getTargetDistance().toState().x));
-        mTelemetry.addData("target heading", 0);
-        mTelemetry.addData("target", targetDistance.name());
+        mTelemetry.addData("current heading", currentHeadingState.x);
+        mTelemetry.addData("target xy", (targetDistance.toState() == null ? "no target" : targetDistance.toState().x));
+        mTelemetry.addData("target heading", (targetHeading.toState() == null ? "no target" : targetHeading.toState().x));
+        mTelemetry.addData("heading output", (targetHeading.toState() == null ? "no output" : getHeadingDistance()));
+        mTelemetry.addData("xy output", (targetDistance.toState() == null ? "no output" : getHeadingDistance()));
+        mTelemetry.addData("xy error", (targetDistance.toState() == null ? "no output" : xyPIDController.getError()));
+        mTelemetry.addData("heading error", (targetDistance.toState() == null ? "no output" : headingPIDController.getError()));
+
     }
 
 }

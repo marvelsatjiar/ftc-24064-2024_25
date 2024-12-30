@@ -73,6 +73,8 @@ public class PIDController implements FeedbackController {
         return errorIntegral;
     }
 
+    public double getError() {return error.x;}
+
     public void stopIntegration(boolean stopIntegration) {
         integrator.stopIntegration(stopIntegration);
     }

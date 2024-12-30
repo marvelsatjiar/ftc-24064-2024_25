@@ -17,9 +17,11 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.BLUE;
 import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.RED;
+import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.YELLOW;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.hypot;
+import static java.lang.Math.round;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -32,6 +34,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
@@ -93,7 +96,7 @@ public final class MainTeleOp extends LinearOpMode {
             }
 
 
-            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
+            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE && robot.autoAligner.getTargetHeading() != AutoAligner.TargetHeading.INACTIVE) {
                 robot.drivetrain.setDrivePowers(
                                 robot.autoAligner.run(gamepadEx1.getLeftX())
                 );
@@ -114,9 +117,9 @@ public final class MainTeleOp extends LinearOpMode {
                 robot.lift.reset();
             }
             
-            if (keyPressed(1, Y)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE, Y));
-            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP, B));
-            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB, X));
+            if (keyPressed(1, Y)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE, AutoAligner.TargetHeading.SUBMERSIBLE, Y));
+            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP, AutoAligner.TargetHeading.WALL_PICKUP, B));
+            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB, AutoAligner.TargetHeading.CLIMB, X));
 
 
             switch (robot.getCurrentState()) {
@@ -137,6 +140,9 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractExtendo());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
+                    break;
+                case TO_BE_TRANSFERRED:
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     break;
                 case TRANSFERRED:
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
@@ -187,6 +193,16 @@ public final class MainTeleOp extends LinearOpMode {
     }
 
     public void doExtendoControls() {
+        if (robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE && robot.intake.getCurrentSample() == YELLOW && robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN) {
+            robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+            robot.actionScheduler.addAction(RobotActions.transferToClaw());
+        }
+
+        if (robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE && (robot.intake.getCurrentSample() == RED && IS_RED) || (robot.intake.getCurrentSample() == BLUE && !IS_RED) && robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN) {
+            robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+            robot.actionScheduler.addAction(RobotActions.retractForTransfer());
+        }
+
         if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.EXTENDED));
         if (keyPressed(2, DPAD_LEFT)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH));
         if (keyPressed(2, DPAD_DOWN)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_HALF));
