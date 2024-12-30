@@ -48,7 +48,6 @@ public final class MainTeleOp extends LinearOpMode {
     // Gamepads and the 'robot' class is imported to save lines and to import controls
     public static GamepadEx gamepadEx1, gamepadEx2;
 
-
     // Quick method that is used for better handling the controller
     public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
         return (gamepad == 2 ? gamepadEx2 : gamepadEx1).wasJustPressed(button);
@@ -65,7 +64,7 @@ public final class MainTeleOp extends LinearOpMode {
 
         Pose2d endPose = Common.AUTO_END_POSE;
         if (endPose != null) {
-            robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - (Common.IS_RED ? Common.BACKWARD : Common.FORWARD));
+            robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - Common.FORWARD);
         }
 
         waitForStart();
@@ -96,7 +95,7 @@ public final class MainTeleOp extends LinearOpMode {
             }
 
 
-            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE && robot.autoAligner.getTargetHeading() != AutoAligner.TargetHeading.INACTIVE) {
+            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
                 robot.drivetrain.setDrivePowers(
                                 robot.autoAligner.run(gamepadEx1.getLeftX())
                 );
@@ -117,14 +116,14 @@ public final class MainTeleOp extends LinearOpMode {
                 robot.lift.reset();
             }
             
-            if (keyPressed(1, Y)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE, AutoAligner.TargetHeading.SUBMERSIBLE, Y));
-            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.WALL_PICKUP, AutoAligner.TargetHeading.WALL_PICKUP, B));
-            if (keyPressed(1, X)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB, AutoAligner.TargetHeading.CLIMB, X));
+            if (keyPressed(1, Y)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE, Y));
+            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB, B));
 
 
             switch (robot.getCurrentState()) {
                 // MISC ============================================================================
                 case NEUTRAL:
+                case TO_BE_TRANSFERRED:
                     doExtendoControls();
                     doIntakeControls();
 
@@ -140,9 +139,6 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractExtendo());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
-                    break;
-                case TO_BE_TRANSFERRED:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     break;
                 case TRANSFERRED:
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
@@ -193,14 +189,23 @@ public final class MainTeleOp extends LinearOpMode {
     }
 
     public void doExtendoControls() {
-        if (robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE && robot.intake.getCurrentSample() == YELLOW && robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN) {
-            robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
-            robot.actionScheduler.addAction(RobotActions.transferToClaw());
+        boolean isExtendoRetracted = robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE;
+        boolean isV4BDown = robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN;
+        boolean isAllianceSpecificSample = robot.intake.getCurrentSample() == RED && IS_RED || robot.intake.getCurrentSample() == BLUE && !IS_RED;
+        boolean isSampleYellow = robot.intake.getCurrentSample() == YELLOW;
+
+        if (isExtendoRetracted && isV4BDown) {
+            if (isSampleYellow) {
+                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+                robot.actionScheduler.addAction(RobotActions.transferToClaw());
+            }
         }
 
-        if (robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE && (robot.intake.getCurrentSample() == RED && IS_RED) || (robot.intake.getCurrentSample() == BLUE && !IS_RED) && robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN) {
-            robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
-            robot.actionScheduler.addAction(RobotActions.retractForTransfer());
+        if (isExtendoRetracted && isV4BDown) {
+            if (isAllianceSpecificSample) {
+                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+                robot.actionScheduler.addAction(RobotActions.retractForTransfer());
+            }
         }
 
         if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.EXTENDED));
@@ -211,7 +216,17 @@ public final class MainTeleOp extends LinearOpMode {
     }
 
     public void doIntakeControls() {
-        if (robot.intake.getRollerPower() != -1 && ((robot.intake.getCurrentSample() == BLUE && IS_RED) || (robot.intake.getCurrentSample() == RED && !IS_RED))) robot.actionScheduler.addAction(RobotActions.setRollers(-1, 0.4));
+        boolean isIntakeAlreadyPowered = robot.intake.getRollerPower() != -1;
+        boolean isV4BDown = robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN;
+        boolean isOppositeAllianceSample = robot.intake.getCurrentSample() == BLUE && IS_RED || robot.intake.getCurrentSample() == RED && !IS_RED;
+
+        if (isIntakeAlreadyPowered && isV4BDown) {
+            if (isOppositeAllianceSample) {
+                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+                robot.actionScheduler.addAction(RobotActions.setRollers(-1, 0.4));
+            }
+        }
+
         if (keyPressed(1, A)) robot.sweeper.toggleSweeper();
 
         if (!gamepadEx1.isDown(RIGHT_BUMPER) && !gamepadEx2.isDown(RIGHT_BUMPER)) {

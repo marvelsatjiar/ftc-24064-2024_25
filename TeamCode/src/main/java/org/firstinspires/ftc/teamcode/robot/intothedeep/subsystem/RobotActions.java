@@ -341,11 +341,11 @@ public class RobotActions {
         );
     }
 
-    public static Action alignRobotWithSensor(AutoAligner.TargetDistance targetDistance, AutoAligner.TargetHeading targetHeading, GamepadKeys.Button button) {
+    public static Action alignRobotWithSensor(AutoAligner.TargetDistance targetDistance, GamepadKeys.Button button) {
         return new SequentialAction(
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(targetDistance, targetHeading)),
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(targetDistance)),
                 new Actions.RunnableAction(() -> MainTeleOp.gamepadEx1.isDown(button)),
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE, AutoAligner.TargetHeading.INACTIVE))
+                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
         );
     }
 

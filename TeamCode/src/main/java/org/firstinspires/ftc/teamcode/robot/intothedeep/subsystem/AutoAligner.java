@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
@@ -21,10 +22,6 @@ public class AutoAligner {
             leftDistanceSensor,
             rightDistanceSensor;
 
-    public static double
-            headingTolerance = 10,
-            xyTolerance = 0.5;
-
     private final PIDController xyPIDController = new PIDController();
     private final PIDController headingPIDController = new PIDController();
 
@@ -44,47 +41,33 @@ public class AutoAligner {
 
     public static double
         SUBMERSIBLE_TARGET = 4,
-        WALL_PICKUP_TARGET = 1,
         CLIMB_TARGET = 2,
-        SUBMERSIBLE_DIRECTION = -90,
-        WALL_PICKUP_DIRECTION = -90,
-        CLIMB_DIRECTION = 180;
+        SUBMERSIBLE_DIRECTION = 180,
+        CLIMB_DIRECTION = 270;
 
     private static final State
             SUBMERSIBLE_STATE = new State(SUBMERSIBLE_TARGET),
-            WALL_PICKUP_STATE = new State(WALL_PICKUP_TARGET),
             CLIMB_STATE = new State(CLIMB_TARGET),
             SUBMERSIBLE_HEADING_STATE = new State(SUBMERSIBLE_DIRECTION),
-            WALL_PICKUP_HEADING_STATE = new State(WALL_PICKUP_DIRECTION),
             CLIMB_HEADING_STATE = new State(CLIMB_DIRECTION);
 
     public enum TargetDistance {
         SUBMERSIBLE,
-        WALL_PICKUP,
         CLIMB,
         INACTIVE;
 
-        private State toState() {
+        private State toDistance() {
             switch (this) {
-                case SUBMERSIBLE: return SUBMERSIBLE_STATE;
-                case WALL_PICKUP: return WALL_PICKUP_STATE;
-                case CLIMB: return CLIMB_STATE;
+                case SUBMERSIBLE:       return SUBMERSIBLE_STATE;
+                case CLIMB:             return CLIMB_STATE;
                 case INACTIVE: default: return null;
             }
         }
-    }
 
-    public enum TargetHeading {
-        SUBMERSIBLE,
-        WALL_PICKUP,
-        CLIMB,
-        INACTIVE;
-
-        private State toState() {
+        private State toHeading() {
             switch (this) {
-                case SUBMERSIBLE: return SUBMERSIBLE_HEADING_STATE;
-                case WALL_PICKUP: return WALL_PICKUP_HEADING_STATE;
-                case CLIMB: return CLIMB_HEADING_STATE;
+                case SUBMERSIBLE:       return SUBMERSIBLE_HEADING_STATE;
+                case CLIMB:             return CLIMB_HEADING_STATE;
                 case INACTIVE: default: return null;
             }
         }
@@ -94,8 +77,6 @@ public class AutoAligner {
     public static final double SENSOR_DISTANCE = 2.5625;
 
     private TargetDistance targetDistance = TargetDistance.INACTIVE;
-    private TargetHeading targetHeading = TargetHeading.INACTIVE;
-
 
     private State currentXYState = new State(0);
     private State currentHeadingState = new State(0);
@@ -111,18 +92,12 @@ public class AutoAligner {
     public TargetDistance getTargetDistance() {
         return targetDistance;
     }
-    public TargetHeading getTargetHeading() {
-        return targetHeading;
-    }
 
-    public boolean setTargetDistance(TargetDistance distance, TargetHeading heading) {
+    public void setTargetDistance(TargetDistance distance) {
         targetDistance = distance;
-        targetHeading = heading;
 
-        headingPIDController.setTarget(heading.toState());
-        xyPIDController.setTarget(distance.toState());
-
-        return true;
+        headingPIDController.setTarget(distance.toHeading());
+        xyPIDController.setTarget(distance.toDistance());
     }
 
     private double getXYDistance() {
@@ -133,10 +108,6 @@ public class AutoAligner {
         return headingPIDController.calculate(currentHeadingState);
     }
 
-    public boolean isPositionInTolerance() {
-        return (headingPIDController.isPositionInTolerance(currentHeadingState, Math.toRadians(headingTolerance)) && xyPIDController.isPositionInTolerance(currentXYState, xyTolerance));
-    }
-
     public PoseVelocity2d run(double y) {
         xyPIDController.setGains(xyPIDGains);
         headingPIDController.setGains(headingPIDGains);
@@ -144,31 +115,26 @@ public class AutoAligner {
         double leftCalculatedDistance = leftDistanceSensor.calculateDistance();
         double rightCalculatedDistance = rightDistanceSensor.calculateDistance();
 
-        double theta = Math.toDegrees(robot.drivetrain.pose.heading.toDouble());
+        double theta = Math.toDegrees(robot.drivetrain.headingOffset - robot.drivetrain.pose.heading.toDouble());
+        if (theta < 0) theta+=360;
         currentXYState = new State((rightCalculatedDistance + leftCalculatedDistance) / 2);
         currentHeadingState = new State(theta);
+
 
         return new PoseVelocity2d(
                 new Vector2d(
                         getXYDistance(),
                         y
                 ),
-                getHeadingDistance()
+                -getHeadingDistance()
         );
     }
 
     public void printTelemetry() {
-        mTelemetry.addData("left distance", leftDistanceSensor.calculateDistance());
-        mTelemetry.addData("right distance", rightDistanceSensor.calculateDistance());
         mTelemetry.addData("current xy", currentXYState.x);
         mTelemetry.addData("current heading", currentHeadingState.x);
-        mTelemetry.addData("target xy", (targetDistance.toState() == null ? "no target" : targetDistance.toState().x));
-        mTelemetry.addData("target heading", (targetHeading.toState() == null ? "no target" : targetHeading.toState().x));
-        mTelemetry.addData("heading output", (targetHeading.toState() == null ? "no output" : getHeadingDistance()));
-        mTelemetry.addData("xy output", (targetDistance.toState() == null ? "no output" : getHeadingDistance()));
-        mTelemetry.addData("xy error", (targetDistance.toState() == null ? "no output" : xyPIDController.getError()));
-        mTelemetry.addData("heading error", (targetDistance.toState() == null ? "no output" : headingPIDController.getError()));
-
+        mTelemetry.addData("target xy", (targetDistance.toDistance() == null ? "no target" : targetDistance.toDistance().x));
+        mTelemetry.addData("target heading", (targetDistance.toHeading() == null ? "no target" : targetDistance.toHeading().x));
     }
 
 }
