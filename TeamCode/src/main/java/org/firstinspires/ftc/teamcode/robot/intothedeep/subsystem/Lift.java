@@ -200,5 +200,6 @@ public final class Lift {
     public void printTelemetry() {
         mTelemetry.addData("Target position (ticks)", getTargetTicks().toTicks());
         mTelemetry.addData("Current state (name)", getTargetTicks().name());
+        mTelemetry.addData("Manual power (%)", manualPower * 100);
     }
 }

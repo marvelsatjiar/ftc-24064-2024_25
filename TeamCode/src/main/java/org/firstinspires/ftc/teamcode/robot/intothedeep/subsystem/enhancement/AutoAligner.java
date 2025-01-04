@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
+package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement;
 
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.normalizeRadians;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
@@ -73,8 +73,7 @@ public class AutoAligner {
         }
     }
 
-
-    public static final double SENSOR_DISTANCE = 2.5625;
+//    public static final double SENSOR_DISTANCE = 2.5625;
 
     private TargetDistance targetDistance = TargetDistance.INACTIVE;
 

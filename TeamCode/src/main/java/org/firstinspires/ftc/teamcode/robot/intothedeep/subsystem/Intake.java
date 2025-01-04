@@ -8,11 +8,9 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.firstinspires.ftc.teamcode.auto.Actions;
-import org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx;
+import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
 public final class Intake {
@@ -24,7 +22,7 @@ public final class Intake {
             V4B_FRONT_WALL_PICKUP_ANGLE = 35,
             V4B_CLEARING_ANGLE = 85,
             V4B_UP_ANGLE = 69,
-            V4B_UNSAFE_THRESHOLD_ANGLE = 101,
+            V4B_UNSAFE_THRESHOLD_ANGLE = 108,
             V4B_TRANSFER_ANGLE = 30,
             V4B_HOVERING_ANGLE = 45;
 

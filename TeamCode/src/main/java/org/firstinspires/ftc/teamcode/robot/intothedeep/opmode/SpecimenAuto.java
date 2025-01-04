@@ -32,7 +32,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 @Config
 public class SpecimenAuto extends AbstractAuto {
     private boolean
-            is5plus0 = false,
+            is5plus0 = true,
             usePartnerSpec = false;
     public static double
             slowDownConstraint = 20,

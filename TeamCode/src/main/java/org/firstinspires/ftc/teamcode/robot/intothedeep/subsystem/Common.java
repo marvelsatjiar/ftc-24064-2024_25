@@ -22,6 +22,8 @@ public final class Common {
             SERVO_AXON_MIN = 0,
             SERVO_AXON_MAX = 255;
 
+    public static final int LIMELIGHT_SPECIMEN_NN_PIPELINE = 4;
+
     public static final double MAX_VOLTAGE = 13;
 
     public static Robot robot;

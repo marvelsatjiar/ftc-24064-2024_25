@@ -7,7 +7,6 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
@@ -15,9 +14,8 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
-import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.BLUE;
-import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.RED;
-import static org.firstinspires.ftc.teamcode.sensor.vision.ColorRangefinderEx.SampleColor.YELLOW;
+import static org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx.SampleColor.BLUE;
+import static org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx.SampleColor.RED;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.hypot;
@@ -25,23 +23,22 @@ import static java.lang.Math.round;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.R;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.AutoAligner;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 
 @TeleOp(group = "24064 Main")
 public final class MainTeleOp extends LinearOpMode {
@@ -95,10 +92,22 @@ public final class MainTeleOp extends LinearOpMode {
             }
 
 
-            if (robot.autoAligner.getTargetDistance() != AutoAligner.TargetDistance.INACTIVE) {
-                robot.drivetrain.setDrivePowers(
-                                robot.autoAligner.run(gamepadEx1.getLeftX())
-                );
+            if (gamepadEx1.isDown(X)) {
+                PoseVelocity2d autoWallPickupPowers = robot.autoWallPickUp.run(gamepadEx1.getLeftY());
+
+                if (autoWallPickupPowers != null) {
+                    robot.drivetrain.setDrivePowers(autoWallPickupPowers);
+                } else {
+                    robot.drivetrain.setFieldCentricPowers(
+                            new PoseVelocity2d(
+                                    new Vector2d(
+                                            gamepadEx1.getLeftY() * slowMult,
+                                            -gamepadEx1.getLeftX() * slowMult
+                                    ),
+                                    -gamepadEx1.getRightX() * slowTurningMult
+                            )
+                    );
+                }
             } else {
                 robot.drivetrain.setFieldCentricPowers(
                         new PoseVelocity2d(
@@ -111,19 +120,14 @@ public final class MainTeleOp extends LinearOpMode {
                 );
             }
 
-            if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.3) {
+            if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.5) {
                 robot.lift.runManual(gamepadEx2.getLeftY());
                 robot.lift.reset();
-            }
-            
-            if (keyPressed(1, Y)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.SUBMERSIBLE, Y));
-            if (keyPressed(1, B)) robot.actionScheduler.addAction(RobotActions.alignRobotWithSensor(AutoAligner.TargetDistance.CLIMB, B));
-
+            } else robot.lift.runManual((0));
 
             switch (robot.getCurrentState()) {
                 // MISC ============================================================================
                 case NEUTRAL:
-                case TO_BE_TRANSFERRED:
                     doExtendoControls();
                     doIntakeControls();
 
@@ -150,7 +154,10 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasket());
                     break;
                 case SCORED_SAMPLE_HIGH_BASKET:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(new SequentialAction(
+                            RobotActions.setArm(Arm.ArmAngle.NEUTRAL, 0.5),
+                            RobotActions.retractToNeutral(0.2)));
+                    break;
                 // CHAMBER =========================================================================
                 case SETUP_CHAMBER_FROM_FRONT:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromFrontAndRetract());
@@ -180,33 +187,34 @@ public final class MainTeleOp extends LinearOpMode {
                 // DROP SAMPLE =====================================================================
                 case SETUP_DROP_SAMPLE:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.dropSample());
+                    break;
             }
 
             robot.drivetrain.updatePoseEstimate();
             robot.run();
-            robot.printTelemetry();
+//            robot.printTelemetry();
         }
     }
 
     public void doExtendoControls() {
-        boolean isExtendoRetracted = robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE;
-        boolean isV4BDown = robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN;
-        boolean isAllianceSpecificSample = robot.intake.getCurrentSample() == RED && IS_RED || robot.intake.getCurrentSample() == BLUE && !IS_RED;
-        boolean isSampleYellow = robot.intake.getCurrentSample() == YELLOW;
-
-        if (isExtendoRetracted && isV4BDown) {
-            if (isSampleYellow) {
-                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
-                robot.actionScheduler.addAction(RobotActions.transferToClaw());
-            }
-        }
-
-        if (isExtendoRetracted && isV4BDown) {
-            if (isAllianceSpecificSample) {
-                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
-                robot.actionScheduler.addAction(RobotActions.retractForTransfer());
-            }
-        }
+//        boolean isExtendoRetracted = robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE;
+//        boolean isV4BDown = robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN;
+//        boolean isAllianceSpecificSample = robot.intake.getCurrentSample() == RED && IS_RED || robot.intake.getCurrentSample() == BLUE && !IS_RED;
+//        boolean isSampleYellow = robot.intake.getCurrentSample() == YELLOW;
+//
+//        if (isExtendoRetracted && isV4BDown) {
+//            if (isSampleYellow) {
+//                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+//                robot.actionScheduler.addAction(RobotActions.transferToClaw());
+//            }
+//        }
+//
+//        if (isExtendoRetracted && isV4BDown) {
+//            if (isAllianceSpecificSample) {
+//                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+//                robot.actionScheduler.addAction(RobotActions.retractForTransfer());
+//            }
+//        }
 
         if (keyPressed(2, DPAD_UP)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.EXTENDED));
         if (keyPressed(2, DPAD_LEFT)) robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH));
@@ -216,16 +224,16 @@ public final class MainTeleOp extends LinearOpMode {
     }
 
     public void doIntakeControls() {
-        boolean isIntakeAlreadyPowered = robot.intake.getRollerPower() != -1;
-        boolean isV4BDown = robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN;
-        boolean isOppositeAllianceSample = robot.intake.getCurrentSample() == BLUE && IS_RED || robot.intake.getCurrentSample() == RED && !IS_RED;
+//        boolean isIntakeAlreadyPowered = robot.intake.getRollerPower() != -1;
+//        boolean isV4BDown = robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN;
+//        boolean isOppositeAllianceSample = robot.intake.getCurrentSample() == BLUE && IS_RED || robot.intake.getCurrentSample() == RED && !IS_RED;
 
-        if (isIntakeAlreadyPowered && isV4BDown) {
-            if (isOppositeAllianceSample) {
-                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
-                robot.actionScheduler.addAction(RobotActions.setRollers(-1, 0.4));
-            }
-        }
+//        if (isIntakeAlreadyPowered && isV4BDown) {
+//            if (isOppositeAllianceSample) {
+//                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
+//                robot.actionScheduler.addAction(RobotActions.setRollers(-1, 0.4));
+//            }
+//        }
 
         if (keyPressed(1, A)) robot.sweeper.toggleSweeper();
 

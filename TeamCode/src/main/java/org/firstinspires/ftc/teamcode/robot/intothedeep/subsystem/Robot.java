@@ -2,17 +2,19 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
-import static org.firstinspires.ftc.teamcode.util.SimpleServoPivot.getGoBildaServo;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAligner;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoWallPickUp;
+import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 import org.firstinspires.ftc.teamcode.util.ActionScheduler;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
 import org.firstinspires.ftc.teamcode.util.LoopUtil;
-import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 @Config
 public final class Robot {
@@ -26,12 +28,8 @@ public final class Robot {
     public final ActionScheduler actionScheduler;
     public final Sweeper sweeper;
     public final AutoAligner autoAligner;
-
-    public final double
-        SWING_CORRECTOR_INACTIVE = 0,
-        SWING_CORRECTOR_ACTIVE = 90;
-
-    public final SimpleServoPivot swingCorrector;
+    public final LimelightEx limelightEx;
+    public final AutoWallPickUp autoWallPickUp;
 
     public enum State {
         NEUTRAL,
@@ -67,7 +65,7 @@ public final class Robot {
      * @param pose2d: The current pose for the robot, which is currently zero at start of teleOp
      */
     public Robot(HardwareMap hardwareMap, Pose2d pose2d) {
-        swingCorrector = new SimpleServoPivot(SWING_CORRECTOR_INACTIVE, SWING_CORRECTOR_ACTIVE, getGoBildaServo(hardwareMap, "swing corrector"));
+        Limelight3A limelight3A = hardwareMap.get(Limelight3A.class, "limelight");
 
         drivetrain = new MecanumDrive(hardwareMap, pose2d);
         extendo = new Extendo(hardwareMap);
@@ -78,7 +76,11 @@ public final class Robot {
         arm = new Arm(hardwareMap);
         sweeper = new Sweeper(hardwareMap);
         autoAligner = new AutoAligner(hardwareMap);
+        limelightEx = new LimelightEx(limelight3A);
+        autoWallPickUp = new AutoWallPickUp(limelightEx);
         actionScheduler = new ActionScheduler();
+
+        limelight3A.start();
     }
 
     // Reads all the necessary sensors (including battery volt.) in one bulk read
@@ -103,10 +105,11 @@ public final class Robot {
         mTelemetry.addData("Robot State", robot.currentState.name());
         mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
 //        extendo.printTelemetry();
-//        lift.printTelemetry();
+        lift.printTelemetry();
 //        arm.printTelemetry();
-        intake.printTelemetry();
-        autoAligner.printTelemetry();
+//        intake.printTelemetry();
+//        autoAligner.printTelemetry();
+//        autoWallPickUp.printTelemetry();
         mTelemetry.update();
     }
 

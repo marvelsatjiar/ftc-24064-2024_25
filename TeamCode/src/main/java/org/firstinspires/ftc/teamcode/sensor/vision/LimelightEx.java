@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -11,19 +12,24 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import java.net.InetAddress;
 import java.util.List;
 
-public final class LimelightEx extends Limelight3A {
+public final class LimelightEx {
     LLResult result;
+    private final Limelight3A limelight;
 
-    public LimelightEx(SerialNumber serialNumber, String name, InetAddress ipAddress) {
-        super(serialNumber, name, ipAddress);
+    public LimelightEx(Limelight3A limelight) {
+        this.limelight = limelight;
     }
 
     public void update() {
-        result = this.getLatestResult();
+        result = limelight.getLatestResult();
     }
 
     public List<LLResultTypes.ColorResult> getColorResult() {
         return result.getColorResults();
+    }
+
+    public List<LLResultTypes.DetectorResult> getDetectorResult() {
+        return result.getDetectorResults();
     }
 
     public Pose2d getPoseEstimate() {
@@ -35,5 +41,9 @@ public final class LimelightEx extends Limelight3A {
             }
         }
         return pose;
+    }
+
+    public Limelight3A getLimelight() {
+        return limelight;
     }
 }

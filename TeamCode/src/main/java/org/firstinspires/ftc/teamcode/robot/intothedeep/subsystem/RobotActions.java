@@ -12,6 +12,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.MainTeleOp;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAligner;
 
 @Config
 public class RobotActions {
@@ -235,6 +236,7 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.FRONT_WALL_PICKUP,
                 new SequentialAction(
                         retractToNeutral(RETRACT_TO_NEUTRAL_SETUP_FRONT_WALL_PICKUP),
+                        setExtendo(Extendo.Extension.RETRACTED, EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER),
                         new ParallelAction(
                                 setWrist(Arm.WristAngle.FRONT_WALL_PICKUP, WRIST_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
                                 setV4B(Intake.V4BAngle.FRONT_WALL_PICKUP, V4B_FRONT_WALL_PICKUP_SETUP_FRONT_WALL_PICKUP),
@@ -369,7 +371,6 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.CLIMB_LEVEL_TWO_HANG,
                 new SequentialAction(
                         setLift(Lift.Ticks.LEVEL_TWO_CLIMB, LIFT_RETRACTED_CLIMB_LEVEL_TWO_HANG),
-                        setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_LEVEL_TWO_HANG),
                         new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_TWO_HANG)
                 )
         );
@@ -391,10 +392,7 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.CLIMB_LEVEL_THREE_HANG,
                 new SequentialAction(
-                        new ParallelAction (
-                                setSwingCorrector(true, SWING_CORRECTOR_ACTIVE_CLIMB_LEVEL_THREE_HANG),
-                                setLift(Lift.Ticks.LEVEL_THREE_CLIMB, LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG)
-                        ),
+                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB, LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG),
                         new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_THREE_HANG)
                 )
         );
@@ -527,13 +525,6 @@ public class RobotActions {
                 ));
     }
 
-    private static Action setSwingCorrector(boolean isSwingCorrect, double sleepSeconds) {
-        return new ParallelAction(
-                new InstantAction(() -> robot.swingCorrector.setActivated(isSwingCorrect)),
-                new SleepAction(sleepSeconds)
-        );
-    }
-
     public static Action setRollers(double power, double sleepSeconds) {
         return new ParallelAction(
                 new InstantAction(() -> robot.intake.setRollerPower(power, true)),
@@ -541,3 +532,5 @@ public class RobotActions {
         );
     }
 }
+
+
