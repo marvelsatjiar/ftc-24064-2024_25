@@ -114,6 +114,7 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.TRANSFERRED,
                 new SequentialAction(
                         new ParallelAction(
+                                setRollers(0.7, 0),
                                 new SequentialAction(
                                         setV4B(Intake.V4BAngle.UP, V4B_UP_RETRACT_FOR_TRANSFER),
                                         setExtendo(Extendo.Extension.RETRACTED, EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER)
@@ -343,13 +344,13 @@ public class RobotActions {
         );
     }
 
-    public static Action alignRobotWithSensor(AutoAligner.TargetDistance targetDistance, GamepadKeys.Button button) {
-        return new SequentialAction(
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(targetDistance)),
-                new Actions.RunnableAction(() -> MainTeleOp.gamepadEx1.isDown(button)),
-                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
-        );
-    }
+//    public static Action alignRobotWithSensor(AutoAligner.TargetDistance targetDistance, GamepadKeys.Button button) {
+//        return new SequentialAction(
+//                new InstantAction(() -> robot.autoAligner.setTargetDistance(targetDistance)),
+//                new Actions.RunnableAction(() -> MainTeleOp.gamepadEx1.isDown(button)),
+//                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
+//        );
+//    }
 
     // TODO
     public static Action setupLevelTwoHang() {
@@ -423,7 +424,8 @@ public class RobotActions {
     }
 
     public static Action retractExtendo() {
-        return new ParallelAction(
+        return new SequentialAction(
+                setRollers(0.7 , 0),
                 setV4B(Intake.V4BAngle.UP, V4B_UP_RETRACT_FOR_TRANSFER),
                 setExtendo(Extendo.Extension.RETRACTED, EXTENDO_RETRACTED_RETRACT_FOR_TRANSFER),
                 new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)

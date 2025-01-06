@@ -27,7 +27,7 @@ public final class Robot {
     public final Arm arm;
     public final ActionScheduler actionScheduler;
     public final Sweeper sweeper;
-    public final AutoAligner autoAligner;
+//    public final AutoAligner autoAligner;
     public final LimelightEx limelightEx;
     public final AutoWallPickUp autoWallPickUp;
 
@@ -75,7 +75,7 @@ public final class Robot {
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
         sweeper = new Sweeper(hardwareMap);
-        autoAligner = new AutoAligner(hardwareMap);
+//        autoAligner = new AutoAligner(hardwareMap);
         limelightEx = new LimelightEx(limelight3A);
         autoWallPickUp = new AutoWallPickUp(limelightEx);
         actionScheduler = new ActionScheduler();
