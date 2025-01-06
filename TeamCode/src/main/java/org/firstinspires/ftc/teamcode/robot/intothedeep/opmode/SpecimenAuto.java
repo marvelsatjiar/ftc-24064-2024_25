@@ -166,7 +166,7 @@ public class SpecimenAuto extends AbstractAuto {
                 .afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true))
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSecondSpecimen, Math.toRadians(270)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
 
-        builder = scoreSpecimen(builder, 0, secondSpecimenOffsetY, false);
+        builder = scoreSpecimen(builder, 2, secondSpecimenOffsetY, false);
         builder = scoreSpecimen(builder, -2.5, 2, false);
         builder = scoreSpecimen(builder, -5, 3.75, !is5plus0);
         if (is5plus0)
