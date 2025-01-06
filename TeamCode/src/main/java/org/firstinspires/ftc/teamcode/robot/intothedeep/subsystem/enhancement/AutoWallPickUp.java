@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
@@ -29,10 +30,12 @@ public class AutoWallPickUp {
     );
 
     public static PIDGains detectionXDegreesGains = new PIDGains(
-            0.03175,
-            0.00005,
-            0
+            0.0288875,
+            0.00007125,
+            0.00001486525
     );
+
+    public static double kMovement = 0.0573;
 
     private State currentDetectionXDegrees = new State(0);
     private State currentHeading = new State(0);
@@ -51,34 +54,50 @@ public class AutoWallPickUp {
         detectionXDegreesPID.setTarget(new State(0));
     }
 
-    public PoseVelocity2d run(double x) {
+    public PoseVelocity2d run(double x, double y) {
         limelightEx.update();
 
         List<LLResultTypes.DetectorResult> results = limelightEx.getDetectorResult();
         LLResultTypes.DetectorResult result;
 
-        if (results != null && results.size() >= 1) {
-            result = results.get(0);
-        } else {
-            return null;
-        }
-
         headingPID.setGains(headingGains);
         detectionXDegreesPID.setGains(detectionXDegreesGains);
 
-        double theta = Common.robot.drivetrain.pose.heading.toDouble();
+        double theta = robot.drivetrain.headingOffset - robot.drivetrain.pose.heading.toDouble();
 
         if (theta < 0) theta += Math.PI * 2;
 
-        currentDetectionXDegrees = new State(result.getTargetXDegrees());
         currentHeading = new State(theta);
+        double headingPower = -headingPID.calculate(currentHeading);
+
+        if (headingPower < kMovement && headingPower > 0) headingPower = kMovement;
+        else if (headingPower < 0 && headingPower > -kMovement) headingPower = kMovement;
+
+        if (results != null && results.size() >= 1) {
+            result = results.get(0);
+        } else {
+            return new PoseVelocity2d(
+                    new Vector2d(
+                            x,
+                            y
+                    ),
+                    headingPower
+            );
+        }
+
+        currentDetectionXDegrees = new State(result.getTargetXDegrees());
+
+        double translationPower = detectionXDegreesPID.calculate(currentDetectionXDegrees);
+
+        if (translationPower < kMovement && translationPower > 0) translationPower = kMovement;
+        else if (translationPower < 0 && translationPower > -kMovement) translationPower = kMovement;
 
         return new PoseVelocity2d(
                 new Vector2d(
                         x,
-                        detectionXDegreesPID.calculate(currentDetectionXDegrees)
+                        translationPower
                 ),
-                headingPID.calculate(currentHeading)
+                headingPower
         );
     }
 
@@ -87,5 +106,6 @@ public class AutoWallPickUp {
         mTelemetry.addData("current detection x degrees", currentDetectionXDegrees.x);
         mTelemetry.addData("target heading", 180);
         mTelemetry.addData("target detection x degrees", 0);
+        mTelemetry.addData("all detections", limelightEx.getDetectorResult());
     }
 }

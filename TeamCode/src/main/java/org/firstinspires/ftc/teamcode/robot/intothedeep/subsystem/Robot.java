@@ -109,7 +109,7 @@ public final class Robot {
 //        arm.printTelemetry();
 //        intake.printTelemetry();
 //        autoAligner.printTelemetry();
-//        autoWallPickUp.printTelemetry();
+        autoWallPickUp.printTelemetry();
         mTelemetry.update();
     }
 

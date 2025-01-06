@@ -29,7 +29,8 @@ public final class LimelightEx {
     }
 
     public List<LLResultTypes.DetectorResult> getDetectorResult() {
-        return result.getDetectorResults();
+        if (result != null) return result.getDetectorResults();
+        return null;
     }
 
     public Pose2d getPoseEstimate() {

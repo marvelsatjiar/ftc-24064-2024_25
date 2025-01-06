@@ -91,24 +91,16 @@ public final class MainTeleOp extends LinearOpMode {
                 slowTurningMult = 0.3;
             }
 
-
+            PoseVelocity2d autoWallPickupPowers = null;
             if (gamepadEx1.isDown(X)) {
-                PoseVelocity2d autoWallPickupPowers = robot.autoWallPickUp.run(gamepadEx1.getLeftY());
+                autoWallPickupPowers = robot.autoWallPickUp.run(gamepadEx1.getLeftY() * slowMult, gamepadEx1.getLeftX() * slowMult);
 
                 if (autoWallPickupPowers != null) {
                     robot.drivetrain.setDrivePowers(autoWallPickupPowers);
-                } else {
-                    robot.drivetrain.setFieldCentricPowers(
-                            new PoseVelocity2d(
-                                    new Vector2d(
-                                            gamepadEx1.getLeftY() * slowMult,
-                                            -gamepadEx1.getLeftX() * slowMult
-                                    ),
-                                    -gamepadEx1.getRightX() * slowTurningMult
-                            )
-                    );
                 }
-            } else {
+            }
+
+            if (autoWallPickupPowers == null) {
                 robot.drivetrain.setFieldCentricPowers(
                         new PoseVelocity2d(
                                 new Vector2d(
@@ -119,6 +111,8 @@ public final class MainTeleOp extends LinearOpMode {
                         )
                 );
             }
+
+            if (keyPressed(1, B)) robot.drivetrain.setCurrentHeading(Math.PI);
 
             if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.5) {
                 robot.lift.runManual(gamepadEx2.getLeftY());
@@ -192,7 +186,7 @@ public final class MainTeleOp extends LinearOpMode {
 
             robot.drivetrain.updatePoseEstimate();
             robot.run();
-//            robot.printTelemetry();
+            robot.printTelemetry();
         }
     }
 
