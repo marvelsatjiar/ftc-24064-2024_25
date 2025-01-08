@@ -40,10 +40,10 @@ public class AutoAligner {
     );
 
     public static double
-        SUBMERSIBLE_TARGET = 4,
-        CLIMB_TARGET = 2,
-        SUBMERSIBLE_DIRECTION = 180,
-        CLIMB_DIRECTION = 270;
+            SUBMERSIBLE_TARGET = 4,
+            CLIMB_TARGET = 2,
+            SUBMERSIBLE_DIRECTION = 180,
+            CLIMB_DIRECTION = 270;
 
     private static final State
             SUBMERSIBLE_STATE = new State(SUBMERSIBLE_TARGET),
@@ -115,7 +115,7 @@ public class AutoAligner {
         double rightCalculatedDistance = rightDistanceSensor.calculateDistance();
 
         double theta = Math.toDegrees(robot.drivetrain.headingOffset - robot.drivetrain.pose.heading.toDouble());
-        if (theta < 0) theta+=360;
+        if (theta < 0) theta += 360;
         currentXYState = new State((rightCalculatedDistance + leftCalculatedDistance) / 2);
         currentHeadingState = new State(theta);
 
