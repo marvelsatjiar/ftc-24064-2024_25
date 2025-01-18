@@ -242,6 +242,7 @@ public final class MainTeleOp extends LinearOpMode {
             }
         } else {
             robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
+            robot.intake.setRollerPower(-1);
         }
     }
 

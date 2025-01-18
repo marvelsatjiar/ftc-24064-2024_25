@@ -36,13 +36,13 @@ public class SpecimenAuto extends AbstractAuto {
             usePartnerSpec = false;
     public static double
             slowDownConstraint = 20,
-            parkVelocityConstraint = 70,
+            parkVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -62,
             scoreSpecimenY = -30,
-            parkX = 20,
+            parkX = 21,
             parkY = -44.6,
-            parkExtendSleep = 0.5,
+            parkExtendSleep = 0.2,
             secondSpecimenOffsetY = 2,
             fifthSpecimenOffsetY = 4.75,
             sample1X = 47,
@@ -65,7 +65,8 @@ public class SpecimenAuto extends AbstractAuto {
             regularGivingConstraint = 40,
             setupFrontWallPickupWait = 0.2,
             bumpSpecimenVelocityConstraint = 15,
-            scoreSpecimenVelocityConstraint = 70;
+            scoreSpecimenVelocityConstraint = 160,
+            firstSpecimenWait = 1.5;
 
 
 
@@ -170,7 +171,7 @@ public class SpecimenAuto extends AbstractAuto {
         builder = scoreSpecimen(builder, -5, 2, false);
         builder = scoreSpecimen(builder, -2.5, 3.75, !is5plus0);
         if (is5plus0)
-            builder = scoreSpecimen(builder, 2, fifthSpecimenOffsetY, true);
+            builder = scoreSpecimen(builder, 4, fifthSpecimenOffsetY, true);
 
         return builder;
     }
@@ -200,8 +201,8 @@ public class SpecimenAuto extends AbstractAuto {
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.takeSpecimenFromFrontWallPickup(false))
-                .lineToY(scoreSpecimenY)
-                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
+                .afterTime(firstSpecimenWait, RobotActions.scoreSpecimenFromFrontWallPickup())
+                .lineToY(scoreSpecimenY);
         return builder;
     }
 
