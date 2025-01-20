@@ -16,7 +16,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.VelConstraint;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -28,55 +27,55 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 
-@Autonomous(name = "Specimen Side")
+@Autonomous(name = "Specimen 5+1")
 @Config
-public class SpecimenAuto extends AbstractAuto {
+public class Specimen5Plus1 extends AbstractAuto {
     private boolean
             is5plus0 = true,
             usePartnerSpec = false;
+
     public static double
-            slowDownConstraint = 20,
-            parkVelocityConstraint = 160,
+            intakeSampleVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -30,
-            parkX = 21,
-            parkY = -44.6,
-            parkExtendSleep = 0.2,
-            secondSpecimenOffsetY = 2,
-            fifthSpecimenOffsetY = 4.75,
+            scoreSpecimenY = -29.5,
+            sampleX = 21,
+            sampleY = -44.6,
+            extendSleep = 0.2,
+            secondSpecimenOffsetY = 7,
+            thirdSpecimenOffsetY = 5,
+            fourthSpecimenOffsetY = 5,
+            fifthSpecimenOffsetY = 6,
+            secondSpecimenOffsetX = -8,
+            thirdSpecimenOffsetX = -5.5,
+            fourthSpecimenOffsetX = -2.5,
+            fifthSpecimenOffsetX = 3.5,
             sample1X = 47,
             sample2X = 55,
             sample3X = 62,
+            startFirstSampleY = -12,
             startSampleY = -14,
-            slowDownStartY = -25,
-            bumpSpecimen = -60,
-            bumpSecondSpecimen = -62,
+            bumpSpecimen = -65.5,
+            bumpSecondSpecimen = -63,
             intakeSpecimenY = -56,
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 4,
             giveSample3X = sample3X,
-            giveSampleY = -50,
+            giveSampleY = -48,
             wallPickupX = 35,
             firstWallPickupX = 55,
-            sweeperSleep = 1,
+            sweeperSleep = 0.4,
             startBumpToClampTime = 0.35,
+            secondSpecimenStartBumpToClampTime = 0.15,
             givingSampleAngle = 270,
-            regularGivingConstraint = 40,
             setupFrontWallPickupWait = 0.2,
-            bumpSpecimenVelocityConstraint = 15,
-            scoreSpecimenVelocityConstraint = 160,
-            firstSpecimenWait = 1.5;
-
-
-
-    private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
-        if (robotPose.position.y.value() > slowDownStartY) {
-            return slowDownConstraint;
-        } else {
-            return regularGivingConstraint;
-        }
-    };
+            scoreSpecimenVelocityConstraint = 200,
+            scoreSampleVelocityConstraint = 160,
+            specimenAutoBasketX = -47,
+            specimenAutoBasketY = -50,
+            transferWait = 0,
+            sampleScoreWait = 0,
+            firstSpecimenWait = 1;
 
     @Override
     protected void configure() {
@@ -125,19 +124,24 @@ public class SpecimenAuto extends AbstractAuto {
         builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
-        builder = park(builder);
+        builder = scoreSample(builder);
 
         return builder.build();
     }
 
-    private TrajectoryActionBuilder park(TrajectoryActionBuilder builder) {
+    private TrajectoryActionBuilder scoreSample(TrajectoryActionBuilder builder) {
         builder = builder
-                .afterTime(parkExtendSleep, new ParallelAction(
-                        RobotActions.setExtendo(Extendo.Extension.EXTENDED,0),
-                        RobotActions.setArm(Arm.ArmAngle.BASKET,0),
-                        RobotActions.setWrist(Arm.WristAngle.BASKET,0)
+                .afterTime(extendSleep, new ParallelAction(
+                        RobotActions.setRollers(1, 0),
+                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
+                        RobotActions.setExtendo(Extendo.Extension.EXTENDED,0)
                 ))
-                .strafeToSplineHeading(new Vector2d(parkX, parkY), Math.toRadians(315), (pose2dDual, posePath, v) -> parkVelocityConstraint);
+
+                .strafeToSplineHeading(new Vector2d(sampleX, sampleY), Math.toRadians(315), (pose2dDual, posePath, v) -> intakeSampleVelocityConstraint)
+                .afterTime(transferWait, RobotActions.retractTransferAndSetupBasket())
+                .setTangent(Math.toRadians(-135))
+                .splineToSplineHeading(new Pose2d(specimenAutoBasketX, specimenAutoBasketY, Math.toRadians(0)), Math.toRadians(-135), (pose2dDual, posePath, v) -> scoreSampleVelocityConstraint)
+                .afterTime(sampleScoreWait, RobotActions.scoreBasket());
         return builder;
     }
 
@@ -154,7 +158,7 @@ public class SpecimenAuto extends AbstractAuto {
                      .setTangent(Math.toRadians(270))
                      .splineToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint)
                      .afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true))
-                     .lineToY(bumpSpecimen, (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
+                     .lineToY(bumpSpecimen);
          }
 
          return builder;
@@ -164,14 +168,14 @@ public class SpecimenAuto extends AbstractAuto {
 
         builder = builder
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, intakeSpecimenY, Math.toRadians(270)), Math.toRadians(270))
-                .afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true))
-                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSecondSpecimen, Math.toRadians(270)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelocityConstraint);
+                .afterTime(secondSpecimenStartBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true))
+                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSecondSpecimen, Math.toRadians(270)), Math.toRadians(270));
 
-        builder = scoreSpecimen(builder, -7.5, secondSpecimenOffsetY, false);
-        builder = scoreSpecimen(builder, -5, 2, false);
-        builder = scoreSpecimen(builder, -2.5, 3.75, !is5plus0);
+        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false);
+        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, !is5plus0);
         if (is5plus0)
-            builder = scoreSpecimen(builder, 4, fifthSpecimenOffsetY, true);
+            builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, true);
 
         return builder;
     }
@@ -179,12 +183,12 @@ public class SpecimenAuto extends AbstractAuto {
         boolean do3rdSample = is5plus0 || !usePartnerSpec;
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(35,-35),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(sample1X, startSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
+                .splineToConstantHeading(new Vector2d(35,-35), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
                 .afterTime(0, RobotActions.setupFrontWallPickup())
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
                 .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
+                .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
 
         if (do3rdSample)
             builder = builder

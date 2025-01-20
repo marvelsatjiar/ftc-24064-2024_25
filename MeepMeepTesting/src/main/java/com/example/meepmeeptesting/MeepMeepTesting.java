@@ -2,15 +2,12 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.VelConstraint;
 import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
-
-import java.util.Vector;
 
 public class MeepMeepTesting {
     public static boolean
@@ -20,18 +17,26 @@ public class MeepMeepTesting {
 
 
     public static double
-            slowDownConstraint = 20,
+            intakeSampleVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -30,
-            secondSpecimenOffsetY = 2,
-            fifthSpecimenOffsetY = 4.75,
+            scoreSpecimenY = -29.5,
+            sampleX = 21,
+            sampleY = -44.6,
+            secondSpecimenOffsetY = 3,
+            thirdSpecimenOffsetY = 2.5,
+            fourthSpecimenOffsetY = 3,
+            fifthSpecimenOffsetY = 4,
+            secondSpecimenOffsetX = -8,
+            thirdSpecimenOffsetX = -5.5,
+            fourthSpecimenOffsetX = -3,
+            fifthSpecimenOffsetX = 3.5,
             sample1X = 47,
             sample2X = 55,
             sample3X = 62,
+            startFirstSampleY = -12,
             startSampleY = -14,
-            slowDownStartY = -25,
-            bumpSpecimen = -60,
+            bumpSpecimen = -61,
             bumpSecondSpecimen = -62,
             intakeSpecimenY = -56,
             giveSample1X = sample1X - 4,
@@ -40,13 +45,11 @@ public class MeepMeepTesting {
             giveSampleY = -50,
             wallPickupX = 35,
             firstWallPickupX = 55,
-            sweeperSleep = 1,
-            startBumpToClampTime = 0.35,
             givingSampleAngle = 270,
-            regularGivingConstraint = 40,
-            setupFrontWallPickupWait = 0.2,
             bumpSpecimenVelocityConstraint = 15,
-            scoreSpecimenVelocityConstraint = 70,
+            scoreSpecimenVelocityConstraint = 160,
+            specimenAutoBasketX = -48,
+            specimenAutoBasketY = -63,
 
 //            Sample variables start here
             bumpSample = -36,
@@ -68,13 +71,13 @@ public class MeepMeepTesting {
             xBasket = -54.25,
             yBasket = -54.25;
 
-    private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
-        if (robotPose.position.y.value() > -17) {
-            return slowDownConstraint;
-        } else {
-            return 60.0;
-        }
-    };
+//    private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
+//        if (robotPose.position.y.value() > -17) {
+//            return slowDownConstraint;
+//        } else {
+//            return 60.0;
+//        }
+//    };
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
@@ -87,18 +90,20 @@ public class MeepMeepTesting {
                 .build();
 
         Pose2d startPose;
-        startPose = new Pose2d(7.375,-62, Math.toRadians(270));
+        startPose = new Pose2d(startingPositionX,startingPositionY, Math.toRadians(270));
 
         Pose2d startSamplePose;
         startSamplePose = new Pose2d(-31.85,-63.375, Math.toRadians(0));
 
 
-        TrajectoryActionBuilder builder = drive.getDrive().actionBuilder(startSamplePose);
-//        builder = scoreFirstSpecimen(builder);
-//        builder = giveSamples(builder);
-//        builder = scoreAllSpecimens(builder);
+        TrajectoryActionBuilder builder = drive.getDrive().actionBuilder(startPose);
+        builder = scoreFirstSpecimen(builder);
+        builder = giveSamples(builder);
+        builder = scoreAllSpecimens(builder);
+        builder = scoreSample(builder);
 //        builder = park(builder);
-        builder = scoreSpecimen(builder);
+
+//        builder = scoreSamples(builder);
 
 
         drive.runAction(builder.build());
@@ -110,7 +115,15 @@ public class MeepMeepTesting {
                 .start();
     }
 
-    private static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder) {
+    private static TrajectoryActionBuilder scoreSample(TrajectoryActionBuilder builder) {
+        builder = builder
+                .strafeToSplineHeading(new Vector2d(sampleX, sampleY), Math.toRadians(315), (pose2dDual, posePath, v) -> intakeSampleVelocityConstraint)
+                .setTangent(Math.toRadians(-135))
+                .splineToSplineHeading(new Pose2d(specimenAutoBasketX, specimenAutoBasketY, Math.toRadians(0)), Math.toRadians(-135));
+        return builder;
+    }
+
+    private static TrajectoryActionBuilder scoreSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(-135))
@@ -185,14 +198,14 @@ public class MeepMeepTesting {
         builder = builder
                 .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(35,-35),Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(sample1X, startSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
+                .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
 //                .splineToLinearHeading(new Pose2d(46, -18, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270), giveSampleVelConstraint)
+                .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270))
                 .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
         if (do3rdSample)
             builder = builder
-                    .splineToConstantHeading(new Vector2d(sample3X, startSampleY), Math.toRadians(270), giveSampleVelConstraint)
+                    .splineToConstantHeading(new Vector2d(sample3X, startSampleY), Math.toRadians(270))
                     .splineToLinearHeading(new Pose2d(giveSample3X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270));
         return builder;
     }
