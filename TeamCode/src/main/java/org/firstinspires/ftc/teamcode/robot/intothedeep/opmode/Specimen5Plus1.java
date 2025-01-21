@@ -203,6 +203,10 @@ public class Specimen5Plus1 extends AbstractAuto {
                 .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(35,-35), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
+                .afterTime(giveSweeperWait, new SequentialAction(
+                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
+                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
+                ))
                 .afterTime(0, RobotActions.setupFrontWallPickup())
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
                 .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270))
