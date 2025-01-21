@@ -101,7 +101,7 @@ public class MeepMeepTesting {
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
         builder = scoreSample(builder);
-//        builder = park(builder);
+        builder = park(builder);
 
 //        builder = scoreSamples(builder);
 
@@ -148,7 +148,7 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder park(TrajectoryActionBuilder builder) {
         builder = builder
 //                .setTangent(Math.toRadians(270))
-                .strafeToSplineHeading(new Vector2d(12.0, -41.1), Math.toRadians(315));
+                .strafeToSplineHeading(new Vector2d(12.0, -61.1), Math.toRadians(0));
         return builder;
     }
 

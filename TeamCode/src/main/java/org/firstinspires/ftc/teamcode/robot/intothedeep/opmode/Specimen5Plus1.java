@@ -61,10 +61,11 @@ public class Specimen5Plus1 extends AbstractAuto {
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 4,
             giveSample3X = sample3X,
-            giveSampleY = -48,
+            giveSampleY = -47,
             wallPickupX = 35,
             firstWallPickupX = 55,
-            sweeperSleep = 0.4,
+            secondSweeperSleep = 0.3,
+            thirdSweeperSleep = 0.4,
             startBumpToClampTime = 0.35,
             secondSpecimenStartBumpToClampTime = 0.15,
             givingSampleAngle = 270,
@@ -75,6 +76,10 @@ public class Specimen5Plus1 extends AbstractAuto {
             specimenAutoBasketY = -50,
             transferWait = 0,
             sampleScoreWait = 0,
+            giveSweeperWait = 0.5,
+            parkX = 10,
+            parkY = -50,
+            parkVelocityConstraint = 180,
             firstSpecimenWait = 1;
 
     @Override
@@ -125,8 +130,20 @@ public class Specimen5Plus1 extends AbstractAuto {
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
         builder = scoreSample(builder);
+//        builder = park(builder);
 
         return builder.build();
+    }
+
+    private TrajectoryActionBuilder park(TrajectoryActionBuilder builder) {
+        builder = builder
+                .afterTime(extendSleep, new ParallelAction(
+                        RobotActions.setExtendo(Extendo.Extension.EXTENDED,0),
+                        RobotActions.setArm(Arm.ArmAngle.BASKET,0),
+                        RobotActions.setWrist(Arm.WristAngle.BASKET,0)
+                ))
+                .strafeToSplineHeading(new Vector2d(parkX, parkY), Math.toRadians(315), (pose2dDual, posePath, v) -> parkVelocityConstraint);
+        return builder;
     }
 
     private TrajectoryActionBuilder scoreSample(TrajectoryActionBuilder builder) {
@@ -142,6 +159,7 @@ public class Specimen5Plus1 extends AbstractAuto {
                 .setTangent(Math.toRadians(-135))
                 .splineToSplineHeading(new Pose2d(specimenAutoBasketX, specimenAutoBasketY, Math.toRadians(0)), Math.toRadians(-135), (pose2dDual, posePath, v) -> scoreSampleVelocityConstraint)
                 .afterTime(sampleScoreWait, RobotActions.scoreBasket());
+//                .stopAndAdd(RobotActions.retractToNeutral(0));
         return builder;
     }
 
@@ -188,13 +206,17 @@ public class Specimen5Plus1 extends AbstractAuto {
                 .afterTime(0, RobotActions.setupFrontWallPickup())
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
                 .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270))
+                .afterTime(giveSweeperWait, new SequentialAction(
+                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
+                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
+                ))
                 .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
 
         if (do3rdSample)
             builder = builder
                     .splineToConstantHeading(new Vector2d(sample3X, startSampleY), Math.toRadians(270))
                     .afterTime(0, new SequentialAction(
-                            RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, sweeperSleep),
+                            RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, thirdSweeperSleep),
                             RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
                     ))
                     .splineToLinearHeading(new Pose2d(giveSample3X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(270));
