@@ -37,21 +37,21 @@ public class Specimen5Plus0 extends AbstractAuto {
             parkSampleVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -31.5,
+            scoreSpecimenY = -29.5,
             sampleX = 21,
             sampleY = -44.6,
             extendSleep = 0.2,
             secondSpecimenOffsetY = 7,
             thirdSpecimenOffsetY = 5,
-            fourthSpecimenOffsetY = 4,
-            fifthSpecimenOffsetY = 6.5,
+            fourthSpecimenOffsetY = 5,
+            fifthSpecimenOffsetY = 6,
             secondSpecimenOffsetX = -8,
             thirdSpecimenOffsetX = -5.5,
             fourthSpecimenOffsetX = -2.5,
             fifthSpecimenOffsetX = 3.5,
             sample1X = 47,
-            sample2X = 55.5,
-            sample3X = 63.5,
+            sample2X = 55,
+            sample3X = 62,
             startFirstSampleY = -12,
             startSampleY = -14,
             bumpSpecimen = -65.5,
@@ -60,11 +60,11 @@ public class Specimen5Plus0 extends AbstractAuto {
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 4,
             giveSample3X = sample3X,
-            giveSampleY = -48,
+            giveSampleY = -47,
             wallPickupX = 35,
             firstWallPickupX = 55,
             secondSweeperSleep = 0.3,
-            thirdSweeperSleep = 0.6,
+            thirdSweeperSleep = 0.4,
             startBumpToClampTime = 0.35,
             secondSpecimenStartBumpToClampTime = 0.15,
             givingSampleAngle = 270,
@@ -76,8 +76,8 @@ public class Specimen5Plus0 extends AbstractAuto {
             transferWait = 0,
             sampleScoreWait = 0,
             giveSweeperWait = 0.5,
-            parkX = 21,
-            parkY = -44.6,
+            parkX = 10,
+            parkY = -50,
             parkVelocityConstraint = 180,
             firstSpecimenWait = 1;
 
@@ -185,16 +185,8 @@ public class Specimen5Plus0 extends AbstractAuto {
                 .splineToConstantHeading(new Vector2d(35,-35), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
                 .afterTime(0, RobotActions.setupFrontWallPickup())
-                .afterTime(giveSweeperWait, new SequentialAction(
-                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
-                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
-                ))
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
                 .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270))
-                .afterTime(giveSweeperWait, new SequentialAction(
-                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
-                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
-                ))
                 .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
 
         if (do3rdSample)
