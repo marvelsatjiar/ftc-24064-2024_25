@@ -39,8 +39,8 @@ public class MeepMeepTesting {
             bumpSpecimen = -61,
             bumpSecondSpecimen = -62,
             intakeSpecimenY = -56,
-            giveSample1X = sample1X - 4,
-            giveSample2X = sample2X - 4,
+            giveSample1X = sample1X - 3,
+            giveSample2X = sample2X - 3,
             giveSample3X = sample3X,
             giveSampleY = -50,
             wallPickupX = 35,
@@ -128,7 +128,7 @@ public class MeepMeepTesting {
                 .setTangent(Math.toRadians(180))
                 .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(-135))
                 .setTangent(Math.toRadians(135))
-                .splineToLinearHeading(new Pose2d(-55.0, -37.6, Math.toRadians(60)), Math.toRadians(45))
+                .splineToLinearHeading(new Pose2d(-55.0, -37.6, Math.toRadians(60))         , Math.toRadians(45))
                 .lineToY(bumpSample)
                 .setTangent(Math.toRadians(-135))
                 .splineToLinearHeading(new Pose2d(xBasket, yBasket, Math.toRadians(45)), Math.toRadians(-45))
