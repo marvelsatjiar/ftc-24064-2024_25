@@ -49,7 +49,7 @@ public class Specimen5Plus0 extends AbstractAuto {
             secondSpecimenOffsetX = -8,
             thirdSpecimenOffsetX = -5.5,
             fourthSpecimenOffsetX = -3.5,
-            fifthSpecimenOffsetX = 3.5,
+            fifthSpecimenOffsetX = 2.5,
             sample1X = 47,
             sample2X = 54,
             sample3X = 63,
@@ -63,11 +63,11 @@ public class Specimen5Plus0 extends AbstractAuto {
             giveSample3X = sample3X,
             giveSampleY = -48.5,
             giveSample3Y = -50,
-            wallPickupX = 35,
+            wallPickupX = 37.5,
             firstWallPickupX = 55,
             secondSweeperSleep = 0.5,
             thirdSweeperSleep = 0.7,
-            startBumpToClampTime = 0.35,
+            startBumpToClampTime = 0.4,
             secondSpecimenStartBumpToClampTime = 0.2,
             givingSampleAngle = 270,
             setupFrontWallPickupWait = 0.2,
@@ -134,7 +134,8 @@ public class Specimen5Plus0 extends AbstractAuto {
                 .afterTime(extendSleep, new ParallelAction(
                         RobotActions.setExtendo(Extendo.Extension.EXTENDED,0),
                         RobotActions.setArm(Arm.ArmAngle.BASKET,0),
-                        RobotActions.setWrist(Arm.WristAngle.BASKET,0)
+                        RobotActions.setWrist(Arm.WristAngle.BASKET,0),
+                        RobotActions.setV4B(Intake.V4BAngle.UP, 0)
                 ))
                 .strafeToSplineHeading(new Vector2d(parkX, parkY), Math.toRadians(315), (pose2dDual, posePath, v) -> parkVelocityConstraint);
         return builder;
