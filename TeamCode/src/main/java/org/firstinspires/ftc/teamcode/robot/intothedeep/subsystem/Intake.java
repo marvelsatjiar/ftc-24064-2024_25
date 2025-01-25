@@ -18,11 +18,11 @@ public final class Intake {
     private final ServoEx[] intakeLinkGroup;
 
     public static int
-            V4B_DOWN_ANGLE = 108,
+            V4B_DOWN_ANGLE = 109,
             V4B_FRONT_WALL_PICKUP_ANGLE = 35,
             V4B_CLEARING_ANGLE = 85,
             V4B_UP_ANGLE = 75,
-            V4B_UNSAFE_THRESHOLD_ANGLE = 109,
+            V4B_UNSAFE_THRESHOLD_ANGLE = 110,
             V4B_TRANSFER_ANGLE = 30,
             V4B_HOVERING_ANGLE = 45;
 
