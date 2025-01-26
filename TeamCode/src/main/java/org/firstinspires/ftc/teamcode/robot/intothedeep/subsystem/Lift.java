@@ -43,10 +43,10 @@ public final class Lift {
      * Remember to set these constants correctly! (in ticks)
      */
     public static int
-            MAX_MOTOR_TICKS = 2970,
+            MAX_MOTOR_TICKS = 3000,
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 600,
-            HIGH_BASKET_TICKS = 2970,
+            HIGH_BASKET_TICKS = 3000,
             HIGH_CHAMBER_SCORE_BACK_TICKS = 1300,
             HIGH_CHAMBER_SCORE_FRONT_TICKS = 1700,
             HIGH_CHAMBER_SETUP_BACK_TICKS = 515,
@@ -54,9 +54,9 @@ public final class Lift {
             WALL_PICKUP_TICKS = 1150,
             FRONT_WALL_SPECIMEN_SCORE_TICKS = 380,
             INTERMEDIARY_WALL_PICKUP_TICKS = 1300,
-            LEVEL_TWO_CLIMB_SETUP_TICKS = 2970,
+            LEVEL_TWO_CLIMB_SETUP_TICKS = 3000,
             LEVEL_TWO_CLIMB_TICKS = 2070,
-            LEVEL_THREE_CLIMB_SETUP_TICKS = 2970,
+            LEVEL_THREE_CLIMB_SETUP_TICKS = 3000,
             LEVEL_THREE_CLIMB_TICKS = 2770,
             UNSAFE_THRESHOLD_TICKS = 1000,
             RETRACTED_THRESHOLD_TICKS = 100;
