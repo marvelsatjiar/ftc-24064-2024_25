@@ -13,6 +13,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -38,14 +39,14 @@ public class Specimen5Plus0 extends AbstractAuto {
             parkVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -32,
+            scoreSpecimenY = -29.5,
             parkX = 23,
             parkY = -44.6,
             extendSleep = 0.2,
-            secondSpecimenOffsetY = 8,
-            thirdSpecimenOffsetY = 7.5,
-            fourthSpecimenOffsetY = 8.5,
-            fifthSpecimenOffsetY = 8.5,
+            secondSpecimenOffsetY = 4,
+            thirdSpecimenOffsetY = 3.5,
+            fourthSpecimenOffsetY = 4,
+            fifthSpecimenOffsetY = 4,
             secondSpecimenOffsetX = -8,
             thirdSpecimenOffsetX = -5.5,
             fourthSpecimenOffsetX = -3.5,
@@ -55,28 +56,32 @@ public class Specimen5Plus0 extends AbstractAuto {
             sample3X = 63,
             startFirstSampleY = -12,
             startSampleY = -14,
-            giveSample2Y = -51.5,
-            bumpSpecimen = -65.5,
-            bumpSecondSpecimen = -65,
+            giveSample2Y = -44.5,
+            bumpSpecimen = -62.5,
+            bumpSecondSpecimen = -62,
             intakeSpecimenY = -56,
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 3,
             giveSample3X = sample3X,
-            giveSampleY = -47.5,
-            giveSample3Y = -50,
+            giveSampleY = -45.5,
+            giveSample3Y = -46,
             wallPickupX = 41.5,
             firstWallPickupX = 56,
             secondSweeperSleep = 0.7,
-            thirdSweeperSleep = 0.7,
-            startBumpToClampTime = 0.4,
+            thirdSweeperSleep = 0.3,
+            startBumpToClampTime = 0.3,
             secondSpecimenStartBumpToClampTime = 0.2,
             givingSampleAngle = 270,
             setupFrontWallPickupWait = 0.2,
-            scoreSpecimenVelocityConstraint = 130,
+            scoreSpecimenVelocityConstraint = 100,
             giveSampleVelocityConstraint = 30,
-            scoreFirstSpecimenVelocityConstraint = 20,
+            scoreFirstSpecimenVelocityConstraint = 100,
             giveSecondSampleSweeperWait = 0.7,
             giveFirstSampleSweeperWait = 0.4,
+            minProfileAccel = -30,
+            maxProfileAccel = 60,
+            minScoreProfileAccel = -50,
+            maxScoreProfileAccel = 60,
             firstSpecimenWait = 0.4;
 
     @Override
@@ -146,7 +151,7 @@ public class Specimen5Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark) {
         builder = builder
                 .setTangent(Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint)
+                .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
 //                .strafeToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY))
                 .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
 
@@ -211,7 +216,7 @@ public class Specimen5Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.takeSpecimenFromFrontWallPickup(false))
-                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint)
+                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
                 .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
                 .waitSeconds(firstSpecimenWait);
         return builder;
