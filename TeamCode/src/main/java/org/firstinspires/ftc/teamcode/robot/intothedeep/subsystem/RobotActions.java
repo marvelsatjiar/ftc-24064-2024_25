@@ -286,7 +286,6 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
                         new ParallelAction(
-                                setLift(Lift.Ticks.FRONT_WALL_SPECIMEN_SCORE, 0),
                                 setWrist(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE, WRIST_FRONT_WALL_SPECIMEN_SCORE_SCORE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
                                 setArm(Arm.ArmAngle.FRONT_WALL_SPECIMEN_SCORE, ARM_FRONT_WALL_SPECIMEN_SCORE_SCORE_SPECIMEN_FROM_FRONT_WALL_PICKUP)
                         ),
