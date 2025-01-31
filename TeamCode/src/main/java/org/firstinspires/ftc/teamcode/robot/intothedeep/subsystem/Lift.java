@@ -43,6 +43,7 @@ public final class Lift {
      * Remember to set these constants correctly! (in ticks)
      */
     public static int
+            DRIFT_TICKS = 50,
             MAX_MOTOR_TICKS = 3000,
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 600,
@@ -52,17 +53,19 @@ public final class Lift {
             HIGH_CHAMBER_SETUP_BACK_TICKS = 515,
             HIGH_CHAMBER_SETUP_FRONT_TICKS = 1100,
             WALL_PICKUP_TICKS = 1150,
-            FRONT_WALL_SPECIMEN_SCORE_TICKS = 380,
+            FRONT_WALL_SPECIMEN_SETUP_TICKS = 420,
+            FRONT_WALL_SPECIMEN_SCORE_TICKS = 470,
             INTERMEDIARY_WALL_PICKUP_TICKS = 1300,
             LEVEL_TWO_CLIMB_SETUP_TICKS = 3000,
             LEVEL_TWO_CLIMB_TICKS = 2070,
             LEVEL_THREE_CLIMB_SETUP_TICKS = 3000,
             LEVEL_THREE_CLIMB_TICKS = 2770,
             UNSAFE_THRESHOLD_TICKS = 1000,
-            RETRACTED_THRESHOLD_TICKS = 100;
+            RETRACTED_THRESHOLD_TICKS = 50;
 
     public static double
             kG = 0.011065,
+            RESETTING_POWER = -0.02,
             JOYSTICK_MULTIPLIER = 40; // 1 = 40 ticks
 
     private final MotorEx[] motors;
@@ -86,6 +89,7 @@ public final class Lift {
         HIGH_CHAMBER_SETUP_FRONT,
         WALL_PICKUP,
         FRONT_WALL_SPECIMEN_SETUP,
+        FRONT_WALL_SPECIMEN_SCORE,
         LEVEL_TWO_CLIMB_SETUP,
         LEVEL_TWO_CLIMB,
         LEVEL_THREE_CLIMB_SETUP,
@@ -102,7 +106,7 @@ public final class Lift {
                 case HIGH_CHAMBER_SETUP_BACK:   return HIGH_CHAMBER_SETUP_BACK_TICKS;
                 case HIGH_CHAMBER_SETUP_FRONT:  return HIGH_CHAMBER_SETUP_FRONT_TICKS;
                 case WALL_PICKUP:               return WALL_PICKUP_TICKS;
-                case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SCORE_TICKS;
+                case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_TICKS;
                 case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
                 case LEVEL_TWO_CLIMB_SETUP:     return LEVEL_TWO_CLIMB_SETUP_TICKS;
                 case LEVEL_TWO_CLIMB:           return LEVEL_TWO_CLIMB_TICKS;
@@ -110,6 +114,7 @@ public final class Lift {
                 case LEVEL_THREE_CLIMB:         return LEVEL_THREE_CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
+                case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_TICKS;
             }
         }
 
@@ -180,10 +185,14 @@ public final class Lift {
         double scalar = MAX_VOLTAGE / batteryVoltageSensor.getVoltage();
         double output = position >= RETRACTED_THRESHOLD_TICKS ? kG * scalar : 0;
 
-        if (manualPower != 0) {
 
+         if (manualPower != 0) {
             controller.setTarget(new State(position));
             output += manualPower;
+
+        } else if (targetTicks == Ticks.RETRACTED && position <= RETRACTED_THRESHOLD_TICKS) {
+            output = RESETTING_POWER;
+            this.reset();
 
         } else {
 
