@@ -136,13 +136,17 @@ public final class Lift {
     public Lift(HardwareMap hardwareMap) {
         MotorEx leader = new MotorEx(hardwareMap, "leader", RPM_435);
         MotorEx follower = new MotorEx(hardwareMap, "follower", RPM_435);
+        MotorEx follower2 = new MotorEx(hardwareMap, "follower2", RPM_435);
 
-        encoder = new MotorEx(hardwareMap, "dummy motor", RPM_435).encoder;
+        encoder = follower2.encoder;
         encoder.reset();
 
         follower.setInverted(true);
+        follower2.setInverted(true);
 
-        motors = new MotorEx[] {leader, follower};
+        encoder.setDirection(Motor.Direction.REVERSE);
+
+        motors = new MotorEx[] {leader, follower, follower2};
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
@@ -208,6 +212,7 @@ public final class Lift {
 
     public void printTelemetry() {
         mTelemetry.addData("Target position (ticks)", getTargetTicks().toTicks());
+        mTelemetry.addData("Current position (ticks)", position);
         mTelemetry.addData("Current state (name)", getTargetTicks().name());
         mTelemetry.addData("Manual power (%)", manualPower * 100);
     }

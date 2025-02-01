@@ -186,7 +186,7 @@ public final class MainTeleOp extends LinearOpMode {
 
             robot.drivetrain.updatePoseEstimate();
             robot.run();
-//            robot.printTelemetry();
+            robot.printTelemetry();
         }
     }
 
