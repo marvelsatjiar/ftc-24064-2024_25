@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.Au
 @Config
 public class RobotActions {
     public static double
-            LIFT_EXTEND_SETUP_SCORE_BASKET = 1,
+            LIFT_EXTEND_SETUP_SCORE_BASKET = 0.5,
             V4B_UP_EXTEND_INTAKE = 0,
             CLAW_UNCLAMPED_SCORE_BASKET_AND_RETRACT = 0.2,
             ARM_CHAMBER_BACK_SETUP_SETUP_CHAMBER_FROM_BACK = 1,
