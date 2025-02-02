@@ -73,9 +73,9 @@ public class Specimen5Plus0 extends AbstractAuto {
             secondSpecimenStartBumpToClampTime = 0.2,
             givingSampleAngle = 270,
             setupFrontWallPickupWait = 0.2,
-            scoreSpecimenVelocityConstraint = 100,
-            giveSampleVelocityConstraint = 30,
-            scoreFirstSpecimenVelocityConstraint = 100,
+            scoreSpecimenVelocityConstraint = 140,
+            giveSampleVelocityConstraint = 27,
+            scoreFirstSpecimenVelocityConstraint = 140,
             giveSecondSampleSweeperWait = 0.7,
             giveFirstSampleSweeperWait = 0.4,
             minProfileAccel = -30,
@@ -131,7 +131,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
-        builder = park(builder);
+//        builder = park(builder);
 
         return builder.build();
     }
@@ -193,22 +193,22 @@ public class Specimen5Plus0 extends AbstractAuto {
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
 //                ))
                 .afterTime(0, RobotActions.setupFrontWallPickup())
-                .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint)
-                .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint)
+                .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
+                .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
 //                .afterTime(giveSecondSampleSweeperWait, new SequentialAction(
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
 //                ))
-                .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X, giveSample2Y, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint);
+                .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X, giveSample2Y, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel));
 
         if (do3rdSample)
             builder = builder
-                    .splineToConstantHeading(new Vector2d(sample3X, startSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint)
+                    .splineToConstantHeading(new Vector2d(sample3X, startSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
                     .afterTime(0, new SequentialAction(
                             RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, thirdSweeperSleep),
                             RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
                     ))
-                    .splineToLinearHeading(new Pose2d(giveSample3X, giveSample3Y, Math.toRadians(givingSampleAngle)), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint);
+                    .splineToLinearHeading(new Pose2d(giveSample3X, giveSample3Y, Math.toRadians(givingSampleAngle)), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel));
 
         return builder;
     }
