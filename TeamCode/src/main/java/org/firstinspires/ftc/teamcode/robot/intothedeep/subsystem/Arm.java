@@ -25,7 +25,7 @@ public final class Arm {
             BASKET_ARM_ANGLE = 105,
             BASKET_WRIST_ANGLE = 270,
 
-            CHAMBER_FRONT_SETUP_ARM_ANGLE = 170,
+            CHAMBER_FRONT_SETUP_ARM_ANGLE = 175,
             CHAMBER_FRONT_SCORE_ARM_ANGLE = 125,
 
             CHAMBER_BACK_SETUP_ARM_ANGLE = 112,
