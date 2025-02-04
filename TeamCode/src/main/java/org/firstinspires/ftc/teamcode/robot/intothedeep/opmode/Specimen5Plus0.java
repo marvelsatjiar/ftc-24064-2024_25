@@ -50,7 +50,7 @@ public class Specimen5Plus0 extends AbstractAuto {
             secondSpecimenOffsetX = -8,
             thirdSpecimenOffsetX = -5.5,
             fourthSpecimenOffsetX = -3.5,
-            fifthSpecimenOffsetX = 1.5,
+            fifthSpecimenOffsetX = 0.5,
             sample1X = 47,
             sample2X = 54.5,
             sample3X = 63,
@@ -82,7 +82,8 @@ public class Specimen5Plus0 extends AbstractAuto {
             maxProfileAccel = 60,
             minScoreProfileAccel = -50,
             maxScoreProfileAccel = 60,
-            firstSpecimenWait = 0.4;
+            firstSpecimenWait = 0.4,
+            minFirstProfileAccel = -45;
 
     @Override
     protected void configure() {
@@ -216,7 +217,7 @@ public class Specimen5Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.takeSpecimenFromFrontWallPickup(false))
-                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
+                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel))
                 .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
                 .waitSeconds(firstSpecimenWait);
         return builder;

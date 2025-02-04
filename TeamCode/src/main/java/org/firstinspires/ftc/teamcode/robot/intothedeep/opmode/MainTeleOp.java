@@ -125,7 +125,7 @@ public final class MainTeleOp extends LinearOpMode {
                     doExtendoControls();
                     doIntakeControls();
 
-                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupFrontWallPickup());
+                    if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupFrontWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
@@ -161,10 +161,10 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 // WALL PICKUP =====================================================================
                 case SETUP_FRONT_SPECIMEN_FROM_WALL:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreSpecimenFromFrontWallPickup());
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimenFromFrontWallPickup());
                     break;
                 case FRONT_WALL_PICKUP:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.takeSpecimenFromFrontWallPickup(true));
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.takeSpecimenFromFrontWallPickup(true));
                     break;
                 // HANG ============================================================================
                 case SETUP_LEVEL_TWO_HANG:
@@ -231,7 +231,7 @@ public final class MainTeleOp extends LinearOpMode {
 
         if (keyPressed(1, A)) robot.sweeper.toggleSweeper();
 
-        if (!gamepadEx1.isDown(RIGHT_BUMPER) && !gamepadEx2.isDown(RIGHT_BUMPER)) {
+//        if (!gamepadEx1.isDown(RIGHT_BUMPER) && !gamepadEx2.isDown(RIGHT_BUMPER)) {
             double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             if (trigger != 0) {
                 robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
@@ -240,10 +240,10 @@ public final class MainTeleOp extends LinearOpMode {
                 robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
                 robot.intake.setRollerPower(0);
             }
-        } else {
-            robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
-            robot.intake.setRollerPower(-1);
-        }
+//        } else {
+//            robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
+//            robot.intake.setRollerPower(-1);
+//        }
     }
 
 }
