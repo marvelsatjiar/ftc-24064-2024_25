@@ -340,14 +340,12 @@ public class RobotActions {
     public static Action retractToNeutral(double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
-                new SequentialAction(
-                        new ParallelAction(
-                                setClaw(Claw.ClawAngles.DEPOSIT, sleepSeconds),
-                                setArm(Arm.ArmAngle.NEUTRAL, 0),
-                                setWrist(Arm.WristAngle.COLLECTING, 0),
-                                setLift(Lift.Ticks.RETRACTED, 0)
-                        ),
-                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                new ParallelAction(
+                        setClaw(Claw.ClawAngles.DEPOSIT, sleepSeconds),
+                        setArm(Arm.ArmAngle.NEUTRAL, 0),
+                        setWrist(Arm.WristAngle.COLLECTING, 0),
+                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL),
+                        setLift(Lift.Ticks.RETRACTED, 0)
                 )
         );
     }
