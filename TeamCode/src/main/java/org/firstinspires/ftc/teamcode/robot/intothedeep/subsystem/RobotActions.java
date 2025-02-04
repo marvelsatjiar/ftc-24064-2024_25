@@ -187,6 +187,13 @@ public class RobotActions {
         );
     }
 
+    public static Action retractFromBasketOrHang(boolean isHang) {
+        return new SequentialAction(
+                new InstantAction(() -> setArm(Arm.ArmAngle.NEUTRAL, 0.5)),
+                isHang ? new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_TWO_HANG) : retractToNeutral(0.2)
+        );
+    }
+
     // DONE
     public static Action setupChamberFromBack() {
         return new Actions.SingleCheckAction(
