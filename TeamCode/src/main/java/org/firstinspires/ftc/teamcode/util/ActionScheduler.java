@@ -1,9 +1,12 @@
 package org.firstinspires.ftc.teamcode.util;
 
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.canvas.Canvas;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -17,7 +20,9 @@ public final class ActionScheduler {
     final Canvas canvas = new Canvas();
 
     public void addAction(Action action) {
+        actions.add(lockSubsytems());
         actions.add(action);
+        actions.add(unlockSubsytems());
     }
 
     // Won't generate previews
@@ -33,5 +38,27 @@ public final class ActionScheduler {
                 actions.remove();
             }
         }
+    }
+
+    private Action lockSubsytems() {
+        return new InstantAction(() -> {
+            robot.intake.isV4BLocked = true;
+            robot.extendo.isLocked = true;
+            robot.lift.isLocked = true;
+            robot.arm.isLocked = true;
+            robot.claw.isLocked = true;
+            robot.intake.isRollerLocked = true;
+        });
+    }
+
+    private Action unlockSubsytems() {
+        return new InstantAction(() -> {
+            robot.intake.isV4BLocked = false;
+            robot.extendo.isLocked = false;
+            robot.lift.isLocked = false;
+            robot.arm.isLocked = false;
+            robot.claw.isLocked = false;
+            robot.intake.isRollerLocked = false;
+        });
     }
 }

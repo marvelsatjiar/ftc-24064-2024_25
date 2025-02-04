@@ -18,9 +18,9 @@ import org.firstinspires.ftc.teamcode.auto.message.SparkFunOTOSInputsMessage;
 public final class SparkFunOTOSLocalizer implements Localizer {
     public static class Params {
         // See https://github.com/sparkfun/SparkFun_Qwiic_OTOS_FTC_Java_Library/blob/ce6648bc00db6a03fdda073eec79dab91c5e4f4a/SensorSparkFunOTOS.java
-        public SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 0, 0);
-        public double linearScalar = 1.0;
-        public double angularScalar = 1.0;
+        public SparkFunOTOS.Pose2D offset = new SparkFunOTOS.Pose2D(0, 1.125, -Math.PI / 2);
+        public double linearScalar = 60/60.3954;
+        public double angularScalar = 3600/(3600-32.5);
     }
 
     public static Params PARAMS = new Params();

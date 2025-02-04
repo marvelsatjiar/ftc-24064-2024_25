@@ -46,12 +46,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.auto.Drawing;
 import org.firstinspires.ftc.teamcode.auto.estimator.AprilTagEstimator;
 import org.firstinspires.ftc.teamcode.auto.estimator.Estimator;
+import org.firstinspires.ftc.teamcode.auto.estimator.LimelightEstimator;
+import org.firstinspires.ftc.teamcode.auto.estimator.NoEstimator;
 import org.firstinspires.ftc.teamcode.auto.localizer.Localizer;
+import org.firstinspires.ftc.teamcode.auto.localizer.SparkFunOTOSLocalizer;
 import org.firstinspires.ftc.teamcode.auto.localizer.ThreeDeadWheelLocalizer;
 import org.firstinspires.ftc.teamcode.auto.message.DriveCommandMessage;
 import org.firstinspires.ftc.teamcode.auto.message.MecanumCommandMessage;
 import org.firstinspires.ftc.teamcode.auto.message.MecanumLocalizerInputsMessage;
 import org.firstinspires.ftc.teamcode.auto.message.PoseMessage;
+import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
+import org.opencv.core.Mat;
 
 import java.lang.Math;
 import java.util.Arrays;
@@ -70,28 +75,28 @@ public final class MecanumDrive {
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
         // drive model parameters
-        public double inPerTick = 0.0029606967506353; // 60 in / 20265.5 ticks
-        public double lateralInPerTick = 0.0020315172274018014;
-        public double trackWidthTicks = 4973.2616142295365;
+        public double inPerTick = 60.0/20423; //0.0029606967506353; // 60 in / 20545 ticks
+        public double lateralInPerTick = 0.0016964481753894158;
+        public double trackWidthTicks = 11.75 / inPerTick;//4973.2616142295365;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.7369032071515926;
-        public double kV = 0.0003786150982074891;
-        public double kA = 0.0001;
+        public double kS = 1.5355146888001412; //0.5;
+        public double kV = 0.00030; //0.153;
+        public double kA = 0.00012; //0.03;
 
         // path profile parameters (in inches)
-        public double maxWheelVel = 50;
-        public double minProfileAccel = -30;
-        public double maxProfileAccel = 50;
+        public double maxWheelVel = 55;
+        public double minProfileAccel = -60;
+        public double maxProfileAccel = 60;
 
         // turn profile parameters (in radians)
         public double maxAngVel = Math.PI; // shared with path
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 2.0 /*2.6*/;
-        public double lateralGain = 2.4 /*2.9*/;
-        public double headingGain = 2.1 /*1.5*/; // shared with turn
+        public double axialGain = 4.0;
+        public double lateralGain = 3.0;
+        public double headingGain = 5.0; // shared with turn
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
@@ -100,12 +105,12 @@ public final class MecanumDrive {
 
     public static Params PARAMS = new Params();
 
-    public final MecanumKinematics kinematics = new MecanumKinematics(
+    public MecanumKinematics kinematics = new MecanumKinematics(
             PARAMS.inPerTick * PARAMS.trackWidthTicks, PARAMS.inPerTick / PARAMS.lateralInPerTick);
 
     public final TurnConstraints defaultTurnConstraints = new TurnConstraints(
             PARAMS.maxAngVel, -PARAMS.maxAngAccel, PARAMS.maxAngAccel);
-    public final VelConstraint defaultVelConstraint =
+    public VelConstraint defaultVelConstraint =
             new MinVelConstraint(Arrays.asList(
                     kinematics.new WheelVelConstraint(PARAMS.maxWheelVel),
                     new AngularVelConstraint(PARAMS.maxAngVel)
@@ -118,8 +123,9 @@ public final class MecanumDrive {
     public final VoltageSensor voltageSensor;
 
     public final LazyImu lazyImu;
+//    public final LimelightEx limelight;
 
-    public final Localizer localizer;
+    public Localizer localizer;
     public final Estimator estimator;
     public Pose2d pose;
     public double headingOffset = 0;
@@ -244,11 +250,12 @@ public final class MecanumDrive {
         //   see https://ftc-docs.firstinspires.org/en/latest/hardware_and_software_configuration/configuring/index.html
         lazyImu = new LazyImu(hardwareMap, "imu", new RevHubOrientationOnRobot(
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
+        // limelight = hardwareMap.get(LimelightEx.class, "limelight");
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
 
         localizer = new ThreeDeadWheelLocalizer(hardwareMap, PARAMS.inPerTick);
-        estimator = new AprilTagEstimator(hardwareMap);
+        estimator = new NoEstimator();
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
@@ -513,7 +520,7 @@ public final class MecanumDrive {
                 defaultTurnConstraints,
                 defaultVelConstraint, defaultAccelConstraint,
                 pose -> new Pose2dDual<>(
-                        pose.position.x, pose.position.y.unaryMinus(), pose.heading.inverse()));
+                        pose.position.x.unaryMinus(), pose.position.y.unaryMinus(), pose.heading.plus(Math.PI)));
     }
 
     /**

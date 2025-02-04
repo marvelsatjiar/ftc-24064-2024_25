@@ -53,6 +53,10 @@ public class PIDController implements FeedbackController {
         return output;
     }
 
+    public boolean isPositionInTolerance(State measurement, double tolerance) {
+        return Math.abs(measurement.minus(target).x) <= tolerance;
+    }
+
     public void setTarget(State target) {
         this.target = target;
     }
@@ -68,6 +72,8 @@ public class PIDController implements FeedbackController {
     public double getErrorIntegral() {
         return errorIntegral;
     }
+
+    public double getError() {return error.x;}
 
     public void stopIntegration(boolean stopIntegration) {
         integrator.stopIntegration(stopIntegration);
