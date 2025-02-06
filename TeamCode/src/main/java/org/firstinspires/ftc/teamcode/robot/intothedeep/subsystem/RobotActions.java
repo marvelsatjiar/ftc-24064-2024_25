@@ -10,6 +10,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.MainTeleOp;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAligner;
@@ -86,7 +87,10 @@ public class RobotActions {
             CLAW_UNCLAMPED_DROP_SAMPLE = 0.3,
             RETRACT_TO_NEUTRAL_DROP_SAMPLE = 0.4,
 
-            SWEEPER_ACTIVE_SWEEP_SUBMERSIBLE = 0.2;
+            SWEEPER_ACTIVE_SWEEP_SUBMERSIBLE = 0.2,
+
+            SET_LIFT_AFTER_WALL_CLAMP = 0.1,
+            SETUP_OVERHANG_SPECIMEN_WAIT = 0.2;
 
     // DONE
     public static Action extendIntake(Extendo.Extension extension) {
@@ -296,6 +300,32 @@ public class RobotActions {
                 )
         );
     }
+
+    public static Action setupOverhangSpecimen() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
+                new SequentialAction(
+                        setClaw(Claw.ClawAngles.CLAMPED, 0),
+                        new ParallelAction(
+                                setLift(Lift.Ticks.OVERHANG_SPECIMEN_SETUP, SET_LIFT_AFTER_WALL_CLAMP),
+                                setWrist(Arm.WristAngle.OVERHANG_SPECIMEN_SETUP, SETUP_OVERHANG_SPECIMEN_WAIT),
+                                setArm(Arm.ArmAngle.OVERHANG_SPECIMEN_SETUP, 0)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_FRONT)
+                )
+        );
+    }
+
+    public static Action scoreOverhangSpecimen() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SCORE_OVERHANG_SPECIMEN,
+                new SequentialAction(
+                        setClaw(Claw.ClawAngles.DEPOSIT, 0),
+                        new InstantAction(() -> robot.currentState = Robot.State.SCORE_OVERHANG_SPECIMEN)
+                )
+        );
+    }
+
 
 //    public static Action setupBackWallPickup() {
 //        return new Actions.SingleCheckAction(

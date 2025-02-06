@@ -161,10 +161,13 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 // WALL PICKUP =====================================================================
                 case SETUP_FRONT_SPECIMEN_FROM_WALL:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimenFromFrontWallPickup());
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreOverhangSpecimen());
                     break;
                 case FRONT_WALL_PICKUP:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.takeSpecimenFromFrontWallPickup(true));
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupOverhangSpecimen());
+                    break;
+                case SCORE_OVERHANG_SPECIMEN:
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
                     break;
                 // HANG ============================================================================
                 case SETUP_LEVEL_TWO_HANG:

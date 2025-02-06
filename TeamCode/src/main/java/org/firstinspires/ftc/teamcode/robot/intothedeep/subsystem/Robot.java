@@ -40,6 +40,7 @@ public final class Robot {
         TRANSFERRED,
         SETUP_CHAMBER_FROM_BACK,
         SETUP_CHAMBER_FROM_FRONT,
+        SCORE_OVERHANG_SPECIMEN,
         SETUP_SCORE_BASKET,
         SETUP_LEVEL_TWO_HANG,
         CLIMB_LEVEL_TWO_HANG,

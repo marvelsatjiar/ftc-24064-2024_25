@@ -83,7 +83,10 @@ public class Specimen5Plus0 extends AbstractAuto {
             minScoreProfileAccel = -50,
             maxScoreProfileAccel = 60,
             firstSpecimenWait = 0.4,
-            minFirstProfileAccel = -45;
+            minFirstProfileAccel = -45,
+            clampWaitBeforeOverhangSpecimen = 0.2,
+            retractAfterOverhangSpecimenWait = 0.6,
+            setupOverhangSpecimenWait = 0.5;
 
     @Override
     protected void configure() {
@@ -154,14 +157,18 @@ public class Specimen5Plus0 extends AbstractAuto {
                 .setTangent(Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
 //                .strafeToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY))
-                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup());
+//                .afterTime(setupOverhangSpecimenWait, RobotActions.scoreOverhangSpecimen())
+                .stopAndAdd(RobotActions.scoreOverhangSpecimen());
 
         if (!doPark) {
             builder = builder
-                    .afterTime(setupFrontWallPickupWait, RobotActions.setupFrontWallPickup())
+                    .afterTime(setupFrontWallPickupWait, new SequentialAction(RobotActions.setupFrontWallPickup()))
                     .setTangent(Math.toRadians(270))
                     .splineToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint)
-                    .afterTime(startBumpToClampTime, RobotActions.takeSpecimenFromFrontWallPickup(true))
+                    .afterTime(startBumpToClampTime, new SequentialAction(
+                            RobotActions.setClaw(Claw.ClawAngles.CLAMPED, 0),
+                            RobotActions.setArm(Arm.ArmAngle.BEFORE_OVERHANG_SPECIMEN, clampWaitBeforeOverhangSpecimen)
+                    ))
                     .lineToY(bumpSpecimen);
         }
 

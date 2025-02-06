@@ -39,6 +39,8 @@ public final class Arm {
             OVERHANG_SPECIMEN_SETUP_ARM_ANGLE = 50,
             OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE = 270,
 
+            BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE = 200,
+
             FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE = 160,
             FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE = 200,
 
@@ -58,6 +60,7 @@ public final class Arm {
         TRANSFERRED,
         BASKET,
         CHAMBER_FRONT,
+        OVERHANG_SPECIMEN_SETUP,
         CHAMBER_BACK,
         CHAMBER_BACK_AUTON,
         WALL_PICKUP;
@@ -68,6 +71,7 @@ public final class Arm {
                 case FRONT_WALL_PICKUP:         return FRONT_WALL_PICKUP_WRIST_ANGLE;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE;
+                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE;
                 case CHAMBER_BACK:              return CHAMBER_BACK_WRIST_ANGLE;
                 case CHAMBER_BACK_AUTON:        return CHAMBER_BACK_AUTON_WRIST_ANGLE;
                 case CHAMBER_FRONT:             return CHAMBER_FRONT_WRIST_ANGLE;
@@ -87,6 +91,8 @@ public final class Arm {
         BASKET,
         CHAMBER_FRONT_SETUP,
         CHAMBER_FRONT_SCORE,
+        OVERHANG_SPECIMEN_SETUP,
+        BEFORE_OVERHANG_SPECIMEN,
         CHAMBER_BACK_SETUP,
         CHAMBER_BACK_SCORE,
         WALL_PICKUP;
@@ -98,6 +104,8 @@ public final class Arm {
                 case FRONT_WALL_PICKUP:         return FRONT_WALL_PICKUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE;
+                case BEFORE_OVERHANG_SPECIMEN:  return BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE;
+                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_ARM_ANGLE;
                 case CHAMBER_FRONT_SETUP:       return CHAMBER_FRONT_SETUP_ARM_ANGLE;
                 case CHAMBER_FRONT_SCORE:       return CHAMBER_FRONT_SCORE_ARM_ANGLE;
                 case CHAMBER_BACK_SETUP:        return CHAMBER_BACK_SETUP_ARM_ANGLE;
