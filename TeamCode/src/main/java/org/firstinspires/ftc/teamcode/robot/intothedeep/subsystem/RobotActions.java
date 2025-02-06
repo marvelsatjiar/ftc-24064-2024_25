@@ -301,13 +301,29 @@ public class RobotActions {
         );
     }
 
-    public static Action setupOverhangSpecimen() {
+    public static Action setupOverhangSpecimen(boolean doSetup) {
+        if (doSetup) {
+            return new Actions.SingleCheckAction(
+                    () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
+                    new SequentialAction(
+                            setupFrontWallPickup(),
+                            setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
+                            new ParallelAction(
+                                    setLift(Lift.Ticks.OVERHANG_SPECIMEN_SETUP, 0),
+                                    setWrist(Arm.WristAngle.OVERHANG_SPECIMEN_SETUP, SETUP_OVERHANG_SPECIMEN_WAIT),
+                                    setArm(Arm.ArmAngle.OVERHANG_SPECIMEN_SETUP, 0)
+                            ),
+                            new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_FRONT)
+                    )
+            );
+        }
+
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
                 new SequentialAction(
-                        setClaw(Claw.ClawAngles.CLAMPED, 0),
+                        setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
                         new ParallelAction(
-                                setLift(Lift.Ticks.OVERHANG_SPECIMEN_SETUP, SET_LIFT_AFTER_WALL_CLAMP),
+                                setLift(Lift.Ticks.OVERHANG_SPECIMEN_SETUP, 0),
                                 setWrist(Arm.WristAngle.OVERHANG_SPECIMEN_SETUP, SETUP_OVERHANG_SPECIMEN_WAIT),
                                 setArm(Arm.ArmAngle.OVERHANG_SPECIMEN_SETUP, 0)
                         ),

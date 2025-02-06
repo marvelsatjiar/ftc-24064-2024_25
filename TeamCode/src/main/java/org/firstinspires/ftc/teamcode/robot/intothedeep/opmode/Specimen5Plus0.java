@@ -154,8 +154,8 @@ public class Specimen5Plus0 extends AbstractAuto {
 
     private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark) {
         builder = builder
-                .setTangent(Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
+                .setTangent(Math.toRadians(135))
+                .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(135), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
 //                .strafeToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY))
 //                .afterTime(setupOverhangSpecimenWait, RobotActions.scoreOverhangSpecimen())
                 .stopAndAdd(RobotActions.scoreOverhangSpecimen());
@@ -166,8 +166,8 @@ public class Specimen5Plus0 extends AbstractAuto {
                     .setTangent(Math.toRadians(270))
                     .splineToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint)
                     .afterTime(startBumpToClampTime, new SequentialAction(
-                            RobotActions.setClaw(Claw.ClawAngles.CLAMPED, 0),
-                            RobotActions.setArm(Arm.ArmAngle.BEFORE_OVERHANG_SPECIMEN, clampWaitBeforeOverhangSpecimen)
+                            RobotActions.setClaw(Claw.ClawAngles.CLAMPED, clampWaitBeforeOverhangSpecimen),
+                            RobotActions.setArm(Arm.ArmAngle.BEFORE_OVERHANG_SPECIMEN, 0)
                     ))
                     .lineToY(bumpSpecimen);
         }

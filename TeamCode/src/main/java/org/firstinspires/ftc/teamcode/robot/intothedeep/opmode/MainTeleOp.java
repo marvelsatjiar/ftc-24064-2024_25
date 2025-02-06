@@ -164,7 +164,7 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreOverhangSpecimen());
                     break;
                 case FRONT_WALL_PICKUP:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupOverhangSpecimen());
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupOverhangSpecimen(false));
                     break;
                 case SCORE_OVERHANG_SPECIMEN:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
