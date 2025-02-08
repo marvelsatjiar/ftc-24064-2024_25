@@ -150,7 +150,13 @@ public final class MainTeleOp extends LinearOpMode {
                 case SCORED_SAMPLE_HIGH_BASKET:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(new SequentialAction(
                             RobotActions.setArm(Arm.ArmAngle.NEUTRAL, 0.5),
-                            RobotActions.retractToNeutral(0.2)));
+                            RobotActions.retractToNeutral(0)));
+
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+
+                    doExtendoControls();
+                    doIntakeControls();
+                    
                     break;
                 // CHAMBER =========================================================================
                 case SETUP_CHAMBER_FROM_FRONT:
