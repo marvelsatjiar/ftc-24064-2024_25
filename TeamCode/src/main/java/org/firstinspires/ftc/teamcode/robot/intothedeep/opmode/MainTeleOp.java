@@ -156,7 +156,7 @@ public final class MainTeleOp extends LinearOpMode {
 
                     doExtendoControls();
                     doIntakeControls();
-                    
+
                     break;
                 // CHAMBER =========================================================================
                 case SETUP_CHAMBER_FROM_FRONT:
@@ -190,6 +190,7 @@ public final class MainTeleOp extends LinearOpMode {
                 // DROP SAMPLE =====================================================================
                 case SETUP_DROP_SAMPLE:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.dropSample());
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
                     break;
             }
 
