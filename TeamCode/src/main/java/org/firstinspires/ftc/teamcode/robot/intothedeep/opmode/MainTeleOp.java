@@ -11,11 +11,8 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
-import static org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx.SampleColor.BLUE;
-import static org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx.SampleColor.RED;
 
 import static java.lang.Math.atan2;
 import static java.lang.Math.hypot;
@@ -33,7 +30,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -140,12 +136,14 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 case TRANSFERRED:
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
-                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupChamberFromBack());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupDropSample());
                     break;
                 // BASKET ==========================================================================
                 case SETUP_SCORE_BASKET:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasket());
+
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+
                     break;
                 case SCORED_SAMPLE_HIGH_BASKET:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(new SequentialAction(
@@ -160,17 +158,14 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 // CHAMBER =========================================================================
                 case SETUP_CHAMBER_FROM_FRONT:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreChamberFromFrontAndRetract());
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreOverhangSpecimen());
                     break;
                 case SETUP_CHAMBER_FROM_BACK:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
                     break;
                 // WALL PICKUP =====================================================================
-                case SETUP_FRONT_SPECIMEN_FROM_WALL:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreOverhangSpecimen());
-                    break;
                 case FRONT_WALL_PICKUP:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupOverhangSpecimen(false));
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.takeAndSetupOverhangSpecimen());
                     break;
                 case SCORE_OVERHANG_SPECIMEN:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
@@ -181,11 +176,7 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
                     break;
                 case CLIMB_LEVEL_TWO_HANG:
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelThreeHang());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
-                    break;
-                case SETUP_LEVEL_THREE_HANG:
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelThreeHang());
                     break;
                 // DROP SAMPLE =====================================================================
                 case SETUP_DROP_SAMPLE:

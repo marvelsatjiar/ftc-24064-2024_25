@@ -8,12 +8,8 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 
-import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.auto.Actions;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.MainTeleOp;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAligner;
 
 @Config
 public class RobotActions {
@@ -134,6 +130,7 @@ public class RobotActions {
         );
     }
 
+    // DONE
     public static Action retractTransferAndSetupBasket() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_SCORE_BASKET,
@@ -192,50 +189,6 @@ public class RobotActions {
     }
 
     // DONE
-    public static Action setupChamberFromBack() {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_BACK,
-                new SequentialAction(
-                        new ParallelAction(
-                                setLift(Lift.Ticks.HIGH_CHAMBER_SETUP_BACK, LIFT_HIGH_CHAMBER_SETUP_BACK_SETUP_CHAMBER_FROM_BACK),
-                                setWrist(Arm.WristAngle.CHAMBER_BACK, WRIST_CHAMBER_BACK_SETUP_CHAMBER_FROM_BACK),
-                                setArm(Arm.ArmAngle.CHAMBER_BACK_SETUP, ARM_CHAMBER_BACK_SETUP_SETUP_CHAMBER_FROM_BACK)
-                        ),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_BACK)
-                )
-        );
-    }
-
-    // DONE
-    public static Action setupChamberFromFront() {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
-                new SequentialAction(
-                        setLift(Lift.Ticks.HIGH_CHAMBER_SETUP_FRONT, LIFT_HIGH_CHAMBER_FRONT_SETUP_CHAMBER_FROM_FRONT),
-                        new ParallelAction(
-                                setWrist(Arm.WristAngle.CHAMBER_FRONT, WRIST_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT),
-                                setArm(Arm.ArmAngle.CHAMBER_FRONT_SETUP, ARM_CHAMBER_SETUP_FRONT_CHAMBER_FROM_FRONT)
-                        ),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_FRONT)
-                )
-        );
-    }
-
-    // DONE
-    public static Action scoreChamberFromFrontAndRetract() {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.NEUTRAL,
-                new SequentialAction(
-                        setLift(Lift.Ticks.HIGH_CHAMBER_SCORE_FRONT, LIFT_HIGH_CHAMBER_FRONT_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
-                        setArm(Arm.ArmAngle.CHAMBER_FRONT_SCORE, ARM_CHAMBER_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
-                        setClaw(Claw.ClawAngles.DEPOSIT, CLAW_UNCLAMPED_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
-                        retractToNeutral(RETRACT_TO_NEUTRAL_SCORE_CHAMBER_FROM_FRONT_AND_RETRACT),
-                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
-                )
-        );
-    }
-
-    // DONE
     public static Action setupFrontWallPickup() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.FRONT_WALL_PICKUP,
@@ -254,26 +207,13 @@ public class RobotActions {
     }
 
 
-    public static Action takeSpecimenFromFrontWallPickup(boolean doSetup) {
-        if (doSetup) {
-            return new Actions.SingleCheckAction(
-                    () -> robot.currentState != Robot.State.SETUP_FRONT_SPECIMEN_FROM_WALL,
-                    new SequentialAction(
-                            setupFrontWallPickup(),
-                            setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
-                            new ParallelAction(
-                                    setArm(Arm.ArmAngle.FRONT_WALL_SPECIMEN_SETUP, ARM_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
-                                    setWrist(Arm.WristAngle.FRONT_WALL_SPECIMEN_SETUP, WRIST_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
-                                    setLift(Lift.Ticks.FRONT_WALL_SPECIMEN_SETUP, LIFT_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP)
-                            ),
-                            new InstantAction(() -> robot.currentState = Robot.State.SETUP_FRONT_SPECIMEN_FROM_WALL)
-                    )
-            );
-        }
-
+    // NON OVERHANG SETUP
+    @Deprecated
+    public static Action takeSpecimenFromFrontWallPickup() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_FRONT_SPECIMEN_FROM_WALL,
                 new SequentialAction(
+                        setupFrontWallPickup(),
                         setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
                         new ParallelAction(
                                 setArm(Arm.ArmAngle.FRONT_WALL_SPECIMEN_SETUP, ARM_FRONT_WALL_SPECIMEN_SETUP_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
@@ -285,6 +225,8 @@ public class RobotActions {
         );
     }
 
+    // NON OVERHANG SCORE
+    @Deprecated
     public static Action scoreSpecimenFromFrontWallPickup() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
@@ -301,8 +243,7 @@ public class RobotActions {
         );
     }
 
-    public static Action setupOverhangSpecimen(boolean doSetup) {
-        if (doSetup) {
+    public static Action takeAndSetupOverhangSpecimen() {
             return new Actions.SingleCheckAction(
                     () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
                     new SequentialAction(
@@ -316,22 +257,21 @@ public class RobotActions {
                             new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_FRONT)
                     )
             );
-        }
+    }
 
+    public static Action stableTakeAndSetupOverhangSpecimen(double sleepSecondsBeforeSetup) {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
                 new SequentialAction(
-                        setClaw(Claw.ClawAngles.CLAMPED, CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
-                        new ParallelAction(
-                                setLift(Lift.Ticks.OVERHANG_SPECIMEN_SETUP, 0),
-                                setWrist(Arm.WristAngle.OVERHANG_SPECIMEN_SETUP, SETUP_OVERHANG_SPECIMEN_WAIT),
-                                setArm(Arm.ArmAngle.OVERHANG_SPECIMEN_SETUP, 0)
-                        ),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_FRONT)
+                        RobotActions.setClaw(Claw.ClawAngles.CLAMPED, RobotActions.CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
+                        RobotActions.setArm(Arm.ArmAngle.BEFORE_OVERHANG_SPECIMEN, sleepSecondsBeforeSetup),
+                        new InstantAction(() -> robot.currentState = Robot.State.FRONT_WALL_PICKUP),
+                        takeAndSetupOverhangSpecimen()
                 )
         );
     }
 
+    // DONE - MAKE INTO DONE
     public static Action scoreOverhangSpecimen() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SCORE_OVERHANG_SPECIMEN,
@@ -341,40 +281,6 @@ public class RobotActions {
                 )
         );
     }
-
-
-//    public static Action setupBackWallPickup() {
-//        return new Actions.SingleCheckAction(
-//                () -> robot.currentState != Robot.State.BACK_WALL_PICKUP,
-//                new SequentialAction(
-//                        setLift(Lift.Ticks.WALL_PICKUP, LIFT_SETUP_WALL_PICKUP),
-//                        new ParallelAction(
-//                                setClaw(Claw.ClawAngles.DEPOSIT_ANGLE, CLAW_UNCLAMPED_SETUP_WALL_PICKUP),
-//                                setArm(Arm.ArmAngle.WALL_PICKUP, ARM_SETUP_WALL_PICKUP),
-//                                setWrist(Arm.WristAngle.WALL_PICKUP, WRIST_SETUP_WALL_PICKUP)
-//
-//                        ),
-//                        new InstantAction(() -> robot.currentState = Robot.State.BACK_WALL_PICKUP)
-//                )
-//        );
-//    }
-//
-//    public static Action pickupFromBackWall() {
-//        return new Actions.SingleCheckAction(
-//                () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
-//                new SequentialAction(
-//                        setupBackWallPickup(),
-//                        new SequentialAction(
-//                                setClaw(Claw.ClawAngles.CLAMP_ANGLE, CLAW_CLAMPED_PICKUP_FROM_WALL),
-//                                setLift(Lift.Ticks.INTERMEDIARY_WALL_PICKUP, LIFT_INTERMEDIARY_WALL_PICKUP_PICKUP_FROM_WALL),
-//                                setArm(Arm.ArmAngle.CHAMBER_FRONT_SETUP, ARM_CHAMBER_FRONT_SETUP_PICKUP_FROM_WALL),
-//                                setWrist(Arm.WristAngle.CHAMBER_FRONT, WRIST_CHAMBER_FRONT_PICKUP_FROM_WALL),
-//                                setLift(Lift.Ticks.HIGH_CHAMBER_SETUP_FRONT, LIFT_HIGH_CHAMBER_FRONT_SETUP_PICKUP_FROM_WALL)
-//                        ),
-//                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_CHAMBER_FROM_FRONT)
-//                )
-//        );
-//    }
 
     public static Action retractToNeutral(double sleepSeconds) {
         return new Actions.SingleCheckAction(
@@ -399,7 +305,7 @@ public class RobotActions {
 //        );
 //    }
 
-    // TODO
+    // DONE
     public static Action setupLevelTwoHang() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_LEVEL_TWO_HANG,
@@ -413,7 +319,7 @@ public class RobotActions {
         );
     }
 
-    // TODO
+    // DONE
     public static Action climbLevelTwoHang() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.CLIMB_LEVEL_TWO_HANG,
@@ -424,28 +330,7 @@ public class RobotActions {
         );
     }
 
-    // TODO
-    public static Action setupLevelThreeHang() {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_LEVEL_THREE_HANG,
-                new SequentialAction(
-                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB_SETUP, LIFT_CLIMB_SETUP_LEVEL_THREE_HANG),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_LEVEL_THREE_HANG)
-                )
-        );
-    }
-
-    // TODO
-    public static Action climbLevelThreeHang() {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.CLIMB_LEVEL_THREE_HANG,
-                new SequentialAction(
-                        setLift(Lift.Ticks.LEVEL_THREE_CLIMB, LIFT_RETRACTED_CLIMB_LEVEL_THREE_HANG),
-                        new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_THREE_HANG)
-                )
-        );
-    }
-
+    // DONE
     public static Action setupDropSample() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_DROP_SAMPLE,
@@ -459,6 +344,7 @@ public class RobotActions {
         );
     }
 
+    // DONE
     public static Action dropSample() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,

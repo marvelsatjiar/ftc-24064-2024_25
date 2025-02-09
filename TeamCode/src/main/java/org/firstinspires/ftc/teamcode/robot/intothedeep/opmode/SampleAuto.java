@@ -103,18 +103,6 @@ public class SampleAuto extends AbstractAuto {
         return builder.build();
     }
 
-    private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder) {
-        builder = builder
-
-                .afterTime(0.0, new ParallelAction(
-                        RobotActions.setupChamberFromFront(),
-                        RobotActions.setClaw(Claw.ClawAngles.CLAMPED, 0.0)
-                ))
-                .splineToConstantHeading(new Vector2d(scoreSpecimenX, scoreSpecimenY), Math.toRadians(90))
-                .stopAndAdd( RobotActions.scoreChamberFromFrontAndRetract());
-        return builder;
-    }
-
     private TrajectoryActionBuilder scoreSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(180))

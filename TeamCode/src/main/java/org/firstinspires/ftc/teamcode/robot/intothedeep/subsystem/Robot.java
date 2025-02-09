@@ -44,8 +44,6 @@ public final class Robot {
         SETUP_SCORE_BASKET,
         SETUP_LEVEL_TWO_HANG,
         CLIMB_LEVEL_TWO_HANG,
-        SETUP_LEVEL_THREE_HANG,
-        CLIMB_LEVEL_THREE_HANG,
         SCORED_SAMPLE_HIGH_BASKET,
         SETUP_DROP_SAMPLE,
     }
