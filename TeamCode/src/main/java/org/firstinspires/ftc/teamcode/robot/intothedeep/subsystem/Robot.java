@@ -75,7 +75,7 @@ public final class Robot {
         arm = new Arm(hardwareMap);
         sweeper = new Sweeper(hardwareMap);
 //        autoAligner = new AutoAligner(hardwareMap);
-        limelightEx = new LimelightEx(limelight3A);
+        limelightEx = new LimelightEx(limelight3A, hardwareMap);
         autoWallPickUp = new AutoWallPickUp(limelightEx);
         actionScheduler = new ActionScheduler();
 

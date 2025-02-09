@@ -20,7 +20,7 @@ public final class Arm {
     public static double
             NEUTRAL_ARM_ANGLE = 195,
             TRANSFERRED_WRIST_ANGLE = 270,
-            COLLECTING_ARM_ANGLE = 222,
+            COLLECTING_ARM_ANGLE = 227,
             COLLECTING_WRIST_ANGLE = 95,
             BASKET_ARM_ANGLE = 105,
             BASKET_WRIST_ANGLE = 270,

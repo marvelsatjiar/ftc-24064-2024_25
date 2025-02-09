@@ -1,10 +1,13 @@
 package org.firstinspires.ftc.teamcode.sensor.vision;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.robotcore.hardware.DigitalChannelController;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.util.SerialNumber;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -15,9 +18,12 @@ import java.util.List;
 public final class LimelightEx {
     LLResult result;
     private final Limelight3A limelight;
+    LED stagelite;
 
-    public LimelightEx(Limelight3A limelight) {
+    public LimelightEx(Limelight3A limelight, HardwareMap hardwareMap) {
         this.limelight = limelight;
+        this.stagelite = hardwareMap.get(LED.class, "stagelite");
+        stagelite.enable(false);
     }
 
     public void update() {
@@ -46,5 +52,9 @@ public final class LimelightEx {
 
     public Limelight3A getLimelight() {
         return limelight;
+    }
+
+    public void enableStagelite(boolean enabled){
+        stagelite.enable(!enabled);
     }
 }

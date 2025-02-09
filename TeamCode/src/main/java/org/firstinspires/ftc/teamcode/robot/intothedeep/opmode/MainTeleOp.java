@@ -89,12 +89,13 @@ public final class MainTeleOp extends LinearOpMode {
 
             PoseVelocity2d autoWallPickupPowers = null;
             if (gamepadEx1.isDown(X)) {
-                autoWallPickupPowers = robot.autoWallPickUp.run(gamepadEx1.getLeftY() * slowMult, gamepadEx1.getLeftX() * slowMult);
+                robot.limelightEx.enableStagelite(true);
+                autoWallPickupPowers = robot.autoWallPickUp.run(-gamepadEx1.getLeftY() * slowMult, gamepadEx1.getLeftX() * slowMult);
 
                 if (autoWallPickupPowers != null) {
                     robot.drivetrain.setDrivePowers(autoWallPickupPowers);
                 }
-            }
+            } else robot.limelightEx.enableStagelite(false);
 
             if (autoWallPickupPowers == null) {
                 robot.drivetrain.setFieldCentricPowers(

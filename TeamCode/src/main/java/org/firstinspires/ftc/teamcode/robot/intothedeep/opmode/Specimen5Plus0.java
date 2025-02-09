@@ -49,8 +49,8 @@ public class Specimen5Plus0 extends AbstractAuto {
             thirdSpecimenOffsetY = 2,
             fourthSpecimenOffsetY = 2,
             fifthSpecimenOffsetY = 2,
-            secondSpecimenOffsetX = -10,
-            thirdSpecimenOffsetX = -8.5,
+            secondSpecimenOffsetX = -11,
+            thirdSpecimenOffsetX = -9,
             fourthSpecimenOffsetX = -5.5,
             fifthSpecimenOffsetX = -1,
             sample1X = 47,
@@ -90,6 +90,12 @@ public class Specimen5Plus0 extends AbstractAuto {
             retractAfterOverhangSpecimenWait = 0.6,
             setupOverhangSpecimenWait = 0.5,
             scoreToRetractWait = 0.7,
+            sleepSecondsBeforeUnclampFirst = 1,
+            sleepSecondsBeforeUnclampSecond = 2.3,
+            sleepSecondsBeforeUnclampThird = 2.1,
+            sleepSecondsBeforeUnclampFourth = 2,
+            sleepSecondsBeforeUnclampFifth = 2,
+
             secondSpecimenSleepBeforeSetup = 0.5,
             lastThreeSleepBeforeSetup = 0.5,
             bumpSpecimenVelConstraint = 20;
@@ -159,16 +165,16 @@ public class Specimen5Plus0 extends AbstractAuto {
         return builder;
     }
 
-    private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark, double sleepSecondsBeforeSetup) {
+    private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark, double sleepSecondsBeforeSetup, double sleepSecondsBeforeUnclamp) {
         // Scoring
         builder = builder
                 .setTangent(Math.toRadians(170))
-                .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
-                .afterTime(0, new SequentialAction(
+                .afterTime(sleepSecondsBeforeUnclamp, new SequentialAction(
                         RobotActions.scoreOverhangSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.setupFrontWallPickup()
                 ))
+                .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
                 .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(270), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint);
 
@@ -189,11 +195,11 @@ public class Specimen5Plus0 extends AbstractAuto {
                 .afterTime(secondSpecimenStartBumpToClampTime, RobotActions.stableTakeAndSetupOverhangSpecimen(secondSpecimenSleepBeforeSetup))
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSecondSpecimen, Math.toRadians(270)), Math.toRadians(270));
 
-        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, lastThreeSleepBeforeSetup);
-        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, lastThreeSleepBeforeSetup);
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, !is5plus0, lastThreeSleepBeforeSetup);
+        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampSecond);
+        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampThird);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, !is5plus0, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampFourth);
         if (is5plus0)
-            builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, true, 0);
+            builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, true, 0, sleepSecondsBeforeUnclampFifth);
 
         return builder;
     }
@@ -231,12 +237,12 @@ public class Specimen5Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.takeAndSetupOverhangSpecimen())
-                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel))
-                .afterTime(0, new SequentialAction(
+                .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
                         RobotActions.scoreOverhangSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.retractToNeutral(0)
-                ));
+                ))
+                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
         return builder;
     }
 
