@@ -78,9 +78,9 @@ public final class MainTeleOp extends LinearOpMode {
                 x = 0;
             }
 
-            double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
+            double slowMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
 
-            double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
+            double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
 
             if (robot.extendo.getTargetExtension() != Extendo.Extension.RETRACTED) {
                 slowMult = 0.3;
@@ -112,7 +112,7 @@ public final class MainTeleOp extends LinearOpMode {
             if (keyPressed(1, B)) robot.drivetrain.setCurrentHeading(Math.PI);
 
             if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.5) {
-                robot.lift.runManual(gamepadEx2.getLeftY());
+                robot.lift.runManual(gamepadEx2.getLeftY() * 0.2);
                 robot.lift.reset();
             } else robot.lift.runManual((0));
 
