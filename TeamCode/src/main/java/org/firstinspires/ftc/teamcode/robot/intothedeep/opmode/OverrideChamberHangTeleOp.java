@@ -14,6 +14,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 
@@ -21,33 +22,38 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 public class OverrideChamberHangTeleOp extends LinearOpMode {
     GamepadEx gamepadEx1;
 
+    MecanumDrive drivetrain;
+    Lift lift;
+
     @Override
     public void runOpMode() throws InterruptedException {
         gamepadEx1 = new GamepadEx(gamepad1);
 
+        drivetrain = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
+        lift = new Lift(hardwareMap);
+
         Pose2d endPose = Common.AUTO_END_POSE;
         if (endPose != null) {
-            robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - Common.FORWARD);
+            drivetrain.setCurrentHeading(endPose.heading.toDouble() - Common.FORWARD);
         }
 
         waitForStart();
 
         while (opModeIsActive()) {
-            robot.readSensors();
             gamepadEx1.readButtons();
 
-            robot.lift.setTargetTicks(Lift.Ticks.CHAMBER_HANG_OVERRIDE);
+            lift.setTargetTicks(Lift.Ticks.CHAMBER_HANG_OVERRIDE);
 
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
             double x = gamepadEx1.getRightX();
             if (gamepadEx1.isDown(RIGHT_STICK_BUTTON)) {
                 double y = gamepadEx1.getRightY();
-                if (hypot(x, y) >= 0.8) robot.drivetrain.setCurrentHeading(atan2(y, x));
+                if (hypot(x, y) >= 0.8) drivetrain.setCurrentHeading(atan2(y, x));
                 x = 0;
             }
 
-            robot.drivetrain.setFieldCentricPowers(
+            drivetrain.setFieldCentricPowers(
                     new PoseVelocity2d(
                             new Vector2d(
                                     gamepadEx1.getLeftY(),
@@ -57,8 +63,8 @@ public class OverrideChamberHangTeleOp extends LinearOpMode {
                     )
             );
 
-            robot.drivetrain.updatePoseEstimate();
-            robot.run();
+            drivetrain.updatePoseEstimate();
+            lift.run();
         }
     }
 }
