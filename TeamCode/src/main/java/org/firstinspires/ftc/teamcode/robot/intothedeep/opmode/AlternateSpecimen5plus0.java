@@ -233,12 +233,8 @@ public class AlternateSpecimen5plus0 extends AbstractAuto{
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .afterTime(0, RobotActions.scoreSpecimenFromFrontWallPickup())
-                .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
-                        RobotActions.scoreSpecimenFromFrontWallPickup(),
-                        new SleepAction(scoreToRetractWait),
-                        RobotActions.retractToNeutral(0)
-                ))
+                .afterTime(0, RobotActions.takeSpecimenFromFrontWallPickup())
+                .stopAndAdd(RobotActions.scoreSpecimenFromFrontWallPickup())
                 .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
         return builder;
     }
