@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
@@ -47,7 +48,7 @@ public class OverrideChamberHangTeleOp extends LinearOpMode {
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
             double x = gamepadEx1.getRightX();
-            if (gamepadEx1.isDown(RIGHT_STICK_BUTTON)) {
+            if (gamepadEx1.wasJustPressed(B)) {
                 double y = gamepadEx1.getRightY();
                 if (hypot(x, y) >= 0.8) drivetrain.setCurrentHeading(atan2(y, x));
                 x = 0;
