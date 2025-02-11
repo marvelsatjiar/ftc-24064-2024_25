@@ -208,7 +208,6 @@ public class RobotActions {
 
 
     // NON OVERHANG SETUP
-    @Deprecated
     public static Action takeSpecimenFromFrontWallPickup() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_FRONT_SPECIMEN_FROM_WALL,
@@ -226,7 +225,6 @@ public class RobotActions {
     }
 
     // NON OVERHANG SCORE
-    @Deprecated
     public static Action scoreSpecimenFromFrontWallPickup() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
@@ -267,6 +265,18 @@ public class RobotActions {
                         RobotActions.setArm(Arm.ArmAngle.BEFORE_OVERHANG_SPECIMEN, sleepSecondsBeforeSetup),
                         new InstantAction(() -> robot.currentState = Robot.State.FRONT_WALL_PICKUP),
                         takeAndSetupOverhangSpecimen()
+                )
+        );
+    }
+
+    public static Action stableTakeFromWallPickup(double sleepSecondsBeforeSetup) {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
+                new SequentialAction(
+                        RobotActions.setClaw(Claw.ClawAngles.CLAMPED, RobotActions.CLAW_CLAMPED_TAKE_SPECIMEN_FROM_FRONT_WALL_PICKUP),
+                        RobotActions.setArm(Arm.ArmAngle.FRONT_WALL_SPECIMEN_SETUP, sleepSecondsBeforeSetup),
+                        new InstantAction(() -> robot.currentState = Robot.State.FRONT_WALL_PICKUP),
+                        takeSpecimenFromFrontWallPickup()
                 )
         );
     }
