@@ -41,14 +41,14 @@ public class Specimen5Plus0 extends AbstractAuto {
             parkVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -62,
-            scoreSpecimenY = -33.5,
+            scoreSpecimenY = -30.5,
             parkX = 23,
             parkY = -44.6,
             extendSleep = 0.2,
-            secondSpecimenOffsetY = 1,
-            thirdSpecimenOffsetY = 1,
-            fourthSpecimenOffsetY = 1,
-            fifthSpecimenOffsetY = 1,
+            secondSpecimenOffsetY = 2,
+            thirdSpecimenOffsetY = 2.5,
+            fourthSpecimenOffsetY = 2.5,
+            fifthSpecimenOffsetY = 2.5,
             secondSpecimenOffsetX = -11,
             thirdSpecimenOffsetX = -9,
             fourthSpecimenOffsetX = -5.5,
@@ -90,7 +90,7 @@ public class Specimen5Plus0 extends AbstractAuto {
             retractAfterOverhangSpecimenWait = 0.6,
             setupOverhangSpecimenWait = 0.5,
             scoreToRetractWait = 0.7,
-            sleepSecondsBeforeUnclampFirst = 1,
+            sleepSecondsBeforeUnclampFirst = 1.2,
             sleepSecondsBeforeUnclampSecond = 2.3,
             sleepSecondsBeforeUnclampThird = 2.1,
             sleepSecondsBeforeUnclampFourth = 2,
@@ -207,7 +207,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         boolean do3rdSample = is5plus0 || !usePartnerSpec;
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(35,-35), Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(35,-37), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint)
 //                .afterTime(giveFirstSampleSweeperWait, new SequentialAction(
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
