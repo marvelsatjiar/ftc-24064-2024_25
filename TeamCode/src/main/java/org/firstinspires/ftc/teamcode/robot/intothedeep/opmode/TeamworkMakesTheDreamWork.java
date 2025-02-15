@@ -30,9 +30,9 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 
-@Autonomous(name = "Specimen 5+0")
+@Autonomous(name = "TeamworkMakesTheDreamWork")
 @Config
-public class Specimen5Plus0 extends AbstractAuto {
+public class TeamworkMakesTheDreamWork extends AbstractAuto {
     private boolean
             is5plus0 = true,
             usePartnerSpec = false;
@@ -45,13 +45,15 @@ public class Specimen5Plus0 extends AbstractAuto {
             parkX = 23,
             parkY = -44.6,
             extendSleep = 0.2,
-            secondSpecimenOffsetY = 2,
+            firstSpecimenOffsetY = 2,
+            secondSpecimenOffsetY = 2.5,
             thirdSpecimenOffsetY = 2.5,
             fourthSpecimenOffsetY = 2.5,
             fifthSpecimenOffsetY = 2.5,
-            secondSpecimenOffsetX = -11,
-            thirdSpecimenOffsetX = -9,
-            fourthSpecimenOffsetX = -5.5,
+            firstSpecimenOffsetX = -11,
+            secondSpecimenOffsetX = -9,
+            thirdSpecimenOffsetX = -5.5,
+            fourthSpecimenOffsetX = -3.5,
             fifthSpecimenOffsetX = -1,
             sample1X = 47,
             sample2X = 54.5,
@@ -60,7 +62,7 @@ public class Specimen5Plus0 extends AbstractAuto {
             startSampleY = -14,
             giveSample2Y = -44.5,
             bumpSpecimen = -62.5,
-            bumpSecondSpecimen = -62,
+            firstSecondSpecimen = -62,
             intakeSpecimenY = -56,
             giveSample1X = sample1X - 4,
             giveSample2X = sample2X - 3,
@@ -72,7 +74,7 @@ public class Specimen5Plus0 extends AbstractAuto {
             secondSweeperSleep = 0.7,
             thirdSweeperSleep = 0.4,
             startBumpToClampTime = 0.4,
-            secondSpecimenStartBumpToClampTime = 0.2,
+            firstSpecimenStartBumpToClampTime = 0.2,
             givingSampleAngle = 270,
             setupFrontWallPickupWait = 0.2,
             scoreSpecimenVelocityConstraint = 140,
@@ -90,14 +92,14 @@ public class Specimen5Plus0 extends AbstractAuto {
             retractAfterOverhangSpecimenWait = 0.6,
             setupOverhangSpecimenWait = 0.5,
             scoreToRetractWait = 0.7,
-            sleepSecondsBeforeUnclampFirst = 1.2,
-            sleepSecondsBeforeUnclampSecond = 2.3,
-            sleepSecondsBeforeUnclampThird = 2.1,
+            sleepSecondsBeforeUnclampFirst = 2.3,
+            sleepSecondsBeforeUnclampSecond = 2.1,
+            sleepSecondsBeforeUnclampThird = 2,
             sleepSecondsBeforeUnclampFourth = 2,
             sleepSecondsBeforeUnclampFifth = 2,
 
-            secondSpecimenSleepBeforeSetup = 0.5,
-            lastThreeSleepBeforeSetup = 0.5,
+            firstSpecimenSleepBeforeSetup = 0.5,
+            lastFourthSleepBeforeSetup = 0.5,
             bumpSpecimenVelConstraint = 20;
 
     @Override
@@ -145,7 +147,6 @@ public class Specimen5Plus0 extends AbstractAuto {
     protected Action onRun() {
         TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
 
-        builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
 //        builder = park(builder);
@@ -192,12 +193,13 @@ public class Specimen5Plus0 extends AbstractAuto {
 
         builder = builder
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, intakeSpecimenY, Math.toRadians(270)), Math.toRadians(270))
-                .afterTime(secondSpecimenStartBumpToClampTime, RobotActions.stableTakeAndSetupOverhangSpecimen(secondSpecimenSleepBeforeSetup))
-                .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSecondSpecimen, Math.toRadians(270)), Math.toRadians(270));
+                .afterTime(firstSpecimenStartBumpToClampTime, RobotActions.stableTakeAndSetupOverhangSpecimen(firstSpecimenSleepBeforeSetup))
+                .splineToSplineHeading(new Pose2d(firstWallPickupX, firstSecondSpecimen, Math.toRadians(270)), Math.toRadians(270));
 
-        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampSecond);
-        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampThird);
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, !is5plus0, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampFourth);
+        builder = scoreSpecimen(builder, firstSpecimenOffsetX, firstSpecimenOffsetY, false, lastFourthSleepBeforeSetup, sleepSecondsBeforeUnclampFirst);
+        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, lastFourthSleepBeforeSetup, sleepSecondsBeforeUnclampSecond);
+        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, lastFourthSleepBeforeSetup, sleepSecondsBeforeUnclampThird);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, !is5plus0, lastFourthSleepBeforeSetup, sleepSecondsBeforeUnclampFourth);
         if (is5plus0)
             builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, true, 0, sleepSecondsBeforeUnclampFifth);
 
@@ -207,7 +209,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         boolean do3rdSample = is5plus0 || !usePartnerSpec;
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(35,-37), Math.toRadians(90))
+                .strafeTo(new Vector2d(35,-37))
                 .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint)
 //                .afterTime(giveFirstSampleSweeperWait, new SequentialAction(
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
@@ -234,17 +236,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         return builder;
     }
 
-    private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
-        builder = builder
-                .afterTime(0, RobotActions.takeAndSetupOverhangSpecimen())
-                .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
-                        RobotActions.scoreOverhangSpecimen(),
-                        new SleepAction(scoreToRetractWait),
-                        RobotActions.retractToNeutral(0)
-                ))
-                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
-        return builder;
-    }
+
 
 
 }
