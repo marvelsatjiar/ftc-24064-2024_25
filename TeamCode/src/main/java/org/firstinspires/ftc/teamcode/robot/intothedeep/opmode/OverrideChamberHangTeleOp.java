@@ -22,6 +22,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 @TeleOp(group = "24064 Main")
 public class OverrideChamberHangTeleOp extends LinearOpMode {
     GamepadEx gamepadEx1;
+    GamepadEx gamepadEx2;
 
     MecanumDrive drivetrain;
     Lift lift;
@@ -29,6 +30,7 @@ public class OverrideChamberHangTeleOp extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         gamepadEx1 = new GamepadEx(gamepad1);
+        gamepadEx2 = new GamepadEx(gamepad2);
 
         drivetrain = new MecanumDrive(hardwareMap, new Pose2d(0, 0, 0));
         lift = new Lift(hardwareMap);
@@ -47,11 +49,8 @@ public class OverrideChamberHangTeleOp extends LinearOpMode {
 
             // Gamepad 1
             // Change the heading of the drivetrain in field-centric mode
-            double x = gamepadEx1.getRightX();
             if (gamepadEx1.wasJustPressed(B)) {
-                double y = gamepadEx1.getRightY();
-                if (hypot(x, y) >= 0.8) drivetrain.setCurrentHeading(atan2(y, x));
-                x = 0;
+                drivetrain.setCurrentHeading(Math.PI);
             }
 
             drivetrain.setFieldCentricPowers(
@@ -64,7 +63,13 @@ public class OverrideChamberHangTeleOp extends LinearOpMode {
                     )
             );
 
+            if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.5) {
+                lift.runManual(gamepadEx2.getLeftY() * 0.2);
+                lift.reset();
+            } else lift.runManual((0));
+
             drivetrain.updatePoseEstimate();
+
             lift.run();
         }
     }

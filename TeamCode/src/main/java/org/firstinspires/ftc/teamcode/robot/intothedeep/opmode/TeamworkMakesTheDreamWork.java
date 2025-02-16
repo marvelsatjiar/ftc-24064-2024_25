@@ -39,7 +39,7 @@ public class TeamworkMakesTheDreamWork extends AbstractAuto {
 
     public static double
             parkVelocityConstraint = 160,
-            startingPositionX = 7.375, //+ 19.75,
+            startingPositionX = 7.375   + 19.75,
             startingPositionY = -62,
             scoreSpecimenY = -30.5,
             parkX = 23,
@@ -50,11 +50,11 @@ public class TeamworkMakesTheDreamWork extends AbstractAuto {
             thirdSpecimenOffsetY = 2.5,
             fourthSpecimenOffsetY = 2.5,
             fifthSpecimenOffsetY = 2.5,
-            firstSpecimenOffsetX = -11,
-            secondSpecimenOffsetX = -9,
-            thirdSpecimenOffsetX = -5.5,
-            fourthSpecimenOffsetX = -3.5,
-            fifthSpecimenOffsetX = -1,
+            firstSpecimenOffsetX = -7,
+            secondSpecimenOffsetX = -5,
+            thirdSpecimenOffsetX = -1.5,
+            fourthSpecimenOffsetX = .5,
+            fifthSpecimenOffsetX = 3,
             sample1X = 47,
             sample2X = 54.5,
             sample3X = 63,
@@ -78,11 +78,11 @@ public class TeamworkMakesTheDreamWork extends AbstractAuto {
             givingSampleAngle = 270,
             setupFrontWallPickupWait = 0.2,
             scoreSpecimenVelocityConstraint = 140,
-            giveSampleVelocityConstraint = 45,
+            giveSampleVelocityConstraint = 30,
             scoreFirstSpecimenVelocityConstraint = 140,
             giveSecondSampleSweeperWait = 0.7,
             giveFirstSampleSweeperWait = 0.4,
-            minProfileAccel = -55,
+            minProfileAccel = -50,
             maxProfileAccel = 60,
             minScoreProfileAccel = -50,
             maxScoreProfileAccel = 60,
@@ -208,7 +208,7 @@ public class TeamworkMakesTheDreamWork extends AbstractAuto {
         boolean do3rdSample = is5plus0 || !usePartnerSpec;
         builder = builder
                 .setTangent(Math.toRadians(90))
-                .splineToConstantHeading(new Vector2d(35,-35),Math.toRadians(90))
+                .splineToConstantHeading(new Vector2d(35,-35),Math.toRadians(90), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
                 .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
 //                .afterTime(giveFirstSampleSweeperWait, new SequentialAction(
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),

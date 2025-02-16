@@ -63,7 +63,7 @@ public final class Lift {
             LEVEL_THREE_CLIMB_TICKS = 2297,
             UNSAFE_THRESHOLD_TICKS = 829,
             RETRACTED_THRESHOLD_TICKS = 41,
-            CHAMBER_HANG_OVERRIDE = 20;
+            CHAMBER_HANG_OVERRIDE_TICKS = 50;
 
     public static double
             kG = 0.011065,
@@ -118,7 +118,7 @@ public final class Lift {
                 case LEVEL_THREE_CLIMB_SETUP:   return LEVEL_THREE_CLIMB_SETUP_TICKS;
                 case LEVEL_THREE_CLIMB:         return LEVEL_THREE_CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
-                case CHAMBER_HANG_OVERRIDE:     return Lift.CHAMBER_HANG_OVERRIDE;
+                case CHAMBER_HANG_OVERRIDE:     return CHAMBER_HANG_OVERRIDE_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_TICKS;
             }

@@ -85,6 +85,8 @@ public final class MainTeleOp extends LinearOpMode {
             if (robot.extendo.getTargetExtension() != Extendo.Extension.RETRACTED) {
                 slowMult = 0.3;
                 slowTurningMult = 0.3;
+//                if (gamepadEx2.isDown(RIGHT_BUMPER))
+//                    slowMult = 1;
             }
 
             PoseVelocity2d autoWallPickupPowers = null;
@@ -160,6 +162,10 @@ public final class MainTeleOp extends LinearOpMode {
                 // CHAMBER =========================================================================
                 case SETUP_CHAMBER_FROM_FRONT:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreOverhangSpecimen());
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                    break;
+                case SCORE_OVERHANG_SPECIMEN:
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
                     break;
                 case SETUP_CHAMBER_FROM_BACK:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
@@ -167,10 +173,9 @@ public final class MainTeleOp extends LinearOpMode {
                 // WALL PICKUP =====================================================================
                 case FRONT_WALL_PICKUP:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.takeAndSetupOverhangSpecimen());
+                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
-                case SCORE_OVERHANG_SPECIMEN:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
-                    break;
+
                 // HANG ============================================================================
                 case SETUP_LEVEL_TWO_HANG:
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());

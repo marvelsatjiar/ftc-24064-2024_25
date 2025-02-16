@@ -97,7 +97,7 @@ public class Specimen5Plus0 extends AbstractAuto {
             sleepSecondsBeforeUnclampFifth = 2,
 
             secondSpecimenSleepBeforeSetup = 0.5,
-            lastThreeSleepBeforeSetup = 0.5,
+            lastThreeSleepBeforeSetup = 0.4,
             bumpSpecimenVelConstraint = 20;
 
     @Override
