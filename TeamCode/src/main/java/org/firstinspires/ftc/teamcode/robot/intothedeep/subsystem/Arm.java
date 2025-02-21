@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MAX;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MIN;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
 public final class Arm {
-    private final ServoEx wrist;
+    private final ServoEx wrist, armstendo;
 
     private final ServoEx[] armServos;
 
@@ -49,8 +49,11 @@ public final class Arm {
             CHAMBER_BACK_AUTON_WRIST_ANGLE = 210,
 
             WALL_PICKUP_ARM_ANGLE = 270,
-            WALL_PICKUP_WRIST_ANGLE = 90;
+            WALL_PICKUP_WRIST_ANGLE = 90,
 
+            EXTENDED_ARMSTENDO_ANGLE = 90,
+            TRANSFER_ARMSTENDO_ANGLE = 30,
+            RETRACTED_ARMSTENDO_ANGLE = 5;
 
     public enum WristAngle {
         COLLECTING,
@@ -118,16 +121,33 @@ public final class Arm {
 
 
     }
+
+    public enum Extension {
+        RETRACTED,
+        EXTENDED,
+        TRANSFER;
+
+        public double getAngle() {
+            switch (this) {
+                case EXTENDED:  return EXTENDED_ARMSTENDO_ANGLE;
+                case TRANSFER:  return TRANSFER_ARMSTENDO_ANGLE;
+                case RETRACTED: default: return RETRACTED_ARMSTENDO_ANGLE;
+            }
+        }
+    }
+
+
     private WristAngle targetWristAngle = WristAngle.COLLECTING;
     private ArmAngle targetArmAngle = ArmAngle.NEUTRAL;
-
+    private Extension targetArmstendoExtension = Extension.RETRACTED;
     public boolean isLocked = false;
 
     public Arm(HardwareMap hardwareMap) {
         wrist = new SimpleServo(hardwareMap, "wrist", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
+        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_AXON_MIN, SERVO_AXON_MAX);
         armServos = new ServoEx[] {
-                new SimpleServo(hardwareMap, "arm master", SERVO_45_KG_MIN, SERVO_45_KG_MAX),
-                new SimpleServo(hardwareMap, "arm follower", SERVO_45_KG_MIN, SERVO_45_KG_MAX)
+                new SimpleServo(hardwareMap, "arm master", SERVO_AXON_MIN, SERVO_AXON_MAX),
+                new SimpleServo(hardwareMap, "arm follower", SERVO_AXON_MIN, SERVO_AXON_MAX)
         };
 
         armServos[1].setInverted(true);
@@ -144,6 +164,15 @@ public final class Arm {
         return setArmAngle(angle, false);
     }
 
+    public boolean setArmstendoAngle(Extension extension, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
+        targetArmstendoExtension = extension;
+
+        return true;
+    }
+
+    public boolean setArmstendoAngle(Extension extension) {return setArmstendoAngle(extension, false);}
+
     public boolean setWristAngle(WristAngle angle, boolean isOverride) {
         if (isLocked && !isOverride) return false;
         targetWristAngle = angle;
@@ -159,15 +188,20 @@ public final class Arm {
         return targetArmAngle;
     }
 
+    public Extension getArmstendoAngle() {return targetArmstendoExtension;}
+
     public WristAngle getWristAngle() {
         return targetWristAngle;
     }
 
      public void run(boolean liftBelowSafety) {
         boolean isArmDown = getArmAngle() == ArmAngle.WALL_PICKUP;
-        if (liftBelowSafety && isArmDown) targetArmAngle = ArmAngle.COLLECTING;
+        boolean isArmstendoUnsafe = getArmstendoAngle() != Extension.RETRACTED;
+        if (liftBelowSafety && isArmDown && isArmstendoUnsafe) targetArmAngle = ArmAngle.COLLECTING;
 
         wrist.turnToAngle(getWristAngle().getAngle());
+
+        armstendo.turnToAngle(getArmstendoAngle().getAngle());
 
          for (ServoEx servos : armServos) {
             servos.turnToAngle(getArmAngle().getAngle());
