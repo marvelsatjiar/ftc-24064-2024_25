@@ -3,12 +3,14 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
+@Config
 public final class Claw {
-    private final double
+
+    public static double
             CLAMP_ANGLE = 0,
             DEPOSIT_ANGLE = 30;
 
@@ -19,7 +21,7 @@ public final class Claw {
 
         public double getAngle() {
             switch (this) {
-                case CLAMPED:               return 0;
+                case CLAMPED:               return CLAMP_ANGLE;
                 case WALL_PICKUP:         return 60;
                 case DEPOSIT: default:    return 30;
             }

@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ProfileAccelConstraint;
@@ -21,6 +22,7 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
@@ -29,10 +31,13 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.SubmersibleColorDetection;
 
 @Autonomous(name = "Specimen 5+0")
 @Config
-public class Specimen5Plus0 extends AbstractAuto {
+public class Specimen6Plus0 extends AbstractAuto {
+    private SubmersibleColorDetection submersibleColorDetection;
+
     private boolean
             is5plus0 = true,
             usePartnerSpec = false;
@@ -90,6 +95,8 @@ public class Specimen5Plus0 extends AbstractAuto {
             retractAfterOverhangSpecimenWait = 0.6,
             setupOverhangSpecimenWait = 0.5,
             scoreToRetractWait = 0.7,
+            sleepSecondsBeforeLimelightActivation = 0.5,
+            sleepSecondsBeforeSubDetection = 0.8,
             sleepSecondsBeforeUnclampFirst = 1.2,
             sleepSecondsBeforeUnclampSecond = 2.3,
             sleepSecondsBeforeUnclampThird = 2.1,
@@ -208,6 +215,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         builder = builder
                 .setTangent(Math.toRadians(270))
                 .splineToConstantHeading(new Vector2d(35,-37), Math.toRadians(90))
+                .afterTime(0, new InstantAction(() -> robot.intake.setRollerPower(-1)))
                 .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint)
 //                .afterTime(giveFirstSampleSweeperWait, new SequentialAction(
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
@@ -237,14 +245,23 @@ public class Specimen5Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.takeAndSetupOverhangSpecimen())
+                .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
+                        new InstantAction(() -> submersibleColorDetection.activateLimelight()),
+                        RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
+                ))
+                .afterTime(sleepSecondsBeforeSubDetection, new Actions.SingleCheckAction(
+                        () -> submersibleColorDetection.lockSampleCounter != 9,
+                        new InstantAction(() -> submersibleColorDetection.isSampleLocked = submersibleColorDetection.lockTargetSample())
+                ))
                 .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
                         RobotActions.scoreOverhangSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.retractToNeutral(0)
                 ))
                 .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
+
+        if (submersibleColorDetection.isSampleLocked) builder = builder.stopAndAdd(submersibleColorDetection.driveToTarget());
+
         return builder;
     }
-
-
 }

@@ -52,7 +52,7 @@ public final class Lift {
             HIGH_CHAMBER_SCORE_FRONT_TICKS = 1409,
             HIGH_CHAMBER_SETUP_BACK_TICKS = 427,
             HIGH_CHAMBER_SETUP_FRONT_TICKS = 912,
-            OVERHANG_HIGH_CHAMBER_SCORE_TICKS = 1608,
+            OVERHANG_SPECIMEN_SETUP_TICKS = 1628,
             WALL_PICKUP_TICKS = 953,
             FRONT_WALL_SPECIMEN_SETUP_TICKS = 330,
             FRONT_WALL_SPECIMEN_SCORE_TICKS = 425,
@@ -62,7 +62,8 @@ public final class Lift {
             LEVEL_THREE_CLIMB_SETUP_TICKS = 2550,
             LEVEL_THREE_CLIMB_TICKS = 2297,
             UNSAFE_THRESHOLD_TICKS = 829,
-            RETRACTED_THRESHOLD_TICKS = 41;
+            RETRACTED_THRESHOLD_TICKS = 41,
+            CHAMBER_HANG_OVERRIDE_TICKS = 50;
 
     public static double
             kG = 0.011065,
@@ -91,11 +92,13 @@ public final class Lift {
         WALL_PICKUP,
         FRONT_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SCORE,
+        OVERHANG_SPECIMEN_SETUP,
         LEVEL_TWO_CLIMB_SETUP,
         LEVEL_TWO_CLIMB,
         LEVEL_THREE_CLIMB_SETUP,
         LEVEL_THREE_CLIMB,
         INTERMEDIARY_WALL_PICKUP,
+        CHAMBER_HANG_OVERRIDE,
         EXTENDED;
 
         private int toTicks() {
@@ -106,6 +109,7 @@ public final class Lift {
                 case HIGH_CHAMBER_SCORE_FRONT:  return HIGH_CHAMBER_SCORE_FRONT_TICKS;
                 case HIGH_CHAMBER_SETUP_BACK:   return HIGH_CHAMBER_SETUP_BACK_TICKS;
                 case HIGH_CHAMBER_SETUP_FRONT:  return HIGH_CHAMBER_SETUP_FRONT_TICKS;
+                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_TICKS;
                 case WALL_PICKUP:               return WALL_PICKUP_TICKS;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_TICKS;
                 case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
@@ -114,6 +118,7 @@ public final class Lift {
                 case LEVEL_THREE_CLIMB_SETUP:   return LEVEL_THREE_CLIMB_SETUP_TICKS;
                 case LEVEL_THREE_CLIMB:         return LEVEL_THREE_CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
+                case CHAMBER_HANG_OVERRIDE:     return CHAMBER_HANG_OVERRIDE_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_TICKS;
             }

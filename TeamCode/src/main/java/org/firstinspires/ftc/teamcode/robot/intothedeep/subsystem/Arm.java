@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MAX;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MIN;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -13,17 +13,17 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
 public final class Arm {
-    private final ServoEx wrist;
+    private final ServoEx wrist, armstendo;
 
     private final ServoEx[] armServos;
 
     public static double
             NEUTRAL_ARM_ANGLE = 195,
-            TRANSFERRED_WRIST_ANGLE = 270,
-            COLLECTING_ARM_ANGLE = 222,
-            COLLECTING_WRIST_ANGLE = 95,
+            TRANSFERRED_WRIST_ANGLE = 220,
+            COLLECTING_ARM_ANGLE = 227,
+            COLLECTING_WRIST_ANGLE = 45,
             BASKET_ARM_ANGLE = 105,
-            BASKET_WRIST_ANGLE = 270,
+            BASKET_WRIST_ANGLE = 220,
 
             CHAMBER_FRONT_SETUP_ARM_ANGLE = 175,
             CHAMBER_FRONT_SCORE_ARM_ANGLE = 125,
@@ -32,23 +32,28 @@ public final class Arm {
             CHAMBER_BACK_SCORE_ARM_ANGLE = 100,
 
             FRONT_WALL_PICKUP_ARM_ANGLE = 220,
-            FRONT_WALL_PICKUP_WRIST_ANGLE = 190,
+            FRONT_WALL_PICKUP_WRIST_ANGLE = 135,
 
             FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE = 120,
-            FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 250,
+            FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 200,
             OVERHANG_SPECIMEN_SETUP_ARM_ANGLE = 50,
-            OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE = 270,
+            OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE = 255,
+
+            BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE = 200,
 
             FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE = 160,
-            FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE = 200,
+            FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE = 150,
 
             CHAMBER_FRONT_WRIST_ANGLE = 172.5,
             CHAMBER_BACK_WRIST_ANGLE = 190,
             CHAMBER_BACK_AUTON_WRIST_ANGLE = 210,
 
             WALL_PICKUP_ARM_ANGLE = 270,
-            WALL_PICKUP_WRIST_ANGLE = 90;
+            WALL_PICKUP_WRIST_ANGLE = 90,
 
+            EXTENDED_ARMSTENDO_ANGLE = 90,
+            TRANSFER_ARMSTENDO_ANGLE = 30,
+            RETRACTED_ARMSTENDO_ANGLE = 5;
 
     public enum WristAngle {
         COLLECTING,
@@ -58,6 +63,7 @@ public final class Arm {
         TRANSFERRED,
         BASKET,
         CHAMBER_FRONT,
+        OVERHANG_SPECIMEN_SETUP,
         CHAMBER_BACK,
         CHAMBER_BACK_AUTON,
         WALL_PICKUP;
@@ -68,6 +74,7 @@ public final class Arm {
                 case FRONT_WALL_PICKUP:         return FRONT_WALL_PICKUP_WRIST_ANGLE;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE;
+                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE;
                 case CHAMBER_BACK:              return CHAMBER_BACK_WRIST_ANGLE;
                 case CHAMBER_BACK_AUTON:        return CHAMBER_BACK_AUTON_WRIST_ANGLE;
                 case CHAMBER_FRONT:             return CHAMBER_FRONT_WRIST_ANGLE;
@@ -87,6 +94,8 @@ public final class Arm {
         BASKET,
         CHAMBER_FRONT_SETUP,
         CHAMBER_FRONT_SCORE,
+        OVERHANG_SPECIMEN_SETUP,
+        BEFORE_OVERHANG_SPECIMEN,
         CHAMBER_BACK_SETUP,
         CHAMBER_BACK_SCORE,
         WALL_PICKUP;
@@ -98,6 +107,8 @@ public final class Arm {
                 case FRONT_WALL_PICKUP:         return FRONT_WALL_PICKUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE;
+                case BEFORE_OVERHANG_SPECIMEN:  return BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE;
+                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_ARM_ANGLE;
                 case CHAMBER_FRONT_SETUP:       return CHAMBER_FRONT_SETUP_ARM_ANGLE;
                 case CHAMBER_FRONT_SCORE:       return CHAMBER_FRONT_SCORE_ARM_ANGLE;
                 case CHAMBER_BACK_SETUP:        return CHAMBER_BACK_SETUP_ARM_ANGLE;
@@ -110,16 +121,33 @@ public final class Arm {
 
 
     }
+
+    public enum Extension {
+        RETRACTED,
+        EXTENDED,
+        TRANSFER;
+
+        public double getAngle() {
+            switch (this) {
+                case EXTENDED:  return EXTENDED_ARMSTENDO_ANGLE;
+                case TRANSFER:  return TRANSFER_ARMSTENDO_ANGLE;
+                case RETRACTED: default: return RETRACTED_ARMSTENDO_ANGLE;
+            }
+        }
+    }
+
+
     private WristAngle targetWristAngle = WristAngle.COLLECTING;
     private ArmAngle targetArmAngle = ArmAngle.NEUTRAL;
-
+    private Extension targetArmstendoExtension = Extension.RETRACTED;
     public boolean isLocked = false;
 
     public Arm(HardwareMap hardwareMap) {
         wrist = new SimpleServo(hardwareMap, "wrist", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
+        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_AXON_MIN, SERVO_AXON_MAX);
         armServos = new ServoEx[] {
-                new SimpleServo(hardwareMap, "arm master", SERVO_45_KG_MIN, SERVO_45_KG_MAX),
-                new SimpleServo(hardwareMap, "arm follower", SERVO_45_KG_MIN, SERVO_45_KG_MAX)
+                new SimpleServo(hardwareMap, "arm master", SERVO_AXON_MIN, SERVO_AXON_MAX),
+                new SimpleServo(hardwareMap, "arm follower", SERVO_AXON_MIN, SERVO_AXON_MAX)
         };
 
         armServos[1].setInverted(true);
@@ -136,6 +164,15 @@ public final class Arm {
         return setArmAngle(angle, false);
     }
 
+    public boolean setArmstendoAngle(Extension extension, boolean isOverride) {
+        if (isLocked && !isOverride) return false;
+        targetArmstendoExtension = extension;
+
+        return true;
+    }
+
+    public boolean setArmstendoAngle(Extension extension) {return setArmstendoAngle(extension, false);}
+
     public boolean setWristAngle(WristAngle angle, boolean isOverride) {
         if (isLocked && !isOverride) return false;
         targetWristAngle = angle;
@@ -151,15 +188,20 @@ public final class Arm {
         return targetArmAngle;
     }
 
+    public Extension getArmstendoAngle() {return targetArmstendoExtension;}
+
     public WristAngle getWristAngle() {
         return targetWristAngle;
     }
 
      public void run(boolean liftBelowSafety) {
         boolean isArmDown = getArmAngle() == ArmAngle.WALL_PICKUP;
-        if (liftBelowSafety && isArmDown) targetArmAngle = ArmAngle.COLLECTING;
+        boolean isArmstendoUnsafe = getArmstendoAngle() != Extension.RETRACTED;
+        if (liftBelowSafety && isArmDown && isArmstendoUnsafe) targetArmAngle = ArmAngle.COLLECTING;
 
         wrist.turnToAngle(getWristAngle().getAngle());
+
+        armstendo.turnToAngle(getArmstendoAngle().getAngle());
 
          for (ServoEx servos : armServos) {
             servos.turnToAngle(getArmAngle().getAngle());

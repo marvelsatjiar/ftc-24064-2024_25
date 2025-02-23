@@ -18,7 +18,7 @@ public class MeepMeepTesting {
 
     public static double
             intakeSampleVelocityConstraint = 160,
-            startingPositionX = 7.375,
+            startingPositionX = 7.375 + 19.75,
             startingPositionY = -62,
             scoreSpecimenY = -29.5,
             sampleX = 21,
@@ -97,7 +97,7 @@ public class MeepMeepTesting {
 
 
         TrajectoryActionBuilder builder = drive.getDrive().actionBuilder(startPose);
-        builder = scoreFirstSpecimen(builder);
+//        builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
         builder = scoreSample(builder);
@@ -196,11 +196,11 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         boolean do3rdSample = is5plus0 || !usePartnerSpec;
         builder = builder
-                .setTangent(Math.toRadians(270))
+                .setTangent(Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(35,-35),Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(sample1X, startFirstSampleY), Math.toRadians(270))//, giveSampleVelConstraint)
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120))
-//                .splineToLinearHeading(new Pose2d(46, -18, Math.toRadians(givingSampleAngle)), Math.toRadians(90))
+//                .splineToLinearHeading(new Pose2d(46, -18, Math.toRadians(givingSampleAngle)), Math.toRa dians(90))
                 .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270))
                 .splineToLinearHeading(new Pose2d((!do3rdSample ? 4 : 0) + giveSample2X,giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(!do3rdSample ? 270 : 120));
         if (do3rdSample)

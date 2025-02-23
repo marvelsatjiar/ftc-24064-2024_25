@@ -40,11 +40,10 @@ public final class Robot {
         TRANSFERRED,
         SETUP_CHAMBER_FROM_BACK,
         SETUP_CHAMBER_FROM_FRONT,
+        SCORE_OVERHANG_SPECIMEN,
         SETUP_SCORE_BASKET,
         SETUP_LEVEL_TWO_HANG,
         CLIMB_LEVEL_TWO_HANG,
-        SETUP_LEVEL_THREE_HANG,
-        CLIMB_LEVEL_THREE_HANG,
         SCORED_SAMPLE_HIGH_BASKET,
         SETUP_DROP_SAMPLE,
     }
@@ -76,7 +75,7 @@ public final class Robot {
         arm = new Arm(hardwareMap);
         sweeper = new Sweeper(hardwareMap);
 //        autoAligner = new AutoAligner(hardwareMap);
-        limelightEx = new LimelightEx(limelight3A);
+        limelightEx = new LimelightEx(limelight3A, hardwareMap);
         autoWallPickUp = new AutoWallPickUp(limelightEx);
         actionScheduler = new ActionScheduler();
 
