@@ -29,6 +29,13 @@ public class SubmersibleColorDetection {
 
     private final PIDController axialPID = new PIDController();
     private final PIDController lateralPID = new PIDController();
+    private final PIDController headingPID = new PIDController();
+
+    public static PIDGains headingGains = new PIDGains(
+            1.15,
+            0,
+            0.0001
+    );
 
     public static PIDGains axialPIDGains = new PIDGains(
             0,
@@ -37,14 +44,14 @@ public class SubmersibleColorDetection {
     );
 
     public static PIDGains lateralPIDGains = new PIDGains(
-            0,
-            0,
-            0
+            0.0288875,
+            0.00007125,
+            0.00001486525
     );
 
     public static double
         targetAxial = 1,
-        targetLateral = 1;
+        targetLateral = 0;
 
     private LLResultTypes.ColorResult desiredSample;
 
@@ -56,9 +63,11 @@ public class SubmersibleColorDetection {
 
         axialPID.setGains(axialPIDGains);
         lateralPID.setGains(lateralPIDGains);
+        headingPID.setGains(headingGains);
 
         axialPID.setTarget(new State(targetAxial));
         lateralPID.setTarget(new State(targetLateral));
+        headingPID.setTarget(new State(Math.toRadians(90)));
     }
 
     public void activateLimelight() {
@@ -90,10 +99,16 @@ public class SubmersibleColorDetection {
     }
 
     private PoseVelocity2d calculateTarget() {
+        double theta = robot.drivetrain.headingOffset - robot.drivetrain.pose.heading.toDouble();
+
+        if (theta < 0) theta += Math.PI * 2;
+
         State currentAxial = new State(desiredSample.getTargetArea());
         State currentLateral = new State(desiredSample.getTargetXDegrees());
+        State currentHeading = new State(theta);
         
         double axialPower = axialPID.calculate(currentAxial);
+        double headingPower = -headingPID.calculate(currentHeading);
         double lateralPower = lateralPID.calculate(currentLateral);
 
         double kMovement = 0.0573;
@@ -108,7 +123,7 @@ public class SubmersibleColorDetection {
                         axialPower,
                         lateralPower
                 ),
-                0
+                headingPower
         );
     }
 
