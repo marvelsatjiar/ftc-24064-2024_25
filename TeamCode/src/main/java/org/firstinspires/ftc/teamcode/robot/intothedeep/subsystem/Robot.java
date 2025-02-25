@@ -36,6 +36,8 @@ public final class Robot {
         EXTENDO_OUT,
         FRONT_WALL_PICKUP,
         SETUP_FRONT_SPECIMEN_FROM_WALL,
+        SETUP_BACK_SPECIMEN_FROM_WALL,
+        SCORE_BACK_WALL_SPECIMEN,
         TO_BE_TRANSFERRED,
         TRANSFERRED,
         SETUP_CHAMBER_FROM_BACK,
@@ -46,6 +48,7 @@ public final class Robot {
         CLIMB_LEVEL_TWO_HANG,
         SCORED_SAMPLE_HIGH_BASKET,
         SETUP_DROP_SAMPLE,
+        BACK_WALL_PICKUP
     }
 
     State currentState = State.NEUTRAL;

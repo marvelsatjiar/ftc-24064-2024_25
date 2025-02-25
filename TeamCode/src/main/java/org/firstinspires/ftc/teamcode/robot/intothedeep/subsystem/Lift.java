@@ -48,12 +48,10 @@ public final class Lift {
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 497,
             HIGH_BASKET_TICKS = 2550,
-            HIGH_CHAMBER_SCORE_BACK_TICKS = 1078,
-            HIGH_CHAMBER_SCORE_FRONT_TICKS = 1409,
-            HIGH_CHAMBER_SETUP_BACK_TICKS = 427,
-            HIGH_CHAMBER_SETUP_FRONT_TICKS = 912,
             OVERHANG_SPECIMEN_SETUP_TICKS = 1628,
             WALL_PICKUP_TICKS = 953,
+            BACK_WALL_PICKUP_TICKS = 700,
+            BACK_WALL_SPECIMEN_SETUP_TICKS = 1628,
             FRONT_WALL_SPECIMEN_SETUP_TICKS = 330,
             FRONT_WALL_SPECIMEN_SCORE_TICKS = 425,
             INTERMEDIARY_WALL_PICKUP_TICKS = 1078,
@@ -85,11 +83,9 @@ public final class Lift {
         RETRACTED,
         LOW_BASKET,
         HIGH_BASKET,
-        HIGH_CHAMBER_SCORE_BACK,
-        HIGH_CHAMBER_SCORE_FRONT,
-        HIGH_CHAMBER_SETUP_BACK,
-        HIGH_CHAMBER_SETUP_FRONT,
         WALL_PICKUP,
+        BACK_WALL_PICKUP,
+        BACK_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SCORE,
         OVERHANG_SPECIMEN_SETUP,
@@ -105,12 +101,10 @@ public final class Lift {
             switch (this) {
                 case LOW_BASKET:                return LOW_BASKET_TICKS;
                 case HIGH_BASKET:               return HIGH_BASKET_TICKS;
-                case HIGH_CHAMBER_SCORE_BACK:   return HIGH_CHAMBER_SCORE_BACK_TICKS;
-                case HIGH_CHAMBER_SCORE_FRONT:  return HIGH_CHAMBER_SCORE_FRONT_TICKS;
-                case HIGH_CHAMBER_SETUP_BACK:   return HIGH_CHAMBER_SETUP_BACK_TICKS;
-                case HIGH_CHAMBER_SETUP_FRONT:  return HIGH_CHAMBER_SETUP_FRONT_TICKS;
                 case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_TICKS;
                 case WALL_PICKUP:               return WALL_PICKUP_TICKS;
+                case BACK_WALL_PICKUP:          return BACK_WALL_PICKUP_TICKS;
+                case BACK_WALL_SPECIMEN_SETUP:  return BACK_WALL_SPECIMEN_SETUP_TICKS;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_TICKS;
                 case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
                 case LEVEL_TWO_CLIMB_SETUP:     return LEVEL_TWO_CLIMB_SETUP_TICKS;

@@ -25,12 +25,6 @@ public final class Arm {
             BASKET_ARM_ANGLE = 105,
             BASKET_WRIST_ANGLE = 220,
 
-            CHAMBER_FRONT_SETUP_ARM_ANGLE = 175,
-            CHAMBER_FRONT_SCORE_ARM_ANGLE = 125,
-
-            CHAMBER_BACK_SETUP_ARM_ANGLE = 112,
-            CHAMBER_BACK_SCORE_ARM_ANGLE = 100,
-
             FRONT_WALL_PICKUP_ARM_ANGLE = 220,
             FRONT_WALL_PICKUP_WRIST_ANGLE = 135,
 
@@ -44,13 +38,16 @@ public final class Arm {
             FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE = 160,
             FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE = 150,
 
-            CHAMBER_FRONT_WRIST_ANGLE = 172.5,
-            CHAMBER_BACK_WRIST_ANGLE = 190,
-            CHAMBER_BACK_AUTON_WRIST_ANGLE = 210,
+            BACK_WALL_PICKUP_ARM_ANGLE = 350,
+            BACK_WALL_PICKUP_WRIST_ANGLE = 270,
+
+            BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 50,
+            BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 230,
 
             WALL_PICKUP_ARM_ANGLE = 270,
             WALL_PICKUP_WRIST_ANGLE = 90,
 
+            BACK_WALL_SPECIMEN_SETUP_ARMSTENDO_ANGLE = 50,
             EXTENDED_ARMSTENDO_ANGLE = 90,
             TRANSFER_ARMSTENDO_ANGLE = 30,
             RETRACTED_ARMSTENDO_ANGLE = 5;
@@ -60,27 +57,25 @@ public final class Arm {
         FRONT_WALL_PICKUP,
         FRONT_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SCORE,
+        BACK_WALL_PICKUP,
+        BACK_WALL_SPECIMEN_SETUP,
         TRANSFERRED,
         BASKET,
-        CHAMBER_FRONT,
         OVERHANG_SPECIMEN_SETUP,
-        CHAMBER_BACK,
-        CHAMBER_BACK_AUTON,
         WALL_PICKUP;
 
         public double getAngle() {
             switch (this) {
-                case BASKET:                    return BASKET_WRIST_ANGLE;
-                case FRONT_WALL_PICKUP:         return FRONT_WALL_PICKUP_WRIST_ANGLE;
-                case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
-                case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE;
-                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE;
-                case CHAMBER_BACK:              return CHAMBER_BACK_WRIST_ANGLE;
-                case CHAMBER_BACK_AUTON:        return CHAMBER_BACK_AUTON_WRIST_ANGLE;
-                case CHAMBER_FRONT:             return CHAMBER_FRONT_WRIST_ANGLE;
-                case WALL_PICKUP:               return WALL_PICKUP_WRIST_ANGLE;
-                case TRANSFERRED:               return TRANSFERRED_WRIST_ANGLE;
-                case COLLECTING: default:       return COLLECTING_WRIST_ANGLE;
+                case BASKET:                        return BASKET_WRIST_ANGLE;
+                case FRONT_WALL_PICKUP:             return FRONT_WALL_PICKUP_WRIST_ANGLE;
+                case BACK_WALL_PICKUP:              return BACK_WALL_PICKUP_WRIST_ANGLE;
+                case BACK_WALL_SPECIMEN_SETUP:      return BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
+                case FRONT_WALL_SPECIMEN_SETUP:     return FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
+                case FRONT_WALL_SPECIMEN_SCORE:     return FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE;
+                case OVERHANG_SPECIMEN_SETUP:       return OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE;
+                case WALL_PICKUP:                   return WALL_PICKUP_WRIST_ANGLE;
+                case TRANSFERRED:                   return TRANSFERRED_WRIST_ANGLE;
+                case COLLECTING: default:           return COLLECTING_WRIST_ANGLE;
             }
         }
     }
@@ -90,14 +85,12 @@ public final class Arm {
         FRONT_WALL_PICKUP,
         FRONT_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SCORE,
+        BACK_WALL_PICKUP,
+        BACK_WALL_SPECIMEN_SETUP,
         COLLECTING,
         BASKET,
-        CHAMBER_FRONT_SETUP,
-        CHAMBER_FRONT_SCORE,
         OVERHANG_SPECIMEN_SETUP,
         BEFORE_OVERHANG_SPECIMEN,
-        CHAMBER_BACK_SETUP,
-        CHAMBER_BACK_SCORE,
         WALL_PICKUP;
 
 
@@ -105,14 +98,12 @@ public final class Arm {
             switch (this) {
                 case BASKET:                    return BASKET_ARM_ANGLE;
                 case FRONT_WALL_PICKUP:         return FRONT_WALL_PICKUP_ARM_ANGLE;
+                case BACK_WALL_PICKUP:          return BACK_WALL_PICKUP_ARM_ANGLE;
+                case BACK_WALL_SPECIMEN_SETUP:  return BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE;
                 case BEFORE_OVERHANG_SPECIMEN:  return BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE;
                 case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_ARM_ANGLE;
-                case CHAMBER_FRONT_SETUP:       return CHAMBER_FRONT_SETUP_ARM_ANGLE;
-                case CHAMBER_FRONT_SCORE:       return CHAMBER_FRONT_SCORE_ARM_ANGLE;
-                case CHAMBER_BACK_SETUP:        return CHAMBER_BACK_SETUP_ARM_ANGLE;
-                case CHAMBER_BACK_SCORE:        return CHAMBER_BACK_SCORE_ARM_ANGLE;
                 case COLLECTING:                return COLLECTING_ARM_ANGLE;
                 case WALL_PICKUP:               return WALL_PICKUP_ARM_ANGLE;
                 case NEUTRAL: default:          return NEUTRAL_ARM_ANGLE;
@@ -125,13 +116,15 @@ public final class Arm {
     public enum Extension {
         RETRACTED,
         EXTENDED,
+        BACK_WALL_SPECIMEN_SETUP,
         TRANSFER;
 
         public double getAngle() {
             switch (this) {
-                case EXTENDED:  return EXTENDED_ARMSTENDO_ANGLE;
-                case TRANSFER:  return TRANSFER_ARMSTENDO_ANGLE;
-                case RETRACTED: default: return RETRACTED_ARMSTENDO_ANGLE;
+                case EXTENDED:                  return EXTENDED_ARMSTENDO_ANGLE;
+                case BACK_WALL_SPECIMEN_SETUP:  return BACK_WALL_SPECIMEN_SETUP_ARMSTENDO_ANGLE;
+                case TRANSFER:                  return TRANSFER_ARMSTENDO_ANGLE;
+                case RETRACTED: default:        return RETRACTED_ARMSTENDO_ANGLE;
             }
         }
     }

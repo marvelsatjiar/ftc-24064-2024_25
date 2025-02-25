@@ -83,7 +83,25 @@ public class RobotActions {
 
     public static class OverhangSpecimen {
         public double setSpecimenDelay = 0.2;
+    }
 
+    public static class BackWallPickup {
+        public double
+                setLiftToPickupFromBackWait = 0.4,
+                setArmToPickupFromBackWait = 0.2;
+    }
+
+    public static class SetupBackWallSpecimen {
+        public double
+                clampClawToPickupFromBackWait = 0.2,
+                extendLiftBeforeBackWallSpecimenWait = 0.4,
+                extendArmstendoBeforeBackWallSpecimenWait = 0.3;
+    }
+
+    public static class ScoreBackWallSpecimen {
+        public double
+                extendArmstendoToScoreSpecimenWait = 0.3,
+                unclampClawToScoreSpecimenWait = 0.5;
     }
 
     public static Transfer TRANSFER = new Transfer();
@@ -97,6 +115,9 @@ public class RobotActions {
     public static DropSamples DROP_SAMPLES = new DropSamples();
     public static LevelTwoHang LEVEL_TWO_HANG = new LevelTwoHang();
     public static OverhangSpecimen OVERHANG_SPECIMEN = new OverhangSpecimen();
+    public static BackWallPickup BACK_WALL_PICKUP = new BackWallPickup();
+    public static SetupBackWallSpecimen SETUP_BACK_WALL_SPECIMEN = new SetupBackWallSpecimen();
+    public static ScoreBackWallSpecimen SCORE_BACK_WALL_SPECIMEN = new ScoreBackWallSpecimen();
 
 
     // DONE
@@ -199,13 +220,6 @@ public class RobotActions {
         );
     }
 
-    public static Action retractFromBasketOrHang(boolean isHang) {
-        return new SequentialAction(
-                new InstantAction(() -> setArm(Arm.ArmAngle.NEUTRAL, 0.5)),
-                isHang ? new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_TWO_HANG) : retractToNeutral(0.2)
-        );
-    }
-
     // DONE
     public static Action setupFrontWallPickup() {
         return new Actions.SingleCheckAction(
@@ -259,6 +273,7 @@ public class RobotActions {
         );
     }
 
+    // DONE
     public static Action takeAndSetupOverhangSpecimen() {
             return new Actions.SingleCheckAction(
                     () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
@@ -275,6 +290,7 @@ public class RobotActions {
             );
     }
 
+    // DONE
     public static Action stableTakeAndSetupOverhangSpecimen(double sleepSecondsBeforeSetup) {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
@@ -287,6 +303,7 @@ public class RobotActions {
         );
     }
 
+    // DONE
     public static Action stableTakeFromWallPickup(double sleepSecondsBeforeSetup) {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_CHAMBER_FROM_FRONT,
@@ -299,7 +316,7 @@ public class RobotActions {
         );
     }
 
-    // DONE - MAKE INTO DONE
+    // DONE
     public static Action scoreOverhangSpecimen() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SCORE_OVERHANG_SPECIMEN,
@@ -310,6 +327,48 @@ public class RobotActions {
         );
     }
 
+    public static Action setupBackWallPickup() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.BACK_WALL_PICKUP,
+                new SequentialAction(
+                        new ParallelAction(
+                                setArm(Arm.ArmAngle.BACK_WALL_PICKUP, BACK_WALL_PICKUP.setArmToPickupFromBackWait),
+                                setWrist(Arm.WristAngle.BACK_WALL_PICKUP, 0)
+                        ),
+                        setLift(Lift.Ticks.BACK_WALL_PICKUP, BACK_WALL_PICKUP.setLiftToPickupFromBackWait),
+                        new InstantAction(() -> robot.currentState = Robot.State.BACK_WALL_PICKUP)
+                )
+        );
+    }
+
+    public static Action setupBackWallSpecimen() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_BACK_SPECIMEN_FROM_WALL,
+                new SequentialAction(
+                        setClaw(Claw.ClawAngles.CLAMPED, SETUP_BACK_WALL_SPECIMEN.clampClawToPickupFromBackWait),
+                        setLift(Lift.Ticks.BACK_WALL_SPECIMEN_SETUP, SETUP_BACK_WALL_SPECIMEN.extendLiftBeforeBackWallSpecimenWait),
+                        new ParallelAction(
+                                setArm(Arm.ArmAngle.BACK_WALL_SPECIMEN_SETUP, 0),
+                                setWrist(Arm.WristAngle.BACK_WALL_SPECIMEN_SETUP, 0)
+                        ),
+                        setArmstendo(Arm.Extension.BACK_WALL_SPECIMEN_SETUP, SETUP_BACK_WALL_SPECIMEN.extendArmstendoBeforeBackWallSpecimenWait),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_BACK_SPECIMEN_FROM_WALL)
+                )
+        );
+    }
+
+    public static Action scoreBackWallSpecimen() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SCORE_BACK_WALL_SPECIMEN,
+                new SequentialAction(
+                        setArmstendo(Arm.Extension.EXTENDED, SCORE_BACK_WALL_SPECIMEN.extendArmstendoToScoreSpecimenWait),
+                        setClaw(Claw.ClawAngles.DEPOSIT, SCORE_BACK_WALL_SPECIMEN.unclampClawToScoreSpecimenWait),
+                        new InstantAction(() -> robot.currentState = Robot.State.SCORE_BACK_WALL_SPECIMEN)
+                )
+        );
+    }
+
+    // DONE
     public static Action retractToNeutral(double sleepSeconds) {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
@@ -322,14 +381,6 @@ public class RobotActions {
                 )
         );
     }
-
-//    public static Action alignRobotWithSensor(AutoAligner.TargetDistance targetDistance, GamepadKeys.Button button) {
-//        return new SequentialAction(
-//                new InstantAction(() -> robot.autoAligner.setTargetDistance(targetDistance)),
-//                new Actions.RunnableAction(() -> MainTeleOp.gamepadEx1.isDown(button)),
-//                new InstantAction(() -> robot.autoAligner.setTargetDistance(AutoAligner.TargetDistance.INACTIVE))
-//        );
-//    }
 
     // DONE
     public static Action setupLevelTwoHang() {
@@ -382,6 +433,7 @@ public class RobotActions {
         );
     }
 
+    // DONE
     public static Action retractExtendo() {
         return new SequentialAction(
                 setRollers(0.7 , 0),
@@ -422,6 +474,16 @@ public class RobotActions {
                 () -> robot.extendo.getTargetAngle() != angle,
                 new ParallelAction(
                         new InstantAction(() -> robot.extendo.setTargetAngle(angle, true)),
+                        new SleepAction(sleepSeconds)
+                )
+        );
+    }
+
+    private static Action setArmstendo(Arm.Extension extension, double sleepSeconds) {
+        return new Actions.SingleCheckAction(
+                () -> robot.arm.getArmstendoAngle() != extension,
+                new ParallelAction(
+                        new InstantAction(() -> robot.arm.setArmstendoAngle(extension, true)),
                         new SleepAction(sleepSeconds)
                 )
         );
