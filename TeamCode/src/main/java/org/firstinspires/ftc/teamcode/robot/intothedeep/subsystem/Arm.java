@@ -38,19 +38,18 @@ public final class Arm {
             FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE = 160,
             FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE = 150,
 
-            BACK_WALL_PICKUP_ARM_ANGLE = 350,
+            BACK_WALL_PICKUP_ARM_ANGLE = 170,
             BACK_WALL_PICKUP_WRIST_ANGLE = 270,
 
-            BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 50,
-            BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 230,
-
-            WALL_PICKUP_ARM_ANGLE = 270,
-            WALL_PICKUP_WRIST_ANGLE = 90,
+            BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 270,
+            BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 90,
 
             BACK_WALL_SPECIMEN_SETUP_ARMSTENDO_ANGLE = 50,
             EXTENDED_ARMSTENDO_ANGLE = 90,
             TRANSFER_ARMSTENDO_ANGLE = 30,
-            RETRACTED_ARMSTENDO_ANGLE = 5;
+            RETRACTED_ARMSTENDO_ANGLE = 5,
+
+            UNSAFE_ARM_THRESHOLD = 240;
 
     public enum WristAngle {
         COLLECTING,
@@ -61,8 +60,7 @@ public final class Arm {
         BACK_WALL_SPECIMEN_SETUP,
         TRANSFERRED,
         BASKET,
-        OVERHANG_SPECIMEN_SETUP,
-        WALL_PICKUP;
+        OVERHANG_SPECIMEN_SETUP;
 
         public double getAngle() {
             switch (this) {
@@ -73,7 +71,6 @@ public final class Arm {
                 case FRONT_WALL_SPECIMEN_SETUP:     return FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
                 case FRONT_WALL_SPECIMEN_SCORE:     return FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE;
                 case OVERHANG_SPECIMEN_SETUP:       return OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE;
-                case WALL_PICKUP:                   return WALL_PICKUP_WRIST_ANGLE;
                 case TRANSFERRED:                   return TRANSFERRED_WRIST_ANGLE;
                 case COLLECTING: default:           return COLLECTING_WRIST_ANGLE;
             }
@@ -90,9 +87,7 @@ public final class Arm {
         COLLECTING,
         BASKET,
         OVERHANG_SPECIMEN_SETUP,
-        BEFORE_OVERHANG_SPECIMEN,
-        WALL_PICKUP;
-
+        BEFORE_OVERHANG_SPECIMEN;
 
         public double getAngle() {
             switch (this) {
@@ -105,7 +100,6 @@ public final class Arm {
                 case BEFORE_OVERHANG_SPECIMEN:  return BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE;
                 case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_ARM_ANGLE;
                 case COLLECTING:                return COLLECTING_ARM_ANGLE;
-                case WALL_PICKUP:               return WALL_PICKUP_ARM_ANGLE;
                 case NEUTRAL: default:          return NEUTRAL_ARM_ANGLE;
             }
         }
@@ -188,7 +182,7 @@ public final class Arm {
     }
 
      public void run(boolean liftBelowSafety) {
-        boolean isArmDown = getArmAngle() == ArmAngle.WALL_PICKUP;
+        boolean isArmDown = getArmAngle().getAngle() >= UNSAFE_ARM_THRESHOLD;
         boolean isArmstendoUnsafe = getArmstendoAngle() != Extension.RETRACTED;
         if (liftBelowSafety && isArmDown && isArmstendoUnsafe) targetArmAngle = ArmAngle.COLLECTING;
 

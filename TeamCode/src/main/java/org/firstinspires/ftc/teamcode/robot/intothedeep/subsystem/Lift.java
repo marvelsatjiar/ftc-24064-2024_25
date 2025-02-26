@@ -49,8 +49,8 @@ public final class Lift {
             LOW_BASKET_TICKS = 497,
             HIGH_BASKET_TICKS = 2550,
             OVERHANG_SPECIMEN_SETUP_TICKS = 1628,
-            WALL_PICKUP_TICKS = 953,
-            BACK_WALL_PICKUP_TICKS = 700,
+            BACK_WALL_PICKUP_TICKS = 953,
+            BEFORE_BACK_SPECIMEN_TICKS = 1043,
             BACK_WALL_SPECIMEN_SETUP_TICKS = 1628,
             FRONT_WALL_SPECIMEN_SETUP_TICKS = 330,
             FRONT_WALL_SPECIMEN_SCORE_TICKS = 425,
@@ -83,8 +83,8 @@ public final class Lift {
         RETRACTED,
         LOW_BASKET,
         HIGH_BASKET,
-        WALL_PICKUP,
         BACK_WALL_PICKUP,
+        BEFORE_BACK_SPECIMEN,
         BACK_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SCORE,
@@ -102,8 +102,8 @@ public final class Lift {
                 case LOW_BASKET:                return LOW_BASKET_TICKS;
                 case HIGH_BASKET:               return HIGH_BASKET_TICKS;
                 case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_TICKS;
-                case WALL_PICKUP:               return WALL_PICKUP_TICKS;
                 case BACK_WALL_PICKUP:          return BACK_WALL_PICKUP_TICKS;
+                case BEFORE_BACK_SPECIMEN:      return BEFORE_BACK_SPECIMEN_TICKS;
                 case BACK_WALL_SPECIMEN_SETUP:  return BACK_WALL_SPECIMEN_SETUP_TICKS;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_TICKS;
                 case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
