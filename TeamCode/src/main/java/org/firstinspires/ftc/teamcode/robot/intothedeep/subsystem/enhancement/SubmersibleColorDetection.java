@@ -9,8 +9,10 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.control.controller.PIDController;
@@ -25,7 +27,7 @@ import java.util.List;
 public class SubmersibleColorDetection {
     private final LimelightEx limelightEx;
 
-    private ColorRangefinderEx.SampleColor targetColor;
+    public ColorRangefinderEx.SampleColor targetColor;
 
     private final PIDController axialPID = new PIDController();
     private final PIDController lateralPID = new PIDController();
@@ -55,8 +57,12 @@ public class SubmersibleColorDetection {
 
     private LLResultTypes.ColorResult desiredSample;
 
+    public ElapsedTime driveToTimer = new ElapsedTime();
+
     public int lockSampleCounter = 0;
     public boolean isSampleLocked = false;
+
+    private boolean isExpired = false;
 
     public SubmersibleColorDetection(LimelightEx limelightEx) {
         this.limelightEx = limelightEx;
@@ -130,8 +136,12 @@ public class SubmersibleColorDetection {
 
     public Action driveToTarget() {
         return new Actions.SingleCheckAction(
-                () -> robot.intake.getCurrentSample() != targetColor,
-                new InstantAction(() -> robot.drivetrain.setFieldCentricPowers(calculateTarget()))
+                () -> robot.intake.getCurrentSample() != targetColor || isExpired,
+                new SequentialAction(
+                        new InstantAction(() -> driveToTimer.startTime()),
+                        new InstantAction(() -> isExpired = driveToTimer.milliseconds() > 1000),
+                        new InstantAction(() -> robot.drivetrain.setFieldCentricPowers(calculateTarget()))
+                )
         );
     }
 }

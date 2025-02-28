@@ -41,6 +41,8 @@ public final class Arm {
             BACK_WALL_PICKUP_ARM_ANGLE = 170,
             BACK_WALL_PICKUP_WRIST_ANGLE = 270,
 
+            CHAMBER_FRONT_SETUP_ARM_ANGLE = 175,
+
             BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 270,
             BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 90,
 
@@ -80,6 +82,7 @@ public final class Arm {
     public enum ArmAngle {
         NEUTRAL,
         FRONT_WALL_PICKUP,
+        CHAMBER_FRONT_SETUP,
         FRONT_WALL_SPECIMEN_SETUP,
         FRONT_WALL_SPECIMEN_SCORE,
         BACK_WALL_PICKUP,
@@ -97,6 +100,7 @@ public final class Arm {
                 case BACK_WALL_SPECIMEN_SETUP:  return BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE;
                 case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE;
+                case CHAMBER_FRONT_SETUP:       return CHAMBER_FRONT_SETUP_ARM_ANGLE;
                 case BEFORE_OVERHANG_SPECIMEN:  return BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE;
                 case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_ARM_ANGLE;
                 case COLLECTING:                return COLLECTING_ARM_ANGLE;
