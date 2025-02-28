@@ -123,14 +123,15 @@ public class Specimen6Plus0 extends AbstractAuto {
 
     @Override
     protected Pose2d getStartPose() {
-        return new Pose2d(startingPositionX, startingPositionY, Math.toRadians(270));
+        return new Pose2d(startingPositionX, startingPositionY, Math.toRadians(90));
     }
 
     @Override
     protected void onInit() {
+        super.onInit();
+
         submersibleColorDetection = new SubmersibleColorDetection(robot.limelightEx);
 
-        super.onInit();
         robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
         robot.claw.setAngle(Claw.ClawAngles.CLAMPED);

@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.roadrunner.Action;
@@ -10,9 +15,14 @@ import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.SubmersibleColorDetection;
 
@@ -20,74 +30,55 @@ public class SubDetectionTest extends AbstractAuto{
     private SubmersibleColorDetection submersibleColorDetection;
 
     public static double
-            parkVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -62,
             scoreSpecimenY = -30.5,
-            parkX = 23,
-            parkY = -44.6,
-            extendSleep = 0.2,
-            secondSpecimenOffsetY = 2,
-            thirdSpecimenOffsetY = 2.5,
-            fourthSpecimenOffsetY = 2.5,
-            fifthSpecimenOffsetY = 2.5,
-            secondSpecimenOffsetX = -11,
-            thirdSpecimenOffsetX = -9,
-            fourthSpecimenOffsetX = -5.5,
-            fifthSpecimenOffsetX = -1,
-            sample1X = 47,
-            sample2X = 54.5,
-            sample3X = 63,
-            startFirstSampleY = -12,
-            startSampleY = -14,
-            giveSample2Y = -44.5,
-            bumpSpecimen = -62.5,
-            bumpSecondSpecimen = -62,
-            intakeSpecimenY = -56,
-            giveSample1X = sample1X - 4,
-            giveSample2X = sample2X - 3,
-            giveSample3X = sample3X,
-            giveSampleY = -46,
-            giveSample3Y = -45,
-            wallPickupX = 41.5,
-            firstWallPickupX = 58,
-            secondSweeperSleep = 0.7,
-            thirdSweeperSleep = 0.4,
-            startBumpToClampTime = 0.4,
-            secondSpecimenStartBumpToClampTime = 0.2,
-            givingSampleAngle = 270,
-            setupFrontWallPickupWait = 0.2,
-            scoreSpecimenVelocityConstraint = 140,
-            giveSampleVelocityConstraint = 27,
             scoreFirstSpecimenVelocityConstraint = 140,
-            giveSecondSampleSweeperWait = 0.7,
-            giveFirstSampleSweeperWait = 0.4,
-            minProfileAccel = -30,
             maxProfileAccel = 60,
-            minScoreProfileAccel = -50,
-            maxScoreProfileAccel = 60,
-            firstSpecimenWait = 0,
             minFirstProfileAccel = -45,
-            clampWaitBeforeOverhangSpecimen = 0.2,
-            retractAfterOverhangSpecimenWait = 0.6,
-            setupOverhangSpecimenWait = 0.5,
+            estimatedSixthSample = 10,
             scoreToRetractWait = 0.7,
             sleepSecondsBeforeLimelightActivation = 0.5,
             sleepSecondsBeforeSubDetection = 0.8,
-            sleepSecondsBeforeUnclampFirst = 1.2,
-            sleepSecondsBeforeUnclampSecond = 2.3,
-            sleepSecondsBeforeUnclampThird = 2.1,
-            sleepSecondsBeforeUnclampFourth = 2,
-            sleepSecondsBeforeUnclampFifth = 2,
-
-    secondSpecimenSleepBeforeSetup = 0.5,
-            lastThreeSleepBeforeSetup = 0.4,
-            bumpSpecimenVelConstraint = 20;
+            sleepSecondsBeforeUnclampFirst = 1.2;
 
 
     @Override
     protected Pose2d getStartPose() {
         return new Pose2d(startingPositionX, startingPositionY, Math.toRadians(90));
+    }
+
+    @Override
+    protected void configure() {
+        super.configure();
+        GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
+
+        while (opModeInInit() && !(gamepadEx1.isDown(RIGHT_BUMPER) && gamepadEx1.isDown(LEFT_BUMPER))) {
+            gamepadEx1.readButtons();
+
+            if (gamepadEx1.wasJustPressed(DPAD_LEFT)) estimatedSixthSample--;
+            if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) estimatedSixthSample++;
+
+            mTelemetry.addLine("Estimated 6th sample is : " + estimatedSixthSample);
+
+            mTelemetry.addLine("Press both shoulder buttons to confirm!");
+            mTelemetry.update();
+        }
+    }
+
+    @Override
+    protected void onInit() {
+        super.onInit();
+
+        submersibleColorDetection = new SubmersibleColorDetection(robot.limelightEx);
+
+        robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
+        robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
+        robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
+        robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
+
+        robot.arm.run(false);
+        robot.claw.run();
     }
 
     @Override
@@ -101,6 +92,7 @@ public class SubDetectionTest extends AbstractAuto{
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
+                .afterTime(0, RobotActions.setupSpecimenWithArmstendo())
                 .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
                         new InstantAction(() -> submersibleColorDetection.activateLimelight()),
                         RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
@@ -109,9 +101,23 @@ public class SubDetectionTest extends AbstractAuto{
                         () -> submersibleColorDetection.lockSampleCounter != 9,
                         new InstantAction(() -> submersibleColorDetection.isSampleLocked = submersibleColorDetection.lockTargetSample())
                 ))
-                .lineToY((scoreSpecimenY), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
+                .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
+                        RobotActions.scoreSpecimenWithArmstendo(),
+                        new SleepAction(scoreToRetractWait),
+                        RobotActions.retractToNeutral(0)
+                ))
+                .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
 
-        if (submersibleColorDetection.isSampleLocked) builder = builder.stopAndAdd(submersibleColorDetection.driveToTarget());
+        if (submersibleColorDetection.isSampleLocked) {
+            builder = builder
+                    .stopAndAdd(new SequentialAction(
+                            new ParallelAction(
+                                    RobotActions.setRollers(1, 0),
+                                    submersibleColorDetection.driveToTarget()
+                            ),
+                            RobotActions.retractExtendo()
+                    ));
+        }
 
         return builder;
     }

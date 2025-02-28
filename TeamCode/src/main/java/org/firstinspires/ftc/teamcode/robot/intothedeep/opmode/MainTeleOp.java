@@ -124,7 +124,7 @@ public final class MainTeleOp extends LinearOpMode {
                     doExtendoControls();
                     doIntakeControls();
 
-                    if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupFrontWallPickup());
+                    if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupBackWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
@@ -160,8 +160,8 @@ public final class MainTeleOp extends LinearOpMode {
 
                     break;
                 // CHAMBER =========================================================================
-                case SETUP_CHAMBER_FROM_FRONT:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreOverhangSpecimen());
+                case SETUP_BACK_SPECIMEN_FROM_WALL:
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimenWithArmstendo());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
                 case SCORE_OVERHANG_SPECIMEN:
@@ -171,8 +171,8 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
                     break;
                 // WALL PICKUP =====================================================================
-                case FRONT_WALL_PICKUP:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.takeAndSetupOverhangSpecimen());
+                case BACK_WALL_PICKUP:
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupSpecimenWithArmstendo());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
 
