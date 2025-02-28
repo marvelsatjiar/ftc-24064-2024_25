@@ -20,6 +20,7 @@ public class RobotActions {
                 setNeutralArmWait = 0.25,
                 outtakeRollersWait = 0.25,
                 setV4BTransferWait = 0.25,
+                retractArmstendoWait = 0.2,
                 clampClawWait = 0.2,
                 setCollectingArmWait = 0.25;
     }
@@ -185,7 +186,10 @@ public class RobotActions {
                 new SequentialAction(
                         retractForTransfer(),
                         setWrist(Arm.WristAngle.COLLECTING, 0),
-                        setArm(Arm.ArmAngle.COLLECTING, TRANSFER.setCollectingArmWait),
+                        new ParallelAction(
+                                setArm(Arm.ArmAngle.COLLECTING, TRANSFER.setCollectingArmWait),
+                                setArmstendo(Arm.Extension.TRANSFER, 0)
+                        ),
                         setClaw(Claw.ClawAngles.CLAMPED, TRANSFER.clampClawWait),
                         new ParallelAction(
                                 setV4B(Intake.V4BAngle.TRANSFER, TRANSFER.setV4BTransferWait),
@@ -193,6 +197,7 @@ public class RobotActions {
                                 setWrist(Arm.WristAngle.TRANSFERRED, TRANSFER.setNeutralWristWait),
                                 setArm(Arm.ArmAngle.NEUTRAL, TRANSFER.setNeutralArmWait)
                         ),
+                        setArmstendo(Arm.Extension.RETRACTED, TRANSFER.retractArmstendoWait),
                         new ParallelAction(
                                 setRollers(0, 0),
                                 setV4B(Intake.V4BAngle.UP, 0)
@@ -207,7 +212,10 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_SCORE_BASKET,
                 new SequentialAction(
-                        setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
+                        new ParallelAction(
+                                setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
+                                setArmstendo(Arm.Extension.EXTENDED, 0)
+                        ),
                         setArm(Arm.ArmAngle.BASKET, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
                 )
