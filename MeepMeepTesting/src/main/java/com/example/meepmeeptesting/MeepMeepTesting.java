@@ -227,9 +227,9 @@ public class MeepMeepTesting {
 
     private static TrajectoryActionBuilder getSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                .setTangent(Math.toRadians(270))
+                .setTangent(Math.toRadians(90))
 //                .afterTime(waitBeforeOuttakeSample, RobotActions.extendIntake(Extendo.Extension.ONE_HALF))
-                .splineToLinearHeading(new Pose2d(dropoffFirstSampleX, outtakeSampleY, Math.toRadians(outtakeSampleHeading)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(dropoffFirstSampleX, outtakeSampleY), Math.toRadians(0))
                 .splineToSplineHeading(new Pose2d(getSampleX, intakeSampleY, Math.toRadians(intakeSampleHeading)), Math.toRadians(110))
                 .waitSeconds(0.6)
                 .strafeToLinearHeading(new Vector2d(getSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading), (pose2dDual, posePath, v) -> intakeSpecimenVelocityConstraint)

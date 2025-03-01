@@ -215,9 +215,9 @@ public class Specimen6Plus0 extends AbstractAuto {
     }
     private TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                .setTangent(Math.toRadians(270))
+                .setTangent(Math.toRadians(90))
                 .afterTime(waitBeforeOuttakeSample, RobotActions.extendIntake(Extendo.Extension.ONE_HALF))
-                .splineToLinearHeading(new Pose2d(dropoffFirstSampleX, outtakeSampleY, Math.toRadians(outtakeSampleHeading)), Math.toRadians(0))
+                .splineToConstantHeading(new Vector2d(dropoffFirstSampleX, outtakeSampleY), Math.toRadians(0))
                 .afterTime(0, new SequentialAction(
                         RobotActions.setRollers(-1, outtakeSampleDelay),
                         RobotActions.setRollers(0, 0)
