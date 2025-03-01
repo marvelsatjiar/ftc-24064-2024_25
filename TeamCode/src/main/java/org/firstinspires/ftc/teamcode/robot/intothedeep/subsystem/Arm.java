@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
@@ -46,7 +48,7 @@ public final class Arm {
             BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 270,
             BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 90,
 
-            BACK_WALL_SPECIMEN_SETUP_ARMSTENDO_ANGLE = 50,
+            WALL_PICKUP_ARMSTENDO_ANGLE = 50,
             EXTENDED_ARMSTENDO_ANGLE = 90,
             TRANSFER_ARMSTENDO_ANGLE = 30,
             RETRACTED_ARMSTENDO_ANGLE = 5,
@@ -114,13 +116,13 @@ public final class Arm {
     public enum Extension {
         RETRACTED,
         EXTENDED,
-        SETUP_SPECIMEN_WITH_ARMSTENDO,
+        WALl_PICKUP,
         TRANSFER;
 
         public double getAngle() {
             switch (this) {
                 case EXTENDED:                  return EXTENDED_ARMSTENDO_ANGLE;
-                case SETUP_SPECIMEN_WITH_ARMSTENDO:  return BACK_WALL_SPECIMEN_SETUP_ARMSTENDO_ANGLE;
+                case WALl_PICKUP:               return WALL_PICKUP_ARMSTENDO_ANGLE;
                 case TRANSFER:                  return TRANSFER_ARMSTENDO_ANGLE;
                 case RETRACTED: default:        return RETRACTED_ARMSTENDO_ANGLE;
             }
@@ -135,10 +137,10 @@ public final class Arm {
 
     public Arm(HardwareMap hardwareMap) {
         wrist = new SimpleServo(hardwareMap, "wrist", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
-        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_AXON_MIN, SERVO_AXON_MAX);
+        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_45_KG_MIN, SERVO_45_KG_MAX);
         armServos = new ServoEx[] {
-                new SimpleServo(hardwareMap, "arm master", SERVO_AXON_MIN, SERVO_AXON_MAX),
-                new SimpleServo(hardwareMap, "arm follower", SERVO_AXON_MIN, SERVO_AXON_MAX)
+                new SimpleServo(hardwareMap, "arm master", SERVO_45_KG_MIN, SERVO_45_KG_MAX),
+                new SimpleServo(hardwareMap, "arm follower", SERVO_45_KG_MIN, SERVO_45_KG_MAX)
         };
 
         armServos[1].setInverted(true);
@@ -162,7 +164,9 @@ public final class Arm {
         return true;
     }
 
-    public boolean setArmstendoAngle(Extension extension) {return setArmstendoAngle(extension, false);}
+    public boolean setArmstendoAngle(Extension extension) {
+        return setArmstendoAngle(extension, false);
+    }
 
     public boolean setWristAngle(WristAngle angle, boolean isOverride) {
         if (isLocked && !isOverride) return false;
@@ -185,11 +189,7 @@ public final class Arm {
         return targetWristAngle;
     }
 
-     public void run(boolean liftBelowSafety) {
-        boolean isArmDown = getArmAngle().getAngle() >= UNSAFE_ARM_THRESHOLD;
-        boolean isArmstendoUnsafe = getArmstendoAngle() != Extension.RETRACTED;
-        if (liftBelowSafety && isArmDown && isArmstendoUnsafe) targetArmAngle = ArmAngle.COLLECTING;
-
+     public void run() {
         wrist.turnToAngle(getWristAngle().getAngle());
 
         armstendo.turnToAngle(getArmstendoAngle().getAngle());

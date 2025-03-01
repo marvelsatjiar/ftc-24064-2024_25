@@ -161,18 +161,15 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 // CHAMBER =========================================================================
                 case SETUP_BACK_SPECIMEN_FROM_WALL:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimenWithArmstendo());
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreBackWallSpecimen());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
-                case SCORE_OVERHANG_SPECIMEN:
+                case SCORE_BACK_WALL_SPECIMEN:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
-                    break;
-                case SETUP_CHAMBER_FROM_BACK:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.5));
                     break;
                 // WALL PICKUP =====================================================================
                 case BACK_WALL_PICKUP:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupSpecimenWithArmstendo());
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupBackWallSpecimen());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
 

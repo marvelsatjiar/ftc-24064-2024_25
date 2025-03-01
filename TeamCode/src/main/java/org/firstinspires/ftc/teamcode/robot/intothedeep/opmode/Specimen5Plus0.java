@@ -136,7 +136,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 //        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
 
-        robot.arm.run(false);
+        robot.arm.run();
         robot.claw.run();
 //        robot.intake.run();
     }
@@ -170,9 +170,9 @@ public class Specimen5Plus0 extends AbstractAuto {
         builder = builder
                 .setTangent(Math.toRadians(170))
                 .afterTime(sleepSecondsBeforeUnclamp, new SequentialAction(
-                        RobotActions.scoreOverhangSpecimen(),
-                        new SleepAction(scoreToRetractWait),
-                        RobotActions.setupFrontWallPickup()
+//                        RobotActions.scoreOverhangSpecimen(),
+                        new SleepAction(scoreToRetractWait)
+//                        RobotActions.setupFrontWallPickup()
                 ))
                 .splineToConstantHeading(new Vector2d(5 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
                 .setTangent(Math.toRadians(270))
@@ -181,7 +181,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         // Setting up for the next cycle
         if (!doPark) {
             builder = builder
-                    .afterTime(startBumpToClampTime, RobotActions.stableTakeAndSetupOverhangSpecimen(sleepSecondsBeforeSetup))
+//                    .afterTime(startBumpToClampTime, RobotActions.stableTakeAndSetupOverhangSpecimen(sleepSecondsBeforeSetup))
                     .lineToY(bumpSpecimen, ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint));
         }
 
@@ -192,7 +192,7 @@ public class Specimen5Plus0 extends AbstractAuto {
 
         builder = builder
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, intakeSpecimenY, Math.toRadians(270)), Math.toRadians(270))
-                .afterTime(secondSpecimenStartBumpToClampTime, RobotActions.stableTakeAndSetupOverhangSpecimen(secondSpecimenSleepBeforeSetup))
+//                .afterTime(secondSpecimenStartBumpToClampTime, RobotActions.stableTakeAndSetupOverhangSpecimen(secondSpecimenSleepBeforeSetup))
                 .splineToSplineHeading(new Pose2d(firstWallPickupX, bumpSecondSpecimen, Math.toRadians(270)), Math.toRadians(270));
 
         builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampSecond);
@@ -213,7 +213,7 @@ public class Specimen5Plus0 extends AbstractAuto {
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.ACTIVE, secondSweeperSleep),
 //                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
 //                ))
-                .afterTime(0, RobotActions.setupFrontWallPickup())
+//                .afterTime(0, RobotActions.setupFrontWallPickup())
                 .splineToLinearHeading(new Pose2d(giveSample1X, giveSampleY, Math.toRadians(givingSampleAngle)), Math.toRadians(120), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
                 .splineToConstantHeading(new Vector2d(sample2X, startSampleY), Math.toRadians(270), (pose2dDual, posePath, v) -> giveSampleVelocityConstraint, new ProfileAccelConstraint(minProfileAccel, maxProfileAccel))
 //                .afterTime(giveSecondSampleSweeperWait, new SequentialAction(
@@ -236,9 +236,9 @@ public class Specimen5Plus0 extends AbstractAuto {
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .afterTime(0, RobotActions.takeAndSetupOverhangSpecimen())
+//                .afterTime(0, RobotActions.takeAndSetupOverhangSpecimen())
                 .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
-                        RobotActions.scoreOverhangSpecimen(),
+//                        RobotActions.scoreOverhangSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.retractToNeutral(0)
                 ))
