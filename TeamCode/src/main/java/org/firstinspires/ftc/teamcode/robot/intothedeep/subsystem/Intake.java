@@ -8,14 +8,16 @@ import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
+import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
 public final class Intake {
-    private final CRServo[] intakeGroup;
     private final ServoEx[] intakeLinkGroup;
+
+    private final MotorEx intake;
 
     public static int
             V4B_DOWN_ANGLE = 109,
@@ -29,7 +31,6 @@ public final class Intake {
     private V4BAngle targetAngle = V4BAngle.UP;
 
     private final ColorRangefinderEx rangefinder;
-
 
     public enum V4BAngle {
         DOWN,
@@ -64,17 +65,14 @@ public final class Intake {
     private double rollerPower = 0;
 
     public Intake(HardwareMap hardwareMap) {
-        CRServo intakeFollower = new CRServo(hardwareMap, "intakeFollower");
-        CRServo intakeMaster = new CRServo(hardwareMap, "intakeMaster");
+        intake = new MotorEx(hardwareMap, "intakeMaster");
         ServoEx intakeGearFollower = new SimpleServo(hardwareMap, "intakeLinkFollower", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
         ServoEx intakeGearMaster = new SimpleServo(hardwareMap, "intakeLinkMaster", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
 
-        intakeFollower.setInverted(true);
         intakeGearMaster.setInverted(true);
 
         rangefinder = new ColorRangefinderEx(hardwareMap);
 
-        intakeGroup = new CRServo[] {intakeFollower, intakeMaster};
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
     }
 
@@ -98,8 +96,7 @@ public final class Intake {
 
         rollerPower = power;
 
-        for (CRServo servos : intakeGroup)
-            servos.set(power);
+        intake.set(rollerPower);
 
         return true;
     }
@@ -124,9 +121,6 @@ public final class Intake {
     public ColorRangefinderEx.SampleColor getCurrentSample() {
         return rangefinder.getRawReading();
     }
-//    public ColorRangefinderEx.SampleColor getRawColor(){
-//        return rangefinder.getRawReading();
-//    }
 
 
     public void printTelemetry() {
