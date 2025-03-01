@@ -360,12 +360,12 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.SETUP_BACK_SPECIMEN_FROM_WALL,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.CLAMPED, SETUP_SPECIMEN_WITH_ARMSTENDO.clampClawToPickupFromBackWait),
-                        setLift(Lift.Ticks.BACK_WALL_SPECIMEN_SETUP, SETUP_SPECIMEN_WITH_ARMSTENDO.extendLiftBeforeBackWallSpecimenWait),
+                        setLift(Lift.Ticks.SETUP_SPECIMEN_WITH_ARMSTENDO, SETUP_SPECIMEN_WITH_ARMSTENDO.extendLiftBeforeBackWallSpecimenWait),
                         new ParallelAction(
-                                setArm(Arm.ArmAngle.BACK_WALL_SPECIMEN_SETUP, 0),
-                                setWrist(Arm.WristAngle.BACK_WALL_SPECIMEN_SETUP, 0)
+                                setArm(Arm.ArmAngle.SETUP_SPECIMEN_WITH_ARMSTENDO, 0),
+                                setWrist(Arm.WristAngle.SETUP_SPECIMEN_WITH_ARMSTENDO, 0)
                         ),
-                        setArmstendo(Arm.Extension.BACK_WALL_SPECIMEN_SETUP, SETUP_SPECIMEN_WITH_ARMSTENDO.extendArmstendoBeforeBackWallSpecimenWait),
+                        setArmstendo(Arm.Extension.SETUP_SPECIMEN_WITH_ARMSTENDO, SETUP_SPECIMEN_WITH_ARMSTENDO.extendArmstendoBeforeBackWallSpecimenWait),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_BACK_SPECIMEN_FROM_WALL)
                 )
         );

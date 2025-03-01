@@ -71,6 +71,11 @@ public class Specimen6Plus0 extends AbstractAuto {
             fourthSpecimenOffsetX = -5.5,
             fifthSpecimenOffsetX = -1,
             sixthSpecimenOffsetX = 0.5,
+            sleepSecondsBeforeSetupSecond = 0.8,
+            sleepSecondsBeforeSetupThird = 0.6,
+            sleepSecondsBeforeSetupFourth = 0.7,
+            sleepSecondsBeforeSetupFifth = 0.8,
+            sleepSecondsBeforeSetupSixth = 0.9,
             bumpSpecimen = -62.5,
             bumpSecondSpecimen = -62,
             pickupSecondSpecimenX = 40,
@@ -94,9 +99,7 @@ public class Specimen6Plus0 extends AbstractAuto {
             sleepSecondsBeforeUnclampFourth = 2,
             sleepSecondsBeforeUnclampFifth = 2,
             sleepSecondsBeforeUnclampSixth = 1.9,
-
             secondSpecimenSleepBeforeSetup = 0.5,
-            lastThreeSleepBeforeSetup = 0.4,
             bumpSpecimenVelConstraint = 20;
 
     @Override
@@ -201,11 +204,11 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .afterTime(startBumpToClampTime, RobotActions.stableTakeFromBackWallPickup(secondSpecimenSleepBeforeSetup))
                 .splineToSplineHeading(new Pose2d(pickupSecondSpecimenX, bumpSecondSpecimen, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelConstraint);
 
-        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampSecond);
-        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampThird);
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, false, lastThreeSleepBeforeSetup, sleepSecondsBeforeUnclampFourth);
-        builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, false, 0, sleepSecondsBeforeUnclampFifth);
-        builder = scoreSpecimen(builder, sixthSpecimenOffsetX, sixthSpecimenOffsetY, true, 0, sleepSecondsBeforeUnclampSixth);
+        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
+        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, sleepSecondsBeforeSetupThird, sleepSecondsBeforeUnclampThird);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, false, sleepSecondsBeforeSetupFourth, sleepSecondsBeforeUnclampFourth);
+        builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, false, sleepSecondsBeforeSetupFifth, sleepSecondsBeforeUnclampFifth);
+        builder = scoreSpecimen(builder, sixthSpecimenOffsetX, sixthSpecimenOffsetY, true, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
 
 
         return builder;
