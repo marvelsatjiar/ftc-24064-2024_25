@@ -42,7 +42,7 @@ public class ArmstendoPrototype extends LinearOpMode {
 
             if (gamepadEx.wasJustPressed(DPAD_LEFT)) targetPosition = Arm.Extension.TRANSFER;
             if (gamepadEx.wasJustPressed(DPAD_UP)) targetPosition = Arm.Extension.EXTENDED;
-            if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.SETUP_SPECIMEN_WITH_ARMSTENDO;
+            if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.WALl_PICKUP;
             if (gamepadEx.wasJustPressed(DPAD_DOWN)) targetPosition = Arm.Extension.RETRACTED;
 
             switch (targetArmAngle) {
@@ -83,7 +83,7 @@ public class ArmstendoPrototype extends LinearOpMode {
             arm.setArmAngle(targetArmAngle);
             arm.setArmstendoAngle(targetPosition);
 
-            arm.run(false);
+            arm.run();
         }
     }
 }

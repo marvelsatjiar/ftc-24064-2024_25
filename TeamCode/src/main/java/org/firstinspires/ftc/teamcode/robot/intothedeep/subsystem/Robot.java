@@ -9,7 +9,6 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.robot.drivetrain.MecanumDrive;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAligner;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoWallPickUp;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 import org.firstinspires.ftc.teamcode.util.ActionScheduler;
@@ -99,7 +98,7 @@ public final class Robot {
         intake.run();
         lift.run();
         claw.run();
-        arm.run(lift.getTargetTicks().isArmUnsafe());
+        arm.run();
     }
 
     // Prints data on the driver hub for debugging and other uses

@@ -11,8 +11,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public final class Claw {
 
     public static double
-            CLAMP_ANGLE = 0,
-            DEPOSIT_ANGLE = 30;
+            CLAMP_ANGLE = 12,
+            WALL_PICKUP_ANGLE = 100,
+            DEPOSIT_ANGLE = 35;
 
     public enum ClawAngles {
         CLAMPED,
@@ -22,8 +23,8 @@ public final class Claw {
         public double getAngle() {
             switch (this) {
                 case CLAMPED:               return CLAMP_ANGLE;
-                case WALL_PICKUP:         return 60;
-                case DEPOSIT: default:    return 30;
+                case WALL_PICKUP:           return WALL_PICKUP_ANGLE;
+                case DEPOSIT: default:      return DEPOSIT_ANGLE;
             }
         }
     }

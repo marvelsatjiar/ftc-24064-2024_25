@@ -1,11 +1,9 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
-import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
@@ -16,7 +14,6 @@ import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
@@ -89,7 +86,7 @@ public class SampleAuto extends AbstractAuto {
         robot.arm.setWristAngle(Arm.WristAngle.TRANSFERRED);
         robot.setCurrentState(Robot.State.TRANSFERRED);
 
-        robot.arm.run(false);
+        robot.arm.run();
         robot.claw.run();
     }
 

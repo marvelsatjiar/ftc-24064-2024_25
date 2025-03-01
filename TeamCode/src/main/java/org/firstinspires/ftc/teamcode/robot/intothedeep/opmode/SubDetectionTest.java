@@ -24,10 +24,10 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.SubmersibleColorDetection;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 
 public class SubDetectionTest extends AbstractAuto{
-    private SubmersibleColorDetection submersibleColorDetection;
+    private AutoAlignToSample autoAlignToSample;
 
     public static double
             startingPositionX = 7.375,
@@ -70,14 +70,14 @@ public class SubDetectionTest extends AbstractAuto{
     protected void onInit() {
         super.onInit();
 
-        submersibleColorDetection = new SubmersibleColorDetection(robot.limelightEx);
+        autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
         robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
         robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
         robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 
-        robot.arm.run(false);
+        robot.arm.run();
         robot.claw.run();
     }
 
@@ -92,28 +92,28 @@ public class SubDetectionTest extends AbstractAuto{
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .afterTime(0, RobotActions.setupSpecimenWithArmstendo())
+                .afterTime(0, RobotActions.setupBackWallSpecimen())
                 .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
-                        new InstantAction(() -> submersibleColorDetection.activateLimelight()),
+                        new InstantAction(() -> autoAlignToSample.activateLimelight()),
                         RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
                 ))
                 .afterTime(sleepSecondsBeforeSubDetection, new Actions.SingleCheckAction(
-                        () -> submersibleColorDetection.lockSampleCounter != 9,
-                        new InstantAction(() -> submersibleColorDetection.isSampleLocked = submersibleColorDetection.lockTargetSample())
+                        () -> autoAlignToSample.lockSampleCounter != 9,
+                        new InstantAction(() -> autoAlignToSample.isSampleLocked = autoAlignToSample.lockTargetSample())
                 ))
                 .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
-                        RobotActions.scoreSpecimenWithArmstendo(),
+                        RobotActions.scoreBackWallSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.retractToNeutral(0)
                 ))
                 .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
 
-        if (submersibleColorDetection.isSampleLocked) {
+        if (autoAlignToSample.isSampleLocked) {
             builder = builder
                     .stopAndAdd(new SequentialAction(
                             new ParallelAction(
                                     RobotActions.setRollers(1, 0),
-                                    submersibleColorDetection.driveToTarget()
+                                    autoAlignToSample.driveToTarget()
                             ),
                             RobotActions.retractExtendo()
                     ));

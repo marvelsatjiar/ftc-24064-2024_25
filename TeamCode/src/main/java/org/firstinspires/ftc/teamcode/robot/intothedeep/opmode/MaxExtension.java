@@ -39,7 +39,7 @@ public class MaxExtension extends LinearOpMode {
                 intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
             } else intake.setRollerPower(0);
 
-            arm.run(false);
+            arm.run();
             extendo.run(false);
             lift.run();
             intake.run();

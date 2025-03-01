@@ -24,7 +24,7 @@ import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 import java.util.List;
 
 @Config
-public class SubmersibleColorDetection {
+public class AutoAlignToSample {
     private final LimelightEx limelightEx;
 
     public ColorRangefinderEx.SampleColor targetColor;
@@ -64,7 +64,7 @@ public class SubmersibleColorDetection {
 
     private boolean isExpired = false;
 
-    public SubmersibleColorDetection(LimelightEx limelightEx) {
+    public AutoAlignToSample(LimelightEx limelightEx) {
         this.limelightEx = limelightEx;
 
         axialPID.setGains(axialPIDGains);

@@ -201,9 +201,10 @@ public class MeepMeepTesting {
 
         builder = scoreSpecimen(builder, 0, secondSpecimenOffsetY, false);
         builder = scoreSpecimen(builder, -2.5, 2, false);
-        builder = scoreSpecimen(builder, -5, 3.75, !is5plus0);
+        builder = scoreSpecimen(builder, -5, 2, false);
+        builder = scoreSpecimen(builder, -7.5, 4.25, !is5plus0);
         if (is5plus0)
-            builder = scoreSpecimen(builder, -7.5,fifthSpecimenOffsetY, true);
+            builder = scoreSpecimen(builder, -10,fifthSpecimenOffsetY, true);
 
         return builder;
     }
