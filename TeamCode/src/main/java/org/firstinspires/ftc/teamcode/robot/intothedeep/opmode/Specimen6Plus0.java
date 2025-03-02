@@ -28,6 +28,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
@@ -131,8 +132,10 @@ public class Specimen6Plus0 extends AbstractAuto {
 
         autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
-        robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
-        robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
+        robot.arm.setArmAngle(Arm.ArmAngle.SETUP_BACK_WALL_SPECIMEN);
+        robot.arm.setWristAngle(Arm.WristAngle.SETUP_BACK_WALL_SPECIMEN);
+        robot.arm.setArmstendoAngle(Arm.Extension.SETUP_BACK_WALL_SPECIMEN);
+        robot.lift.setTargetTicks(Lift.Ticks.SETUP_BACK_WALL_SPECIMEN);
         robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
         robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 
@@ -179,7 +182,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .strafeToConstantHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
 
                 .setTangent(Math.toRadians(270))
-                .afterTime(setBackWallPickupWait, RobotActions.setupBackWallPickup())
+                .afterTime(setBackWallPickupWait, RobotActions.backWallPickup())
                 .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel));
 
         // Setting up for the next cycle

@@ -179,7 +179,7 @@ public class RobotActions {
         );
     }
 
-    // DONE
+    // TODO
     public static Action transferToClaw() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.TRANSFERRED,
@@ -234,7 +234,7 @@ public class RobotActions {
     }
 
     // TODO
-    public static Action setupBackWallPickup() {
+    public static Action backWallPickup() {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.BACK_WALL_PICKUP,
                 new SequentialAction(
@@ -252,16 +252,16 @@ public class RobotActions {
     // TODO
     public static Action setupBackWallSpecimen() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_BACK_SPECIMEN_FROM_WALL,
+                () -> robot.currentState != Robot.State.SETUP_BACK_WALL_SPECIMEN,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.CLAMPED, SETUP_SPECIMEN_WITH_ARMSTENDO.clampClawToPickupFromBackWait),
-                        setLift(Lift.Ticks.SETUP_SPECIMEN_WITH_ARMSTENDO, SETUP_SPECIMEN_WITH_ARMSTENDO.extendLiftBeforeBackWallSpecimenWait),
+                        setLift(Lift.Ticks.SETUP_BACK_WALL_SPECIMEN, SETUP_SPECIMEN_WITH_ARMSTENDO.extendLiftBeforeBackWallSpecimenWait),
                         new ParallelAction(
-                                setArm(Arm.ArmAngle.SETUP_SPECIMEN_WITH_ARMSTENDO, 0),
-                                setWrist(Arm.WristAngle.SETUP_SPECIMEN_WITH_ARMSTENDO, 0)
+                                setArm(Arm.ArmAngle.SETUP_BACK_WALL_SPECIMEN, 0),
+                                setWrist(Arm.WristAngle.SETUP_BACK_WALL_SPECIMEN, 0)
                         ),
-                        setArmstendo(Arm.Extension.WALl_PICKUP, SETUP_SPECIMEN_WITH_ARMSTENDO.extendArmstendoBeforeBackWallSpecimenWait),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_BACK_SPECIMEN_FROM_WALL)
+                        setArmstendo(Arm.Extension.SETUP_BACK_WALL_SPECIMEN, SETUP_SPECIMEN_WITH_ARMSTENDO.extendArmstendoBeforeBackWallSpecimenWait),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_BACK_WALL_SPECIMEN)
                 )
         );
     }
@@ -281,7 +281,7 @@ public class RobotActions {
     // TODO
     public static Action stableTakeFromBackWallPickup(double sleepSecondsBeforeSetup) {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_BACK_SPECIMEN_FROM_WALL,
+                () -> robot.currentState != Robot.State.SETUP_BACK_WALL_SPECIMEN,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.CLAMPED, STABLE_TAKE_FROM_BACK_WALL_PICKUP.clampClawToTakeSpecimenWait),
                         setLift(Lift.Ticks.BEFORE_BACK_SPECIMEN, sleepSecondsBeforeSetup),

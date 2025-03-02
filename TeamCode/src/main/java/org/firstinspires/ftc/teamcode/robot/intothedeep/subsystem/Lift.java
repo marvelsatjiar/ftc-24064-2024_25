@@ -43,18 +43,13 @@ public final class Lift {
      * Remember to set these constants correctly! (in ticks)
      */
     public static int
-            DRIFT_TICKS = 50,
             MAX_MOTOR_TICKS = 2550,
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 297,
             HIGH_BASKET_TICKS = 2050,
-            OVERHANG_SPECIMEN_SETUP_TICKS = 1628,
             BACK_WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
             BACK_WALL_SPECIMEN_SETUP_TICKS = 1628,
-            FRONT_WALL_SPECIMEN_SETUP_TICKS = 330,
-            FRONT_WALL_SPECIMEN_SCORE_TICKS = 425,
-            INTERMEDIARY_WALL_PICKUP_TICKS = 1078,
             LEVEL_TWO_CLIMB_SETUP_TICKS = 2550,
             LEVEL_TWO_CLIMB_TICKS = 1716,
             LEVEL_THREE_CLIMB_SETUP_TICKS = 2550,
@@ -85,15 +80,11 @@ public final class Lift {
         HIGH_BASKET,
         BACK_WALL_PICKUP,
         BEFORE_BACK_SPECIMEN,
-        SETUP_SPECIMEN_WITH_ARMSTENDO,
-        FRONT_WALL_SPECIMEN_SETUP,
-        FRONT_WALL_SPECIMEN_SCORE,
-        OVERHANG_SPECIMEN_SETUP,
+        SETUP_BACK_WALL_SPECIMEN,
         LEVEL_TWO_CLIMB_SETUP,
         LEVEL_TWO_CLIMB,
         LEVEL_THREE_CLIMB_SETUP,
         LEVEL_THREE_CLIMB,
-        INTERMEDIARY_WALL_PICKUP,
         CHAMBER_HANG_OVERRIDE,
         EXTENDED;
 
@@ -101,12 +92,9 @@ public final class Lift {
             switch (this) {
                 case LOW_BASKET:                return LOW_BASKET_TICKS;
                 case HIGH_BASKET:               return HIGH_BASKET_TICKS;
-                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_TICKS;
                 case BACK_WALL_PICKUP:          return BACK_WALL_PICKUP_TICKS;
                 case BEFORE_BACK_SPECIMEN:      return BEFORE_BACK_SPECIMEN_TICKS;
-                case SETUP_SPECIMEN_WITH_ARMSTENDO:  return BACK_WALL_SPECIMEN_SETUP_TICKS;
-                case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_TICKS;
-                case INTERMEDIARY_WALL_PICKUP:  return INTERMEDIARY_WALL_PICKUP_TICKS;
+                case SETUP_BACK_WALL_SPECIMEN:  return BACK_WALL_SPECIMEN_SETUP_TICKS;
                 case LEVEL_TWO_CLIMB_SETUP:     return LEVEL_TWO_CLIMB_SETUP_TICKS;
                 case LEVEL_TWO_CLIMB:           return LEVEL_TWO_CLIMB_TICKS;
                 case LEVEL_THREE_CLIMB_SETUP:   return LEVEL_THREE_CLIMB_SETUP_TICKS;
@@ -114,7 +102,6 @@ public final class Lift {
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case CHAMBER_HANG_OVERRIDE:     return CHAMBER_HANG_OVERRIDE_TICKS;
                 case RETRACTED: default:        return MIN_MOTOR_TICKS;
-                case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_TICKS;
             }
         }
 

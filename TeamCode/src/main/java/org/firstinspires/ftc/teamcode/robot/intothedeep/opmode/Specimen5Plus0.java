@@ -26,6 +26,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
@@ -130,8 +131,10 @@ public class Specimen5Plus0 extends AbstractAuto {
     @Override
     protected void onInit() {
         super.onInit();
-        robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
-        robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
+        robot.arm.setArmAngle(Arm.ArmAngle.SETUP_BACK_WALL_SPECIMEN);
+        robot.arm.setWristAngle(Arm.WristAngle.SETUP_BACK_WALL_SPECIMEN);
+        robot.arm.setArmstendoAngle(Arm.Extension.SETUP_BACK_WALL_SPECIMEN);
+        robot.lift.setTargetTicks(Lift.Ticks.SETUP_BACK_WALL_SPECIMEN);
         robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
         robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 //        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);

@@ -4,8 +4,6 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MIN;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -27,23 +25,10 @@ public final class Arm {
             BASKET_ARM_ANGLE = 105,
             BASKET_WRIST_ANGLE = 220,
 
-            FRONT_WALL_PICKUP_ARM_ANGLE = 220,
-            FRONT_WALL_PICKUP_WRIST_ANGLE = 135,
-
-            FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE = 120,
-            FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 200,
-            OVERHANG_SPECIMEN_SETUP_ARM_ANGLE = 50,
             OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE = 255,
-
-            BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE = 200,
-
-            FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE = 160,
-            FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE = 150,
 
             BACK_WALL_PICKUP_ARM_ANGLE = 170,
             BACK_WALL_PICKUP_WRIST_ANGLE = 270,
-
-            CHAMBER_FRONT_SETUP_ARM_ANGLE = 175,
 
             BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 270,
             BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 90,
@@ -51,17 +36,12 @@ public final class Arm {
             WALL_PICKUP_ARMSTENDO_ANGLE = 50,
             EXTENDED_ARMSTENDO_ANGLE = 90,
             TRANSFER_ARMSTENDO_ANGLE = 30,
-            RETRACTED_ARMSTENDO_ANGLE = 5,
-
-            UNSAFE_ARM_THRESHOLD = 240;
+            RETRACTED_ARMSTENDO_ANGLE = 5;
 
     public enum WristAngle {
         COLLECTING,
-        FRONT_WALL_PICKUP,
-        FRONT_WALL_SPECIMEN_SETUP,
-        FRONT_WALL_SPECIMEN_SCORE,
         BACK_WALL_PICKUP,
-        SETUP_SPECIMEN_WITH_ARMSTENDO,
+        SETUP_BACK_WALL_SPECIMEN,
         TRANSFERRED,
         BASKET,
         OVERHANG_SPECIMEN_SETUP;
@@ -69,11 +49,8 @@ public final class Arm {
         public double getAngle() {
             switch (this) {
                 case BASKET:                        return BASKET_WRIST_ANGLE;
-                case FRONT_WALL_PICKUP:             return FRONT_WALL_PICKUP_WRIST_ANGLE;
                 case BACK_WALL_PICKUP:              return BACK_WALL_PICKUP_WRIST_ANGLE;
-                case SETUP_SPECIMEN_WITH_ARMSTENDO:      return BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
-                case FRONT_WALL_SPECIMEN_SETUP:     return FRONT_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
-                case FRONT_WALL_SPECIMEN_SCORE:     return FRONT_WALL_SPECIMEN_SCORE_WRIST_ANGLE;
+                case SETUP_BACK_WALL_SPECIMEN:      return BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
                 case OVERHANG_SPECIMEN_SETUP:       return OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE;
                 case TRANSFERRED:                   return TRANSFERRED_WRIST_ANGLE;
                 case COLLECTING: default:           return COLLECTING_WRIST_ANGLE;
@@ -83,28 +60,16 @@ public final class Arm {
 
     public enum ArmAngle {
         NEUTRAL,
-        FRONT_WALL_PICKUP,
-        CHAMBER_FRONT_SETUP,
-        FRONT_WALL_SPECIMEN_SETUP,
-        FRONT_WALL_SPECIMEN_SCORE,
         BACK_WALL_PICKUP,
-        SETUP_SPECIMEN_WITH_ARMSTENDO,
+        SETUP_BACK_WALL_SPECIMEN,
         COLLECTING,
-        BASKET,
-        OVERHANG_SPECIMEN_SETUP,
-        BEFORE_OVERHANG_SPECIMEN;
+        BASKET;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:                    return BASKET_ARM_ANGLE;
-                case FRONT_WALL_PICKUP:         return FRONT_WALL_PICKUP_ARM_ANGLE;
                 case BACK_WALL_PICKUP:          return BACK_WALL_PICKUP_ARM_ANGLE;
-                case SETUP_SPECIMEN_WITH_ARMSTENDO:  return BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE;
-                case FRONT_WALL_SPECIMEN_SETUP: return FRONT_WALL_SPECIMEN_SETUP_ARM_ANGLE;
-                case FRONT_WALL_SPECIMEN_SCORE: return FRONT_WALL_SPECIMEN_SCORE_ARM_ANGLE;
-                case CHAMBER_FRONT_SETUP:       return CHAMBER_FRONT_SETUP_ARM_ANGLE;
-                case BEFORE_OVERHANG_SPECIMEN:  return BEFORE_OVERHANG_SPECIMEN_ARM_ANGLE;
-                case OVERHANG_SPECIMEN_SETUP:   return OVERHANG_SPECIMEN_SETUP_ARM_ANGLE;
+                case SETUP_BACK_WALL_SPECIMEN:  return BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE;
                 case COLLECTING:                return COLLECTING_ARM_ANGLE;
                 case NEUTRAL: default:          return NEUTRAL_ARM_ANGLE;
             }
@@ -116,13 +81,13 @@ public final class Arm {
     public enum Extension {
         RETRACTED,
         EXTENDED,
-        WALl_PICKUP,
+        SETUP_BACK_WALL_SPECIMEN,
         TRANSFER;
 
         public double getAngle() {
             switch (this) {
                 case EXTENDED:                  return EXTENDED_ARMSTENDO_ANGLE;
-                case WALl_PICKUP:               return WALL_PICKUP_ARMSTENDO_ANGLE;
+                case SETUP_BACK_WALL_SPECIMEN:               return WALL_PICKUP_ARMSTENDO_ANGLE;
                 case TRANSFER:                  return TRANSFER_ARMSTENDO_ANGLE;
                 case RETRACTED: default:        return RETRACTED_ARMSTENDO_ANGLE;
             }

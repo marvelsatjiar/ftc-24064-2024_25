@@ -42,7 +42,7 @@ public class ArmstendoPrototype extends LinearOpMode {
 
             if (gamepadEx.wasJustPressed(DPAD_LEFT)) targetPosition = Arm.Extension.TRANSFER;
             if (gamepadEx.wasJustPressed(DPAD_UP)) targetPosition = Arm.Extension.EXTENDED;
-            if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.WALl_PICKUP;
+            if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.SETUP_BACK_WALL_SPECIMEN;
             if (gamepadEx.wasJustPressed(DPAD_DOWN)) targetPosition = Arm.Extension.RETRACTED;
 
             switch (targetArmAngle) {
@@ -54,9 +54,9 @@ public class ArmstendoPrototype extends LinearOpMode {
                     break;
                 case BACK_WALL_PICKUP:
                     lift.setTargetTicks(Lift.Ticks.BACK_WALL_PICKUP);
-                    if (isAPressed) targetArmAngle = Arm.ArmAngle.SETUP_SPECIMEN_WITH_ARMSTENDO;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.SETUP_BACK_WALL_SPECIMEN;
                     break;
-                case SETUP_SPECIMEN_WITH_ARMSTENDO:
+                case SETUP_BACK_WALL_SPECIMEN:
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
@@ -72,9 +72,9 @@ public class ArmstendoPrototype extends LinearOpMode {
                     if (isBPressed) targetWristAngle = Arm.WristAngle.BACK_WALL_PICKUP;
                     break;
                 case BACK_WALL_PICKUP:
-                    if (isBPressed) targetWristAngle = Arm.WristAngle.SETUP_SPECIMEN_WITH_ARMSTENDO;
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.SETUP_BACK_WALL_SPECIMEN;
                     break;
-                case SETUP_SPECIMEN_WITH_ARMSTENDO:
+                case SETUP_BACK_WALL_SPECIMEN:
                     if (isBPressed) targetWristAngle = Arm.WristAngle.COLLECTING;
                     break;
             }
