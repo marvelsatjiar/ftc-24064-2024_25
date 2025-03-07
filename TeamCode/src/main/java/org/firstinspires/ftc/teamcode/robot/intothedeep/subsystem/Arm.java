@@ -20,9 +20,9 @@ public final class Arm {
     public static double
             NEUTRAL_ARM_ANGLE = 195,
             TRANSFERRED_WRIST_ANGLE = 220,
-            COLLECTING_ARM_ANGLE = 227,
+            COLLECTING_ARM_ANGLE = 205,
             COLLECTING_WRIST_ANGLE = 45,
-            BASKET_ARM_ANGLE = 105,
+            BASKET_ARM_ANGLE = 60,
             BASKET_WRIST_ANGLE = 220,
 
             OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE = 255,
@@ -33,10 +33,10 @@ public final class Arm {
             BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 270,
             BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 90,
 
-            WALL_PICKUP_ARMSTENDO_ANGLE = 50,
-            EXTENDED_ARMSTENDO_ANGLE = 90,
-            TRANSFER_ARMSTENDO_ANGLE = 30,
-            RETRACTED_ARMSTENDO_ANGLE = 5;
+            WALL_PICKUP_ARMSTENDO_ANGLE = 90,
+            EXTENDED_ARMSTENDO_ANGLE = 25,
+            TRANSFER_ARMSTENDO_ANGLE = 55,
+            RETRACTED_ARMSTENDO_ANGLE = 90;
 
     public enum WristAngle {
         COLLECTING,
@@ -167,5 +167,6 @@ public final class Arm {
     public void printTelemetry() {
         mTelemetry.addData("ARM STATE:", targetArmAngle.name());
         mTelemetry.addData("WRIST STATE:", targetWristAngle.name());
+        mTelemetry.addData("ARMSTENDO STATE", targetArmstendoExtension.name());
     }
 }

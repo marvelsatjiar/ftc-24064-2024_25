@@ -83,6 +83,9 @@ public class ArmstendoPrototype extends LinearOpMode {
             arm.setArmAngle(targetArmAngle);
             arm.setArmstendoAngle(targetPosition);
 
+            arm.printTelemetry();
+            mTelemetry.update();
+
             arm.run();
         }
     }

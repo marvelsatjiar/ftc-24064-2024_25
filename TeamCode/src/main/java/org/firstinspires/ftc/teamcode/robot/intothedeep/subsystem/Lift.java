@@ -86,7 +86,7 @@ public final class Lift {
         LEVEL_THREE_CLIMB_SETUP,
         LEVEL_THREE_CLIMB,
         CHAMBER_HANG_OVERRIDE,
-        EXTENDED;
+            EXTENDED;
 
         private int toTicks() {
             switch (this) {

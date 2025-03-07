@@ -33,7 +33,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 
-@Autonomous(name = "Specimen 5+0")
+@Autonomous(name = "Specimen 6+0")
 @Config
 public class Specimen6Plus0 extends AbstractAuto {
     private AutoAlignToSample autoAlignToSample;
