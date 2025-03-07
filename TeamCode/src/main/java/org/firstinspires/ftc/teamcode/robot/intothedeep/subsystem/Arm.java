@@ -25,33 +25,30 @@ public final class Arm {
             BASKET_ARM_ANGLE = 60,
             BASKET_WRIST_ANGLE = 220,
 
-            OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE = 255,
+            WALL_PICKUP_ARM_ANGLE = 170,
+            WALL_PICKUP_WRIST_ANGLE = 270,
 
-            BACK_WALL_PICKUP_ARM_ANGLE = 170,
-            BACK_WALL_PICKUP_WRIST_ANGLE = 270,
-
-            BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE = 270,
-            BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE = 90,
+            SCORE_SPECIMEN_ARM_ANGLE = 270,
+            SCORE_SPECIMEN_WRIST_ANGLE = 90,
 
             WALL_PICKUP_ARMSTENDO_ANGLE = 90,
+            SETUP_SPECIMEN_ANGLE = 45,
             EXTENDED_ARMSTENDO_ANGLE = 25,
             TRANSFER_ARMSTENDO_ANGLE = 55,
             RETRACTED_ARMSTENDO_ANGLE = 90;
 
     public enum WristAngle {
         COLLECTING,
-        BACK_WALL_PICKUP,
-        SETUP_BACK_WALL_SPECIMEN,
+        WALL_PICKUP,
+        SCORE_SPECIMEN,
         TRANSFERRED,
-        BASKET,
-        OVERHANG_SPECIMEN_SETUP;
+        BASKET;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:                        return BASKET_WRIST_ANGLE;
-                case BACK_WALL_PICKUP:              return BACK_WALL_PICKUP_WRIST_ANGLE;
-                case SETUP_BACK_WALL_SPECIMEN:      return BACK_WALL_SPECIMEN_SETUP_WRIST_ANGLE;
-                case OVERHANG_SPECIMEN_SETUP:       return OVERHANG_SPECIMEN_SETUP_WRIST_ANGLE;
+                case WALL_PICKUP:                   return WALL_PICKUP_WRIST_ANGLE;
+                case SCORE_SPECIMEN:                return SCORE_SPECIMEN_WRIST_ANGLE;
                 case TRANSFERRED:                   return TRANSFERRED_WRIST_ANGLE;
                 case COLLECTING: default:           return COLLECTING_WRIST_ANGLE;
             }
@@ -60,16 +57,16 @@ public final class Arm {
 
     public enum ArmAngle {
         NEUTRAL,
-        BACK_WALL_PICKUP,
-        SETUP_BACK_WALL_SPECIMEN,
+        WALL_PICKUP,
+        SCORE_SPECIMEN,
         COLLECTING,
         BASKET;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:                    return BASKET_ARM_ANGLE;
-                case BACK_WALL_PICKUP:          return BACK_WALL_PICKUP_ARM_ANGLE;
-                case SETUP_BACK_WALL_SPECIMEN:  return BACK_WALL_SPECIMEN_SETUP_ARM_ANGLE;
+                case WALL_PICKUP:               return WALL_PICKUP_ARM_ANGLE;
+                case SCORE_SPECIMEN:            return SCORE_SPECIMEN_ARM_ANGLE;
                 case COLLECTING:                return COLLECTING_ARM_ANGLE;
                 case NEUTRAL: default:          return NEUTRAL_ARM_ANGLE;
             }
@@ -81,13 +78,15 @@ public final class Arm {
     public enum Extension {
         RETRACTED,
         EXTENDED,
-        SETUP_BACK_WALL_SPECIMEN,
+        SETUP_SPECIMEN,
+        WALL_PICKUP,
         TRANSFER;
 
         public double getAngle() {
             switch (this) {
                 case EXTENDED:                  return EXTENDED_ARMSTENDO_ANGLE;
-                case SETUP_BACK_WALL_SPECIMEN:               return WALL_PICKUP_ARMSTENDO_ANGLE;
+                case WALL_PICKUP:               return WALL_PICKUP_ARMSTENDO_ANGLE;
+                case SETUP_SPECIMEN:            return SETUP_SPECIMEN_ANGLE;
                 case TRANSFER:                  return TRANSFER_ARMSTENDO_ANGLE;
                 case RETRACTED: default:        return RETRACTED_ARMSTENDO_ANGLE;
             }

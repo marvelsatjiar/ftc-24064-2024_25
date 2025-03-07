@@ -92,7 +92,7 @@ public class SubDetectionTest extends AbstractAuto{
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .afterTime(0, RobotActions.setupBackWallSpecimen())
+                .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
                         new InstantAction(() -> autoAlignToSample.activateLimelight()),
                         RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
@@ -102,7 +102,7 @@ public class SubDetectionTest extends AbstractAuto{
                         new InstantAction(() -> autoAlignToSample.isSampleLocked = autoAlignToSample.lockTargetSample())
                 ))
                 .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
-                        RobotActions.scoreBackWallSpecimen(),
+                        RobotActions.scoreSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.retractToNeutral(0)
                 ))

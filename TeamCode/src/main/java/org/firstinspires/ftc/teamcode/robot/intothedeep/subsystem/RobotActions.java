@@ -45,28 +45,6 @@ public class RobotActions {
         public double unclampClawToScoreWait = 0.2;
     }
 
-    public static class SetupFrontWallPickup {
-        public double
-                retractToNeutralDelay = 1,
-                setV4BToPickupWait = 0.3,
-                setWristToPickupWait = 0.1,
-                setArmToPickupWait = 0.1,
-                setClawToWallPickupWait = 0.1;
-    }
-
-    public static class FrontWallSpecimenSetup {
-        public double
-                clampClawToTakeSpecimenWait = 0.2,
-                setArmSpecimenSetupWait = 0.1,
-                setWristSpecimenSetupWait = 0.1,
-                extendLiftForSpecimenSetupWait = 0.1;
-    }
-
-    public static class FrontWallSpecimenScore {
-        public double
-                setArmToScoreSpecimenWait = 0.3;
-    }
-
     public static class DropSamples {
         public double
                 setWristToDropSampleWait = 0.15,
@@ -82,31 +60,30 @@ public class RobotActions {
                 retractLiftToClimbWait = 3;
     }
 
-    public static class OverhangSpecimen {
-        public double setSpecimenDelay = 0.2;
-    }
-
     public static class BackWallPickup {
         public double
-                setLiftToPickupFromBackWait = 0.4,
-                setArmToPickupFromBackWait = 0.2;
+                setLiftWait = 0.4,
+                setArmstendoWait = 0.3,
+                setArmWait = 0.2;
     }
 
-    public static class setupSpecimenWithArmstendo {
+    public static class setupSpecimen {
         public double
-                clampClawToPickupFromBackWait = 0.2,
-                extendLiftBeforeBackWallSpecimenWait = 0.4,
-                extendArmstendoBeforeBackWallSpecimenWait = 0.3;
+                clampClawWait = 0.2,
+                setArmWait = 0.25,
+                setArmstendoWait = 0.3,
+                setLiftWait = 0,
+                extendArmstendoWait = 0.3;
     }
 
-    public static class scoreSpecimenWithArmstendo {
+    public static class scoreSpecimen {
         public double
-                extendArmstendoToScoreSpecimenWait = 0.3,
-                unclampClawToScoreSpecimenWait = 0.5;
+                extendArmstendoWait = 0.3,
+                unclampClawWait = 0.5;
     }
 
     public static class StableTakeFromBackWallSpecimen {
-        public double clampClawToTakeSpecimenWait = 0.2;
+        public double clampClawWait = 0.2;
     }
 
     public static Transfer TRANSFER = new Transfer();
@@ -114,15 +91,11 @@ public class RobotActions {
     public static ExtendIntake EXTEND_INTAKE = new ExtendIntake();
     public static SetupBasket SETUP_BASKET = new SetupBasket();
     public static ScoreBasket SCORE_BASKET = new ScoreBasket();
-    public static SetupFrontWallPickup SETUP_FRONT_WALL_PICKUP = new SetupFrontWallPickup();
-    public static FrontWallSpecimenSetup FRONT_WALL_SPECIMEN_SETUP = new FrontWallSpecimenSetup();
-    public static FrontWallSpecimenScore FRONT_WALL_SPECIMEN_SCORE = new FrontWallSpecimenScore();
     public static DropSamples DROP_SAMPLES = new DropSamples();
     public static LevelTwoHang LEVEL_TWO_HANG = new LevelTwoHang();
-    public static OverhangSpecimen OVERHANG_SPECIMEN = new OverhangSpecimen();
-    public static BackWallPickup BACK_WALL_PICKUP = new BackWallPickup();
-    public static setupSpecimenWithArmstendo SETUP_SPECIMEN_WITH_ARMSTENDO = new setupSpecimenWithArmstendo();
-    public static scoreSpecimenWithArmstendo SCORE_SPECIMEN_WITH_ARMSTENDO = new scoreSpecimenWithArmstendo();
+    public static BackWallPickup WALL_PICKUP = new BackWallPickup();
+    public static setupSpecimen SETUP_SPECIMEN = new setupSpecimen();
+    public static scoreSpecimen SCORE_SPECIMEN = new scoreSpecimen();
     public static StableTakeFromBackWallSpecimen STABLE_TAKE_FROM_BACK_WALL_PICKUP = new StableTakeFromBackWallSpecimen();
 
 
@@ -234,59 +207,61 @@ public class RobotActions {
     }
 
     // TODO
-    public static Action backWallPickup() {
+    public static Action setupWallPickup() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.BACK_WALL_PICKUP,
+                () -> robot.currentState != Robot.State.WALL_PICKUP,
                 new SequentialAction(
-                        setLift(Lift.Ticks.BACK_WALL_PICKUP, BACK_WALL_PICKUP.setLiftToPickupFromBackWait),
+                        setLift(Lift.Ticks.WALL_PICKUP, WALL_PICKUP.setLiftWait),
                         new ParallelAction(
-                                setArm(Arm.ArmAngle.BACK_WALL_PICKUP, BACK_WALL_PICKUP.setArmToPickupFromBackWait),
-                                setClaw(Claw.ClawAngles.WALL_PICKUP, 0),
-                                setWrist(Arm.WristAngle.BACK_WALL_PICKUP, 0)
+                                setArmstendo(Arm.Extension.WALL_PICKUP, WALL_PICKUP.setArmstendoWait),
+                                setWrist(Arm.WristAngle.WALL_PICKUP, 0),
+                                setClaw(Claw.ClawAngles.WALL_PICKUP, 0)
                         ),
-                        new InstantAction(() -> robot.currentState = Robot.State.BACK_WALL_PICKUP)
+                        setArm(Arm.ArmAngle.WALL_PICKUP, WALL_PICKUP.setArmWait),
+                        new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
                 )
         );
     }
 
     // TODO
-    public static Action setupBackWallSpecimen() {
+    public static Action setupSpecimen() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_BACK_WALL_SPECIMEN,
+                () -> robot.currentState != Robot.State.SETUP_SPECIMEN,
                 new SequentialAction(
-                        setClaw(Claw.ClawAngles.CLAMPED, SETUP_SPECIMEN_WITH_ARMSTENDO.clampClawToPickupFromBackWait),
-                        setLift(Lift.Ticks.SETUP_BACK_WALL_SPECIMEN, SETUP_SPECIMEN_WITH_ARMSTENDO.extendLiftBeforeBackWallSpecimenWait),
+                        setClaw(Claw.ClawAngles.CLAMPED, SETUP_SPECIMEN.clampClawWait),
+                        setArmstendo(Arm.Extension.RETRACTED, SETUP_SPECIMEN.setArmstendoWait),
+                        setLift(Lift.Ticks.SETUP_SPECIMEN, SETUP_SPECIMEN.setLiftWait),
                         new ParallelAction(
-                                setArm(Arm.ArmAngle.SETUP_BACK_WALL_SPECIMEN, 0),
-                                setWrist(Arm.WristAngle.SETUP_BACK_WALL_SPECIMEN, 0)
+                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait),
+                                setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0)
                         ),
-                        setArmstendo(Arm.Extension.SETUP_BACK_WALL_SPECIMEN, SETUP_SPECIMEN_WITH_ARMSTENDO.extendArmstendoBeforeBackWallSpecimenWait),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_BACK_WALL_SPECIMEN)
+                        setArmstendo(Arm.Extension.SETUP_SPECIMEN, SETUP_SPECIMEN.extendArmstendoWait),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_SPECIMEN)
                 )
         );
     }
 
     // TODO
-    public static Action scoreBackWallSpecimen() {
+    public static Action scoreSpecimen() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SCORE_BACK_WALL_SPECIMEN,
+                () -> robot.currentState != Robot.State.SCORE_SPECIMEN,
                 new SequentialAction(
-                        setArmstendo(Arm.Extension.EXTENDED, SCORE_SPECIMEN_WITH_ARMSTENDO.extendArmstendoToScoreSpecimenWait),
-                        setClaw(Claw.ClawAngles.DEPOSIT, SCORE_SPECIMEN_WITH_ARMSTENDO.unclampClawToScoreSpecimenWait),
-                        new InstantAction(() -> robot.currentState = Robot.State.SCORE_BACK_WALL_SPECIMEN)
+                        setArmstendo(Arm.Extension.EXTENDED, SCORE_SPECIMEN.extendArmstendoWait),
+                        setClaw(Claw.ClawAngles.DEPOSIT, SCORE_SPECIMEN.unclampClawWait),
+                        new InstantAction(() -> robot.currentState = Robot.State.SCORE_SPECIMEN)
                 )
         );
     }
 
     // TODO
-    public static Action stableTakeFromBackWallPickup(double sleepSecondsBeforeSetup) {
+    public static Action stableWallPickup(double sleepSecondsBeforeSetup) {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_BACK_WALL_SPECIMEN,
+                () -> robot.currentState != Robot.State.SETUP_SPECIMEN,
                 new SequentialAction(
-                        setClaw(Claw.ClawAngles.CLAMPED, STABLE_TAKE_FROM_BACK_WALL_PICKUP.clampClawToTakeSpecimenWait),
-                        setLift(Lift.Ticks.BEFORE_BACK_SPECIMEN, sleepSecondsBeforeSetup),
-                        new InstantAction(() -> robot.currentState = Robot.State.BACK_WALL_PICKUP),
-                        setupBackWallSpecimen()
+                        setClaw(Claw.ClawAngles.CLAMPED, STABLE_TAKE_FROM_BACK_WALL_PICKUP.clampClawWait),
+                        setArmstendo(Arm.Extension.RETRACTED, sleepSecondsBeforeSetup),
+                        new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP),
+                        setupSpecimen()
                 )
         );
     }

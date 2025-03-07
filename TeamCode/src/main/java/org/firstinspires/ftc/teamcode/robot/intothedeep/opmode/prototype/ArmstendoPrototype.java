@@ -42,7 +42,7 @@ public class ArmstendoPrototype extends LinearOpMode {
 
             if (gamepadEx.wasJustPressed(DPAD_LEFT)) targetPosition = Arm.Extension.TRANSFER;
             if (gamepadEx.wasJustPressed(DPAD_UP)) targetPosition = Arm.Extension.EXTENDED;
-            if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.SETUP_BACK_WALL_SPECIMEN;
+            if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.WALL_PICKUP;
             if (gamepadEx.wasJustPressed(DPAD_DOWN)) targetPosition = Arm.Extension.RETRACTED;
 
             switch (targetArmAngle) {
@@ -50,13 +50,13 @@ public class ArmstendoPrototype extends LinearOpMode {
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.BASKET;
                     break;
                 case BASKET:
-                    if (isAPressed) targetArmAngle = Arm.ArmAngle.BACK_WALL_PICKUP;
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.WALL_PICKUP;
                     break;
-                case BACK_WALL_PICKUP:
-                    lift.setTargetTicks(Lift.Ticks.BACK_WALL_PICKUP);
-                    if (isAPressed) targetArmAngle = Arm.ArmAngle.SETUP_BACK_WALL_SPECIMEN;
+                case WALL_PICKUP:
+                    lift.setTargetTicks(Lift.Ticks.WALL_PICKUP);
+                    if (isAPressed) targetArmAngle = Arm.ArmAngle.SCORE_SPECIMEN;
                     break;
-                case SETUP_BACK_WALL_SPECIMEN:
+                case SCORE_SPECIMEN:
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.NEUTRAL;
                     break;
                 case NEUTRAL:
@@ -69,12 +69,12 @@ public class ArmstendoPrototype extends LinearOpMode {
                     if (isBPressed) targetWristAngle = Arm.WristAngle.BASKET;
                     break;
                 case BASKET:
-                    if (isBPressed) targetWristAngle = Arm.WristAngle.BACK_WALL_PICKUP;
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.WALL_PICKUP;
                     break;
-                case BACK_WALL_PICKUP:
-                    if (isBPressed) targetWristAngle = Arm.WristAngle.SETUP_BACK_WALL_SPECIMEN;
+                case WALL_PICKUP:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.SCORE_SPECIMEN;
                     break;
-                case SETUP_BACK_WALL_SPECIMEN:
+                case SCORE_SPECIMEN:
                     if (isBPressed) targetWristAngle = Arm.WristAngle.COLLECTING;
                     break;
             }

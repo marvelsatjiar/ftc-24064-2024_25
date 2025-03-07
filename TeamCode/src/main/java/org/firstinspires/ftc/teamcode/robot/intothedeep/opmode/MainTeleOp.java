@@ -124,7 +124,7 @@ public final class MainTeleOp extends LinearOpMode {
                     doExtendoControls();
                     doIntakeControls();
 
-                    if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.backWallPickup());
+                    if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
@@ -160,16 +160,16 @@ public final class MainTeleOp extends LinearOpMode {
 
                     break;
                 // CHAMBER =========================================================================
-                case SETUP_BACK_WALL_SPECIMEN:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreBackWallSpecimen());
+                case SETUP_SPECIMEN:
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimen());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
-                case SCORE_BACK_WALL_SPECIMEN:
+                case SCORE_SPECIMEN:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
                     break;
                 // WALL PICKUP =====================================================================
-                case BACK_WALL_PICKUP:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupBackWallSpecimen());
+                case WALL_PICKUP:
+                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupSpecimen());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
 

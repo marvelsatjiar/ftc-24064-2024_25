@@ -47,9 +47,9 @@ public final class Lift {
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 297,
             HIGH_BASKET_TICKS = 2050,
-            BACK_WALL_PICKUP_TICKS = 953,
+            WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
-            BACK_WALL_SPECIMEN_SETUP_TICKS = 1628,
+            SPECIMEN_SETUP_TICKS = 1628,
             LEVEL_TWO_CLIMB_SETUP_TICKS = 2550,
             LEVEL_TWO_CLIMB_TICKS = 1716,
             LEVEL_THREE_CLIMB_SETUP_TICKS = 2550,
@@ -78,23 +78,23 @@ public final class Lift {
         RETRACTED,
         LOW_BASKET,
         HIGH_BASKET,
-        BACK_WALL_PICKUP,
+        WALL_PICKUP,
         BEFORE_BACK_SPECIMEN,
-        SETUP_BACK_WALL_SPECIMEN,
+        SETUP_SPECIMEN,
         LEVEL_TWO_CLIMB_SETUP,
         LEVEL_TWO_CLIMB,
         LEVEL_THREE_CLIMB_SETUP,
         LEVEL_THREE_CLIMB,
         CHAMBER_HANG_OVERRIDE,
-            EXTENDED;
+        EXTENDED;
 
         private int toTicks() {
             switch (this) {
                 case LOW_BASKET:                return LOW_BASKET_TICKS;
                 case HIGH_BASKET:               return HIGH_BASKET_TICKS;
-                case BACK_WALL_PICKUP:          return BACK_WALL_PICKUP_TICKS;
+                case WALL_PICKUP:               return WALL_PICKUP_TICKS;
                 case BEFORE_BACK_SPECIMEN:      return BEFORE_BACK_SPECIMEN_TICKS;
-                case SETUP_BACK_WALL_SPECIMEN:  return BACK_WALL_SPECIMEN_SETUP_TICKS;
+                case SETUP_SPECIMEN:            return SPECIMEN_SETUP_TICKS;
                 case LEVEL_TWO_CLIMB_SETUP:     return LEVEL_TWO_CLIMB_SETUP_TICKS;
                 case LEVEL_TWO_CLIMB:           return LEVEL_TWO_CLIMB_TICKS;
                 case LEVEL_THREE_CLIMB_SETUP:   return LEVEL_THREE_CLIMB_SETUP_TICKS;

@@ -132,10 +132,10 @@ public class Specimen6Plus0 extends AbstractAuto {
 
         autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
-        robot.arm.setArmAngle(Arm.ArmAngle.SETUP_BACK_WALL_SPECIMEN);
-        robot.arm.setWristAngle(Arm.WristAngle.SETUP_BACK_WALL_SPECIMEN);
-        robot.arm.setArmstendoAngle(Arm.Extension.SETUP_BACK_WALL_SPECIMEN);
-        robot.lift.setTargetTicks(Lift.Ticks.SETUP_BACK_WALL_SPECIMEN);
+        robot.arm.setArmAngle(Arm.ArmAngle.SCORE_SPECIMEN);
+        robot.arm.setWristAngle(Arm.WristAngle.SCORE_SPECIMEN);
+        robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
+        robot.lift.setTargetTicks(Lift.Ticks.SETUP_SPECIMEN);
         robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
         robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 
@@ -173,7 +173,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .setTangent(90)
                 .afterTime(sleepSecondsBeforeUnclamp, new SequentialAction(
                         new ParallelAction(
-                                RobotActions.scoreBackWallSpecimen(),
+                                RobotActions.scoreSpecimen(),
                                 new SleepAction(scoreToRetractWait)
                         ),
                         RobotActions.setArmstendo(Arm.Extension.RETRACTED, 0)
@@ -182,13 +182,13 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .strafeToConstantHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
 
                 .setTangent(Math.toRadians(270))
-                .afterTime(setBackWallPickupWait, RobotActions.backWallPickup())
+                .afterTime(setBackWallPickupWait, RobotActions.setupWallPickup())
                 .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel));
 
         // Setting up for the next cycle
         if (!doPark) {
             builder = builder
-                    .afterTime(startBumpToClampTime, RobotActions.stableTakeFromBackWallPickup(sleepSecondsBeforeSetup))
+                    .afterTime(startBumpToClampTime, RobotActions.stableWallPickup(sleepSecondsBeforeSetup))
                     .lineToY(bumpSpecimen, ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint));
         }
 
@@ -200,7 +200,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         builder = builder
                 .setTangent(180)
                 .splineToSplineHeading(new Pose2d(pickupSecondSpecimenX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270))
-                .afterTime(startBumpToClampTime, RobotActions.stableTakeFromBackWallPickup(secondSpecimenSleepBeforeSetup))
+                .afterTime(startBumpToClampTime, RobotActions.stableWallPickup(secondSpecimenSleepBeforeSetup))
                 .splineToSplineHeading(new Pose2d(pickupSecondSpecimenX, bumpSecondSpecimen, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelConstraint);
 
         builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
@@ -263,7 +263,7 @@ public class Specimen6Plus0 extends AbstractAuto {
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .afterTime(0, RobotActions.setupBackWallSpecimen())
+                .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
                         new InstantAction(() -> autoAlignToSample.activateLimelight()),
                         RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
@@ -273,7 +273,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                         new InstantAction(() -> autoAlignToSample.isSampleLocked = autoAlignToSample.lockTargetSample())
                 ))
                 .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
-                        RobotActions.scoreBackWallSpecimen(),
+                        RobotActions.scoreSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.retractToNeutral(0)
                 ))
