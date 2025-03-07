@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MIN;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.config.Config;
@@ -106,10 +108,10 @@ public final class Arm {
 
     public Arm(HardwareMap hardwareMap) {
         wrist = new SimpleServo(hardwareMap, "wrist", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
-        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_45_KG_MIN, SERVO_45_KG_MAX);
+        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_AXON_MIN, SERVO_AXON_MAX);
         armServos = new ServoEx[] {
-                new SimpleServo(hardwareMap, "arm master", SERVO_45_KG_MIN, SERVO_45_KG_MAX),
-                new SimpleServo(hardwareMap, "arm follower", SERVO_45_KG_MIN, SERVO_45_KG_MAX)
+                new SimpleServo(hardwareMap, "arm master", SERVO_AXON_MIN, SERVO_AXON_MAX),
+                new SimpleServo(hardwareMap, "arm follower", SERVO_AXON_MIN, SERVO_AXON_MAX)
         };
 
         armServos[1].setInverted(true);

@@ -20,7 +20,7 @@ public final class Common {
             SERVO_45_KG_MIN = 0,
             SERVO_45_KG_MAX = 270,
             SERVO_AXON_MIN = 0,
-            SERVO_AXON_MAX = 255;
+            SERVO_AXON_MAX = 355;
 
     public static final int
             LIMELIGHT_RED_DETECTION_PIPELINE = 1,

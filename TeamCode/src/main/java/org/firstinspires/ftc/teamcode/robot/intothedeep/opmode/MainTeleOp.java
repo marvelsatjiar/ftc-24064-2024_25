@@ -22,14 +22,12 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -139,6 +137,7 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 case TRANSFERRED:
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupBasket(true));
+                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupBasket(false));
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupDropSample());
                     break;
                 // BASKET ==========================================================================
@@ -148,7 +147,7 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
 
                     break;
-                case SCORED_SAMPLE_HIGH_BASKET:
+                case SCORED_BASKET:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractAfterScoreBasket());
 
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());

@@ -84,7 +84,12 @@ public class RobotActions {
     }
 
     public static class SetupSpecimenStable {
-        public double clampClawWait = 0.2;
+        public double
+                clampClawWait = 0.2,
+                setWristWait = 0.3,
+                setArmWait = 0.2,
+                setArmstendoWait = 0.4,
+                setLiftWait = 0.3;
     }
 
     public static Transfer TRANSFER = new Transfer();
@@ -195,10 +200,10 @@ public class RobotActions {
     // DONE
     public static Action scoreBasket() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SCORED_SAMPLE_HIGH_BASKET,
+                () -> robot.currentState != Robot.State.SCORED_BASKET,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.DEPOSIT, SCORE_BASKET.unclampClawToScoreWait),
-                        new InstantAction(() -> robot.currentState = Robot.State.SCORED_SAMPLE_HIGH_BASKET)
+                        new InstantAction(() -> robot.currentState = Robot.State.SCORED_BASKET)
                 )
         );
     }
@@ -266,8 +271,14 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.SETUP_SPECIMEN,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.CLAMPED, SETUP_SPECIMEN_STABLE.clampClawWait),
+                        setWrist(Arm.WristAngle.GRAB_OFF_WALL, SETUP_SPECIMEN_STABLE.setWristWait),
                         setArmstendo(Arm.Extension.RETRACTED, sleepSecondsBeforeSetup),
-                        setupSpecimen()
+                        new ParallelAction(
+                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN_STABLE.setArmWait),
+                                setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0)
+                        ),
+                        setArmstendo(Arm.Extension.WALL_PICKUP, SETUP_SPECIMEN_STABLE.setArmstendoWait),
+                        setLift(Lift.Ticks.SETUP_SPECIMEN, SETUP_SPECIMEN_STABLE.setLiftWait)
                 )
         );
     }

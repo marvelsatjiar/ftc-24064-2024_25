@@ -6,6 +6,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_DOWN;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -45,6 +46,8 @@ public class ArmstendoPrototype extends LinearOpMode {
             if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.WALL_PICKUP;
             if (gamepadEx.wasJustPressed(DPAD_DOWN)) targetPosition = Arm.Extension.RETRACTED;
 
+            if (gamepadEx.wasJustPressed(Y)) targetPosition = Arm.Extension.SETUP_SPECIMEN;
+
             switch (targetArmAngle) {
                 case COLLECTING:
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.BASKET;
@@ -75,6 +78,9 @@ public class ArmstendoPrototype extends LinearOpMode {
                     if (isBPressed) targetWristAngle = Arm.WristAngle.SCORE_SPECIMEN;
                     break;
                 case SCORE_SPECIMEN:
+                    if (isBPressed) targetWristAngle = Arm.WristAngle.GRAB_OFF_WALL;
+                    break;
+                case GRAB_OFF_WALL:
                     if (isBPressed) targetWristAngle = Arm.WristAngle.COLLECTING;
                     break;
             }
