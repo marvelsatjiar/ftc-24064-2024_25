@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
@@ -37,6 +38,8 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.Au
 @Config
 public class Specimen6Plus0 extends AbstractAuto {
     private AutoAlignToSample autoAlignToSample;
+
+    public boolean isSixPlusZero = false;
 
     public static double
             parkVelocityConstraint = 160,
@@ -108,10 +111,11 @@ public class Specimen6Plus0 extends AbstractAuto {
             gamepadEx1.readButtons();
             if (gamepadEx1.wasJustPressed(B)) Common.IS_RED = true;
             if (gamepadEx1.wasJustPressed(X)) Common.IS_RED = false;
+            if (gamepadEx1.wasJustPressed(A)) isSixPlusZero = false;
             if (gamepadEx1.wasJustPressed(DPAD_LEFT)) estimatedSixthSample--;
             if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) estimatedSixthSample++;
             mTelemetry.addLine("| B - Red alliance | X - Blue alliance |");
-            mTelemetry.addLine("| A - Toggle 5+0 | Y - Toggle using partner specimen |");
+            mTelemetry.addLine("| A - Toggle 6+0");
             mTelemetry.addLine("| DPAD LEFT - Subtract estimated 6th sample | DPAD RIGHT - Add estimated 6th sample");
             mTelemetry.addLine();
             mTelemetry.addLine("Selected alliance : " + (Common.IS_RED ? "Red" : "Blue"));
@@ -206,9 +210,9 @@ public class Specimen6Plus0 extends AbstractAuto {
         builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
         builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, sleepSecondsBeforeSetupThird, sleepSecondsBeforeUnclampThird);
         builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, false, sleepSecondsBeforeSetupFourth, sleepSecondsBeforeUnclampFourth);
-        builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, false, sleepSecondsBeforeSetupFifth, sleepSecondsBeforeUnclampFifth);
-        builder = scoreSpecimen(builder, sixthSpecimenOffsetX, sixthSpecimenOffsetY, true, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
+        builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, !isSixPlusZero, sleepSecondsBeforeSetupFifth, sleepSecondsBeforeUnclampFifth);
 
+        if (isSixPlusZero) builder = scoreSpecimen(builder, sixthSpecimenOffsetX, sixthSpecimenOffsetY, true, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
 
         return builder;
     }
