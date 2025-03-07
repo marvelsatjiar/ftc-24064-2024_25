@@ -9,6 +9,7 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
@@ -28,6 +29,8 @@ public final class Arm {
             WALL_PICKUP_ARM_ANGLE = 170,
             WALL_PICKUP_WRIST_ANGLE = 270,
 
+            GRAB_OFF_WALL_WRIST_ANGLE = 270,
+
             SCORE_SPECIMEN_ARM_ANGLE = 270,
             SCORE_SPECIMEN_WRIST_ANGLE = 90,
 
@@ -40,6 +43,7 @@ public final class Arm {
     public enum WristAngle {
         COLLECTING,
         WALL_PICKUP,
+        GRAB_OFF_WALL,
         SCORE_SPECIMEN,
         TRANSFERRED,
         BASKET;
@@ -48,6 +52,7 @@ public final class Arm {
             switch (this) {
                 case BASKET:                        return BASKET_WRIST_ANGLE;
                 case WALL_PICKUP:                   return WALL_PICKUP_WRIST_ANGLE;
+                case GRAB_OFF_WALL:                 return GRAB_OFF_WALL_WRIST_ANGLE;
                 case SCORE_SPECIMEN:                return SCORE_SPECIMEN_WRIST_ANGLE;
                 case TRANSFERRED:                   return TRANSFERRED_WRIST_ANGLE;
                 case COLLECTING: default:           return COLLECTING_WRIST_ANGLE;

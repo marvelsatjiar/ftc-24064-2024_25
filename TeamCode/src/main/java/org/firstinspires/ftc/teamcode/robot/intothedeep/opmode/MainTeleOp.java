@@ -125,7 +125,7 @@ public final class MainTeleOp extends LinearOpMode {
                     doIntakeControls();
 
                     if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transfer());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
@@ -133,12 +133,12 @@ public final class MainTeleOp extends LinearOpMode {
                     doExtendoControls();
                     doIntakeControls();
 
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transferToClaw());
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transfer());
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractExtendo());
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
                     break;
                 case TRANSFERRED:
-                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupBasket(true));
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupDropSample());
                     break;
                 // BASKET ==========================================================================
@@ -149,9 +149,7 @@ public final class MainTeleOp extends LinearOpMode {
 
                     break;
                 case SCORED_SAMPLE_HIGH_BASKET:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(new SequentialAction(
-                            RobotActions.setArm(Arm.ArmAngle.NEUTRAL, 0.5),
-                            RobotActions.retractToNeutral(0)));
+                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractAfterScoreBasket());
 
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
 
@@ -184,7 +182,7 @@ public final class MainTeleOp extends LinearOpMode {
                 // DROP SAMPLE =====================================================================
                 case SETUP_DROP_SAMPLE:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.dropSample());
-                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupScoreBasket(true));
+                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupBasket(true));
                     break;
             }
 

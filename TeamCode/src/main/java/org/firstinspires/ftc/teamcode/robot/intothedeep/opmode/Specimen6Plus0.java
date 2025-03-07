@@ -192,7 +192,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         // Setting up for the next cycle
         if (!doPark) {
             builder = builder
-                    .afterTime(startBumpToClampTime, RobotActions.stableWallPickup(sleepSecondsBeforeSetup))
+                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimenStable(sleepSecondsBeforeSetup))
                     .lineToY(bumpSpecimen, ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint));
         }
 
@@ -204,7 +204,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         builder = builder
                 .setTangent(180)
                 .splineToSplineHeading(new Pose2d(pickupSecondSpecimenX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270))
-                .afterTime(startBumpToClampTime, RobotActions.stableWallPickup(secondSpecimenSleepBeforeSetup))
+                .afterTime(startBumpToClampTime, RobotActions.setupSpecimenStable(secondSpecimenSleepBeforeSetup))
                 .splineToSplineHeading(new Pose2d(pickupSecondSpecimenX, bumpSecondSpecimen, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelConstraint);
 
         builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);

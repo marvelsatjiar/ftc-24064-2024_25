@@ -103,7 +103,7 @@ public class SampleAuto extends AbstractAuto {
     private TrajectoryActionBuilder scoreSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(180))
-                .afterTime(0, RobotActions.setupScoreBasket(true))
+                .afterTime(0, RobotActions.setupBasket(true))
                 .splineToLinearHeading(new Pose2d(xBasket1, yBasket1, Math.toRadians(45)), Math.toRadians(-135))
 //                .waitSeconds(waitToScoreSample1)
                 .stopAndAdd(new SequentialAction(
@@ -120,9 +120,9 @@ public class SampleAuto extends AbstractAuto {
                 .splineToLinearHeading(new Pose2d(xSample1, ySample1, Math.toRadians(headingSample1)), Math.toRadians(45))
                 .lineToY(bumpSample)
                 .afterTime(intakeTime, new SequentialAction(
-                        RobotActions.transferToClaw(),
+                        RobotActions.transfer(),
                         new SleepAction(1),
-                        RobotActions.setupScoreBasket(true),
+                        RobotActions.setupBasket(true),
                         RobotActions.scoreBasket(),
                         RobotActions.setV4B(Intake.V4BAngle.HOVERING, scoreWait)
                 ))
@@ -140,9 +140,9 @@ public class SampleAuto extends AbstractAuto {
                 .splineToLinearHeading(new Pose2d(xSample2, ySample2, Math.toRadians(robotAngle)),Math.toRadians(110))
                 .lineToY(bumpSample)
                 .afterTime(intakeTime, new SequentialAction(
-                        RobotActions.transferToClaw(),
+                        RobotActions.transfer(),
                         new SleepAction(1),
-                        RobotActions.setupScoreBasket(true),
+                        RobotActions.setupBasket(true),
                         RobotActions.scoreBasket(),
                         RobotActions.setV4B(Intake.V4BAngle.HOVERING, scoreWait)
                 ))
@@ -159,9 +159,9 @@ public class SampleAuto extends AbstractAuto {
                 .splineToLinearHeading(new Pose2d(xSample3, ySample3, Math.toRadians(thirdSampleangle)),Math.toRadians(110))
                 .lineToY(bumpSample)
                 .afterTime(intakeTime, new SequentialAction(
-                        RobotActions.transferToClaw(),
+                        RobotActions.transfer(),
                         new SleepAction(1),
-                        RobotActions.setupScoreBasket(true),
+                        RobotActions.setupBasket(true),
                         RobotActions.scoreBasket(),
                         RobotActions.setV4B(Intake.V4BAngle.HOVERING, scoreWait)
                 ))
