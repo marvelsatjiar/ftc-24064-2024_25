@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MAX;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_45_KG_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
@@ -11,7 +9,6 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
@@ -21,26 +18,26 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 195,
+            NEUTRAL_ARM_ANGLE = 225,
             TRANSFERRED_WRIST_ANGLE = 220,
-            COLLECTING_ARM_ANGLE = 205,
-            COLLECTING_WRIST_ANGLE = 45,
-            BASKET_ARM_ANGLE = 60,
-            BASKET_WRIST_ANGLE = 220,
+            COLLECTING_ARM_ANGLE = 250,
+            COLLECTING_WRIST_ANGLE = 145,
+            BASKET_ARM_ANGLE = 70,
+            BASKET_WRIST_ANGLE = 70,
 
-            WALL_PICKUP_ARM_ANGLE = 170,
-            WALL_PICKUP_WRIST_ANGLE = 270,
+            WALL_PICKUP_ARM_ANGLE = 355,
+            WALL_PICKUP_WRIST_ANGLE = 155,
 
-            GRAB_OFF_WALL_WRIST_ANGLE = 270,
+            GRAB_OFF_WALL_WRIST_ANGLE = 200,
 
-            SCORE_SPECIMEN_ARM_ANGLE = 270,
-            SCORE_SPECIMEN_WRIST_ANGLE = 90,
+            SCORE_SPECIMEN_ARM_ANGLE = 180,
+            SCORE_SPECIMEN_WRIST_ANGLE = 170,
 
-            WALL_PICKUP_ARMSTENDO_ANGLE = 90,
-            SETUP_SPECIMEN_ANGLE = 45,
-            EXTENDED_ARMSTENDO_ANGLE = 25,
-            TRANSFER_ARMSTENDO_ANGLE = 55,
-            RETRACTED_ARMSTENDO_ANGLE = 90;
+            WALL_PICKUP_ARMSTENDO_ANGLE = 60,
+            SETUP_SPECIMEN_ARMSTENDO_ANGLE = 45,
+            EXTENDED_ARMSTENDO_ANGLE = 32,
+            TRANSFER_ARMSTENDO_ANGLE = 80,
+            RETRACTED_ARMSTENDO_ANGLE = 107;
 
     public enum WristAngle {
         COLLECTING,
@@ -93,7 +90,7 @@ public final class Arm {
             switch (this) {
                 case EXTENDED:                  return EXTENDED_ARMSTENDO_ANGLE;
                 case WALL_PICKUP:               return WALL_PICKUP_ARMSTENDO_ANGLE;
-                case SETUP_SPECIMEN:            return SETUP_SPECIMEN_ANGLE;
+                case SETUP_SPECIMEN:            return SETUP_SPECIMEN_ARMSTENDO_ANGLE;
                 case TRANSFER:                  return TRANSFER_ARMSTENDO_ANGLE;
                 case RETRACTED: default:        return RETRACTED_ARMSTENDO_ANGLE;
             }

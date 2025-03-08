@@ -27,7 +27,7 @@ public class MaxExtension extends LinearOpMode {
         while (opModeIsActive()) {
             gamepadEx1.readButtons();
             //arm.setArmAngle(Arm.ArmAngle.OVERHANG_SPECIMEN_SETUP);
-            arm.setWristAngle(Arm.WristAngle.OVERHANG_SPECIMEN_SETUP);
+            arm.setWristAngle(Arm.WristAngle.SCORE_SPECIMEN);
             extendo.setTargetExtension(Extendo.Extension.EXTENDED);
             intake.setTargetV4BAngle(Intake.V4BAngle.UP);
             //lift.setTargetTicks(Lift.Ticks.OVERHANG_SPECIMEN_SETUP);

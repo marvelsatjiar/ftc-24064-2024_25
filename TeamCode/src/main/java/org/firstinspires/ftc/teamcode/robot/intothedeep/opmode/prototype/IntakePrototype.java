@@ -58,6 +58,7 @@ public final class IntakePrototype extends LinearOpMode {
             extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
 
             extendo.printTelemetry();
+            intake.printTelemetry();
             mTelemetry.update();
         }
     }
