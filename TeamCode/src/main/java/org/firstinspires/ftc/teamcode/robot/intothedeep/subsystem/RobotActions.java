@@ -18,7 +18,7 @@ public class RobotActions {
         public double
                 setArmstendoTransferWait = 0,
                 clampClawWait = 0.1,
-                setCollectingArmWait = 0.1;
+                setCollectingArmWait = 0.2;
     }
 
     public static class RetractionForTransfer {
@@ -35,7 +35,7 @@ public class RobotActions {
 
     public static class SetupBasket {
         public double
-                extendLiftToSetupWait = 0.5,
+                extendLiftToSetupWait = 0.4,
                 setArmWait = 0.15,
                 setV4BWait = 0;
     }
@@ -46,7 +46,6 @@ public class RobotActions {
 
     public static class DropSamples {
         public double
-                setWristToDropSampleWait = 0.,
                 setArmToDropSampleWait = 0.3,
                 unclampClawForDropoffWait = 0.3,
                 setV4BWait = 0,
@@ -73,25 +72,19 @@ public class RobotActions {
         public double
                 clampClawWait = 0.2,
                 setWristWait = 0.1,
-                setArmWait = 0.25,
+                setArmWait = 0.3,
                 setArmstendoWait = 0.3,
-                setLiftWait = 0,
                 extendArmstendoWait = 0.3;
     }
 
     public static class ScoreSpecimen {
         public double
-                extendArmstendoWait = 0.3,
-                unclampClawWait = 0.5;
+                retractArmstendoWait = 0.2,
+                unclampClawWait = 0.2;
     }
 
     public static class SetupSpecimenStable {
-        public double
-                clampClawWait = 0.2,
-                setWristWait = 0.3,
-                setArmWait = 0.2,
-                setArmstendoWait = 0.4,
-                setLiftWait = 0.3;
+        public double setArmWait = 0.2;
     }
 
     public static Transfer TRANSFER = new Transfer();
@@ -172,7 +165,7 @@ public class RobotActions {
                         ),
                         setArmstendo(Arm.Extension.TRANSFER, TRANSFER.setArmstendoTransferWait),
                         setArm(Arm.ArmAngle.COLLECTING, TRANSFER.setCollectingArmWait),
-                        setClaw(Claw.ClawAngles.CLAMPED, TRANSFER.clampClawWait),
+                        setClaw(Claw.ClawAngles.SAMPLE_CLAMPED, TRANSFER.clampClawWait),
                         setRollers(0, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.TRANSFERRED)
                 )
@@ -226,12 +219,10 @@ public class RobotActions {
                 new SequentialAction(
                         setArmstendo(Arm.Extension.RETRACTED, SETUP_WALL_PICKUP.retractArmstendoWait),
                         setWrist(Arm.WristAngle.GRAB_OFF_WALL, SETUP_WALL_PICKUP.setWristWait),
+                        setArm(Arm.ArmAngle.WALL_PICKUP, SETUP_WALL_PICKUP.setArmWait),
                         new ParallelAction(
-                                setArm(Arm.ArmAngle.WALL_PICKUP, SETUP_WALL_PICKUP.setArmWait),
-                                setClaw(Claw.ClawAngles.WALL_PICKUP, 0)
-                        ),
-                        new ParallelAction(
-                                setWrist(Arm.WristAngle.WALL_PICKUP, SETUP_WALL_PICKUP.setWristWait),
+                                setClaw(Claw.ClawAngles.WALL_PICKUP, 0),
+                                setWrist(Arm.WristAngle.WALL_PICKUP, 0),
                                 setArmstendo(Arm.Extension.WALL_PICKUP, SETUP_WALL_PICKUP.setArmstendoWait)
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
@@ -244,8 +235,7 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_SPECIMEN,
                 new SequentialAction(
-                        setClaw(Claw.ClawAngles.CLAMPED, SETUP_SPECIMEN.clampClawWait),
-
+                        setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, SETUP_SPECIMEN.clampClawWait),
                         setWrist(Arm.WristAngle.GRAB_OFF_WALL, SETUP_SPECIMEN.setWristWait),
                         setArmstendo(Arm.Extension.RETRACTED, SETUP_SPECIMEN.setArmstendoWait),
 
@@ -267,15 +257,17 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_SPECIMEN,
                 new SequentialAction(
-                        setClaw(Claw.ClawAngles.CLAMPED, SETUP_SPECIMEN_STABLE.clampClawWait),
-                        setWrist(Arm.WristAngle.GRAB_OFF_WALL, SETUP_SPECIMEN_STABLE.setWristWait),
-                        setArmstendo(Arm.Extension.RETRACTED, sleepSecondsBeforeSetup),
-                        setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN_STABLE.setArmWait),
+                        setClaw(Claw.ClawAngles.SAMPLE_CLAMPED, SETUP_SPECIMEN.clampClawWait),
+                        setWrist(Arm.WristAngle.GRAB_OFF_WALL, SETUP_SPECIMEN.setWristWait),
+                        setArmstendo(Arm.Extension.RETRACTED, SETUP_SPECIMEN.setArmstendoWait),
+                        setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait),
                         new ParallelAction(
-                                setArmstendo(Arm.Extension.WALL_PICKUP, SETUP_SPECIMEN_STABLE.setArmstendoWait),
+                                setArmstendo(Arm.Extension.EXTENDED, sleepSecondsBeforeSetup),
                                 setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0)
                         ),
-                        setLift(Lift.Ticks.EXTENDED, SETUP_SPECIMEN_STABLE.setLiftWait)
+                        setLift(Lift.Ticks.EXTENDED, 0),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_SPECIMEN)
+
                 )
         );
     }
@@ -283,15 +275,24 @@ public class RobotActions {
     // TODO
     public static Action scoreSpecimen() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SCORE_SPECIMEN,
+                () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.DEPOSIT, SCORE_SPECIMEN.unclampClawWait),
-                        new InstantAction(() -> robot.currentState = Robot.State.SCORE_SPECIMEN)
+                        retractAfterScore()
                 )
         );
     }
 
-
+    public static Action retractAfterScore() {
+        return  new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.NEUTRAL,
+                new SequentialAction(
+                        setArmstendo(Arm.Extension.RETRACTED, SCORE_SPECIMEN.retractArmstendoWait),
+                        retractToNeutral(0),
+                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                )
+        );
+    }
 
     // DONE
     public static Action retractToNeutral(double sleepSeconds) {

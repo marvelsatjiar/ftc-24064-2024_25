@@ -49,7 +49,7 @@ public final class Lift {
             HIGH_BASKET_TICKS = 1750,
             WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
-            SPECIMEN_SETUP_TICKS = 1628,
+            SPECIMEN_SETUP_TICKS = 1378,
             LEVEL_TWO_CLIMB_SETUP_TICKS = 2550,
             LEVEL_TWO_CLIMB_TICKS = 1716,
             LEVEL_THREE_CLIMB_SETUP_TICKS = 2550,

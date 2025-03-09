@@ -20,7 +20,7 @@ public final class Intake {
     private final MotorEx intake;
 
     public static int
-            V4B_DOWN_ANGLE = 50,
+            V4B_DOWN_ANGLE = 48,
             V4B_CLEARING_ANGLE = 85,
             V4B_UP_ANGLE = 85,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,

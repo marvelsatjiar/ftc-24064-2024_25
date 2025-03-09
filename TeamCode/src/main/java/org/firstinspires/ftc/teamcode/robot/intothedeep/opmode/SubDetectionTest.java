@@ -19,7 +19,6 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
@@ -74,7 +73,7 @@ public class SubDetectionTest extends AbstractAuto{
 
         //robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         //robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
-        robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
+        robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
         robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 
         robot.arm.run();

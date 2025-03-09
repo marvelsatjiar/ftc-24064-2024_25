@@ -161,9 +161,6 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimen());
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
-                case SCORE_SPECIMEN:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0));
-                    break;
                 // WALL PICKUP =====================================================================
                 case WALL_PICKUP:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupSpecimen());

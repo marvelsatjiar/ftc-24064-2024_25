@@ -16,7 +16,7 @@ public final class Extendo {
 
     public static double
             LINKAGE_MIN_ANGLE = 13,
-            LINKAGE_MAX_ANGLE = 107,
+            LINKAGE_MAX_ANGLE = 142,
             LINKAGE_ONE_FOURTH_ANGLE = (LINKAGE_MAX_ANGLE - LINKAGE_MIN_ANGLE) * (1/4.0),
             LINKAGE_ONE_HALF_ANGLE = (LINKAGE_MAX_ANGLE - LINKAGE_MIN_ANGLE) * (1/2.0),
             LINKAGE_THREE_FOURTHS_ANGLE = (LINKAGE_MAX_ANGLE - LINKAGE_MIN_ANGLE) * (3/4.0),

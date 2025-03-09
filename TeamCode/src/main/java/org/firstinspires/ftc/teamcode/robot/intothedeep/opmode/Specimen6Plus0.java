@@ -140,7 +140,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         robot.arm.setWristAngle(Arm.WristAngle.SCORE_SPECIMEN);
         robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
         robot.lift.setTargetTicks(Lift.Ticks.SETUP_SPECIMEN);
-        robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
+        robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
         robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 
         robot.arm.run();
@@ -194,7 +194,7 @@ public class Specimen6Plus0 extends AbstractAuto {
             builder = builder
                     .afterTime(startBumpToClampTime, RobotActions.setupSpecimenStable(sleepSecondsBeforeSetup))
                     .lineToY(bumpSpecimen, ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint));
-        }
+            }
 
         return builder;
     }

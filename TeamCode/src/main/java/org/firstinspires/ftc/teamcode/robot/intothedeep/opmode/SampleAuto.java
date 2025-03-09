@@ -81,7 +81,7 @@ public class SampleAuto extends AbstractAuto {
 
     @Override
     protected void onInit() {
-        robot.claw.setAngle(Claw.ClawAngles.CLAMPED);
+        robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
         robot.arm.setArmAngle(Arm.ArmAngle.COLLECTING);
         robot.arm.setWristAngle(Arm.WristAngle.TRANSFERRED);
         robot.setCurrentState(Robot.State.TRANSFERRED);
