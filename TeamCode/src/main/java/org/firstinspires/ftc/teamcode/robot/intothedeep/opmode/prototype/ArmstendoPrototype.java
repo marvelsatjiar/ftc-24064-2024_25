@@ -46,7 +46,6 @@ public class ArmstendoPrototype extends LinearOpMode {
             if (gamepadEx.wasJustPressed(DPAD_RIGHT)) targetPosition = Arm.Extension.WALL_PICKUP;
             if (gamepadEx.wasJustPressed(DPAD_DOWN)) targetPosition = Arm.Extension.RETRACTED;
 
-            if (gamepadEx.wasJustPressed(Y)) targetPosition = Arm.Extension.SETUP_SPECIMEN;
 
             switch (targetArmAngle) {
                 case COLLECTING:
@@ -56,7 +55,6 @@ public class ArmstendoPrototype extends LinearOpMode {
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.WALL_PICKUP;
                     break;
                 case WALL_PICKUP:
-                    lift.setTargetTicks(Lift.Ticks.WALL_PICKUP);
                     if (isAPressed) targetArmAngle = Arm.ArmAngle.SCORE_SPECIMEN;
                     break;
                 case SCORE_SPECIMEN:

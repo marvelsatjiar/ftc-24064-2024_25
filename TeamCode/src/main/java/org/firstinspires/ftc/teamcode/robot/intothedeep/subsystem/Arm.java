@@ -18,26 +18,26 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 225,
-            TRANSFERRED_WRIST_ANGLE = 220,
-            COLLECTING_ARM_ANGLE = 250,
-            COLLECTING_WRIST_ANGLE = 145,
+            NEUTRAL_ARM_ANGLE = 200, //215,
+            TRANSFERRED_WRIST_ANGLE = 145,
+            COLLECTING_ARM_ANGLE = 230, //240,
+            COLLECTING_WRIST_ANGLE = 110, //140,
             BASKET_ARM_ANGLE = 70,
-            BASKET_WRIST_ANGLE = 70,
+            BASKET_WRIST_ANGLE = 50,
 
             WALL_PICKUP_ARM_ANGLE = 355,
-            WALL_PICKUP_WRIST_ANGLE = 155,
+            WALL_PICKUP_WRIST_ANGLE = 90,
+
 
             GRAB_OFF_WALL_WRIST_ANGLE = 200,
 
             SCORE_SPECIMEN_ARM_ANGLE = 180,
             SCORE_SPECIMEN_WRIST_ANGLE = 170,
 
-            WALL_PICKUP_ARMSTENDO_ANGLE = 60,
-            SETUP_SPECIMEN_ARMSTENDO_ANGLE = 45,
-            EXTENDED_ARMSTENDO_ANGLE = 32,
-            TRANSFER_ARMSTENDO_ANGLE = 80,
-            RETRACTED_ARMSTENDO_ANGLE = 107;
+            WALL_PICKUP_ARMSTENDO_ANGLE = 105,
+            EXTENDED_ARMSTENDO_ANGLE = 10,
+            TRANSFER_ARMSTENDO_ANGLE = 85, //50,
+            RETRACTED_ARMSTENDO_ANGLE = 122;
 
     public enum WristAngle {
         COLLECTING,
@@ -82,7 +82,6 @@ public final class Arm {
     public enum Extension {
         RETRACTED,
         EXTENDED,
-        SETUP_SPECIMEN,
         WALL_PICKUP,
         TRANSFER;
 
@@ -90,7 +89,6 @@ public final class Arm {
             switch (this) {
                 case EXTENDED:                  return EXTENDED_ARMSTENDO_ANGLE;
                 case WALL_PICKUP:               return WALL_PICKUP_ARMSTENDO_ANGLE;
-                case SETUP_SPECIMEN:            return SETUP_SPECIMEN_ARMSTENDO_ANGLE;
                 case TRANSFER:                  return TRANSFER_ARMSTENDO_ANGLE;
                 case RETRACTED: default:        return RETRACTED_ARMSTENDO_ANGLE;
             }

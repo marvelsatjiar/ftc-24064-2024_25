@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public final class Claw {
 
     public static double
-            CLAMP_ANGLE = 12,
+            CLAMP_ANGLE = 15,
             WALL_PICKUP_ANGLE = 100,
             DEPOSIT_ANGLE = 35;
 

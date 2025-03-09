@@ -16,11 +16,9 @@ public class RobotActions {
     // 1. Add classes 2. delete unecessary delays 3. refactor delays
     public static class Transfer {
         public double
-                setArmstendoTransferWait = 0.3,
-                setV4BTransferWait = 0.25,
-                retractArmstendoWait = 0.2,
-                clampClawWait = 0.2,
-                setCollectingArmWait = 0.25;
+                setArmstendoTransferWait = 0,
+                clampClawWait = 0.1,
+                setCollectingArmWait = 0.1;
     }
 
     public static class RetractionForTransfer {
@@ -36,7 +34,10 @@ public class RobotActions {
     }
 
     public static class SetupBasket {
-        public double extendLiftToSetupWait = 0.9;
+        public double
+                extendLiftToSetupWait = 0.5,
+                setArmWait = 0.15,
+                setV4BWait = 0;
     }
 
     public static class ScoreBasket {
@@ -45,9 +46,10 @@ public class RobotActions {
 
     public static class DropSamples {
         public double
-                setWristToDropSampleWait = 0.15,
-                setArmToDropSampleWait = 0.15,
+                setWristToDropSampleWait = 0.,
+                setArmToDropSampleWait = 0.3,
                 unclampClawForDropoffWait = 0.3,
+                setV4BWait = 0,
                 retractToNeutralDelay = 0.4;
     }
 
@@ -131,7 +133,6 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.TRANSFERRED,
                 new SequentialAction(
                         new ParallelAction(
-                                setRollers(0.7, 0),
                                 new SequentialAction(
                                         setV4B(Intake.V4BAngle.UP, RETRACTION_FOR_TRANSFER.setV4BUpWait),
                                         setExtendo(Extendo.Extension.RETRACTED, RETRACTION_FOR_TRANSFER.retractExtendoWait)
@@ -165,18 +166,14 @@ public class RobotActions {
                 new SequentialAction(
                         new ParallelAction(
                                 retractForTransfer(),
-                                setWrist(Arm.WristAngle.COLLECTING, 0)
+                                setWrist(Arm.WristAngle.COLLECTING, 0),
+                                setV4B(Intake.V4BAngle.UP, 0),
+                                setRollers(0.5, 0)
                         ),
                         setArmstendo(Arm.Extension.TRANSFER, TRANSFER.setArmstendoTransferWait),
                         setArm(Arm.ArmAngle.COLLECTING, TRANSFER.setCollectingArmWait),
                         setClaw(Claw.ClawAngles.CLAMPED, TRANSFER.clampClawWait),
-                        new ParallelAction(
-                                setV4B(Intake.V4BAngle.TRANSFER, TRANSFER.setV4BTransferWait),
-                                setWrist(Arm.WristAngle.TRANSFERRED, 0),
-                                setArm(Arm.ArmAngle.NEUTRAL, 0)
-                        ),
-                        setArmstendo(Arm.Extension.RETRACTED, TRANSFER.retractArmstendoWait),
-                        setV4B(Intake.V4BAngle.UP, 0),
+                        setRollers(0, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.TRANSFERRED)
                 )
         );
@@ -187,11 +184,14 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_SCORE_BASKET,
                 new SequentialAction(
+                        setV4B(Intake.V4BAngle.TRANSFER, SETUP_BASKET.setV4BWait),
+                        setArm(Arm.ArmAngle.BASKET, SETUP_BASKET.setArmWait),
+                        setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
                         new ParallelAction(
-                                setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
-                                setArmstendo(Arm.Extension.EXTENDED, 0)
+                            setWrist(Arm.WristAngle.BASKET, 0),
+                            setArmstendo(Arm.Extension.EXTENDED,0)
                         ),
-                        setArm(Arm.ArmAngle.BASKET, 0),
+                        setV4B(Intake.V4BAngle.UP, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
                 )
         );
@@ -212,6 +212,7 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
+                        RobotActions.setArmstendo(Arm.Extension.RETRACTED,0.5),
                         RobotActions.setArm(Arm.ArmAngle.NEUTRAL, 0.5),
                         RobotActions.retractToNeutral(0)
                 )
@@ -231,8 +232,7 @@ public class RobotActions {
                         ),
                         new ParallelAction(
                                 setWrist(Arm.WristAngle.WALL_PICKUP, SETUP_WALL_PICKUP.setWristWait),
-                                setArmstendo(Arm.Extension.WALL_PICKUP, SETUP_WALL_PICKUP.setArmstendoWait),
-                                setLift(Lift.Ticks.WALL_PICKUP, SETUP_WALL_PICKUP.setLiftWait)
+                                setArmstendo(Arm.Extension.WALL_PICKUP, SETUP_WALL_PICKUP.setArmstendoWait)
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
                 )
@@ -250,12 +250,13 @@ public class RobotActions {
                         setArmstendo(Arm.Extension.RETRACTED, SETUP_SPECIMEN.setArmstendoWait),
 
                         new ParallelAction(
-                                setLift(Lift.Ticks.SETUP_SPECIMEN, SETUP_SPECIMEN.setLiftWait),
-                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait),
-                                setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0),
-                                setArmstendo(Arm.Extension.SETUP_SPECIMEN, SETUP_SPECIMEN.extendArmstendoWait)
+                                setLift(Lift.Ticks.SETUP_SPECIMEN, 0),
+                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait)
                         ),
-
+                        new ParallelAction(
+                                setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0),
+                                setArmstendo(Arm.Extension.EXTENDED, SETUP_SPECIMEN.extendArmstendoWait)
+                        ),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_SPECIMEN)
                 )
         );
@@ -285,7 +286,6 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.SCORE_SPECIMEN,
                 new SequentialAction(
                         setClaw(Claw.ClawAngles.DEPOSIT, SCORE_SPECIMEN.unclampClawWait),
-                        setArmstendo(Arm.Extension.EXTENDED, SCORE_SPECIMEN.extendArmstendoWait),
                         new InstantAction(() -> robot.currentState = Robot.State.SCORE_SPECIMEN)
                 )
         );
@@ -338,10 +338,9 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.SETUP_DROP_SAMPLE,
                 new SequentialAction(
-                        new ParallelAction(
-                                setWrist(Arm.WristAngle.BASKET, DROP_SAMPLES.setWristToDropSampleWait),
-                                setArm(Arm.ArmAngle.BASKET, DROP_SAMPLES.setArmToDropSampleWait)
-                        ),
+                        setV4B(Intake.V4BAngle.DOWN, DROP_SAMPLES.setV4BWait),
+                        setArm(Arm.ArmAngle.BASKET, DROP_SAMPLES.setArmToDropSampleWait),
+                        setWrist(Arm.WristAngle.BASKET, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_DROP_SAMPLE)
                 )
         );
