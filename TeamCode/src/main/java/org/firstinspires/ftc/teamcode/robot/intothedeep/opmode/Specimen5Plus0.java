@@ -136,7 +136,7 @@ public class Specimen5Plus0 extends AbstractAuto {
         robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
         robot.lift.setTargetTicks(Lift.Ticks.SETUP_SPECIMEN);
         robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
-        robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
+//        robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
 //        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
 
         robot.arm.run();

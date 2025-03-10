@@ -33,7 +33,6 @@ public final class Robot {
     public enum State {
         NEUTRAL,
         EXTENDO_OUT,
-        FRONT_WALL_PICKUP,
         SETUP_SPECIMEN,
         TO_BE_TRANSFERRED,
         TRANSFERRED,

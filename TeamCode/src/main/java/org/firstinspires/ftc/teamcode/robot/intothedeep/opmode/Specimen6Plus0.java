@@ -44,8 +44,8 @@ public class Specimen6Plus0 extends AbstractAuto {
     public static double
             parkVelocityConstraint = 160,
             startingPositionX = 7.375,
-            startingPositionY = -62,
-            scoreSpecimenY = -30.5,
+            startingPositionY = -60,
+            scoreSpecimenY = -33.5,
             dropoffFirstSampleX = 25,
             waitBeforeOuttakeSample = 0.4,
             waitToExtendTo2ndSample = 0.4,
@@ -111,7 +111,7 @@ public class Specimen6Plus0 extends AbstractAuto {
             gamepadEx1.readButtons();
             if (gamepadEx1.wasJustPressed(B)) Common.IS_RED = true;
             if (gamepadEx1.wasJustPressed(X)) Common.IS_RED = false;
-            if (gamepadEx1.wasJustPressed(A)) isSixPlusZero = false;
+            if (gamepadEx1.wasJustPressed(A)) isSixPlusZero = !isSixPlusZero;
             if (gamepadEx1.wasJustPressed(DPAD_LEFT)) estimatedSixthSample--;
             if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) estimatedSixthSample++;
             mTelemetry.addLine("| B - Red alliance | X - Blue alliance |");
@@ -119,6 +119,7 @@ public class Specimen6Plus0 extends AbstractAuto {
             mTelemetry.addLine("| DPAD LEFT - Subtract estimated 6th sample | DPAD RIGHT - Add estimated 6th sample");
             mTelemetry.addLine();
             mTelemetry.addLine("Selected alliance : " + (Common.IS_RED ? "Red" : "Blue"));
+            mTelemetry.addData("Six Plus Zero : ", isSixPlusZero);
             mTelemetry.addLine("Estimated 6th sample is : " + estimatedSixthSample);
             mTelemetry.addLine("Press both shoulder buttons to confirm!");
             mTelemetry.update();
@@ -136,12 +137,11 @@ public class Specimen6Plus0 extends AbstractAuto {
 
         autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
-        robot.arm.setArmAngle(Arm.ArmAngle.SCORE_SPECIMEN);
-        robot.arm.setWristAngle(Arm.WristAngle.SCORE_SPECIMEN);
-        robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
-        robot.lift.setTargetTicks(Lift.Ticks.SETUP_SPECIMEN);
-        robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
-        robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
+        robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
+        robot.arm.setWristAngle(Arm.WristAngle.GRAB_OFF_WALL);
+        robot.arm.setArmstendoAngle(Arm.Extension.RETRACTED);
+        robot.claw.setAngle(Claw.ClawAngles.SPECIMEN_CLAMPED);
+        robot.setCurrentState(Robot.State.WALL_PICKUP);
 
         robot.arm.run();
         robot.claw.run();
@@ -154,7 +154,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         builder = scoreFirstSpecimen(builder);
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
-        builder = park(builder);
+//        builder = park(builder);
 
         return builder.build();
     }
@@ -167,7 +167,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                         RobotActions.setWrist(Arm.WristAngle.BASKET,0),
                         RobotActions.setV4B(Intake.V4BAngle.UP, 0)
                 ))
-                .strafeToSplineHeading(new Vector2d(parkX, parkY), Math.toRadians(315), (pose2dDual, posePath, v) -> parkVelocityConstraint);
+                .strafeToSplineHeading(new Vector2d(parkX, parkY), Math.toRadians(315));
         return builder;
     }
 
@@ -175,25 +175,17 @@ public class Specimen6Plus0 extends AbstractAuto {
         // Scoring
         builder = builder
                 .setTangent(90)
-                .afterTime(sleepSecondsBeforeUnclamp, new SequentialAction(
-                        new ParallelAction(
-                                RobotActions.scoreSpecimen(),
-                                new SleepAction(scoreToRetractWait)
-                        ),
-                        RobotActions.setArmstendo(Arm.Extension.RETRACTED, 0)
-                ))
-
-                .strafeToConstantHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
-
+                .afterTime(sleepSecondsBeforeUnclamp, RobotActions.scoreSpecimen())
+                .strafeToConstantHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY))//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
                 .setTangent(Math.toRadians(270))
                 .afterTime(setBackWallPickupWait, RobotActions.setupWallPickup())
-                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel));
+                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY)); //, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel));
 
         // Setting up for the next cycle
         if (!doPark) {
             builder = builder
-                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimenStable(sleepSecondsBeforeSetup))
-                    .lineToY(bumpSpecimen, ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint));
+                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimen())
+                    .lineToY(bumpSpecimen); // ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint)
             }
 
         return builder;
@@ -203,9 +195,8 @@ public class Specimen6Plus0 extends AbstractAuto {
 
         builder = builder
                 .setTangent(180)
-                .splineToSplineHeading(new Pose2d(pickupSecondSpecimenX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270))
-                .afterTime(startBumpToClampTime, RobotActions.setupSpecimenStable(secondSpecimenSleepBeforeSetup))
-                .splineToSplineHeading(new Pose2d(pickupSecondSpecimenX, bumpSecondSpecimen, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> bumpSpecimenVelConstraint);
+                .splineToSplineHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270))
+                .afterTime(startBumpToClampTime, RobotActions.setupSpecimen());
 
         builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
         builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, sleepSecondsBeforeSetupThird, sleepSecondsBeforeUnclampThird);
@@ -231,19 +222,19 @@ public class Specimen6Plus0 extends AbstractAuto {
                         RobotActions.setRollers(1, intakeSampleDelay),
                         RobotActions.setRollers(0, 0)
                 ))
-                .strafeToLinearHeading(new Vector2d(getSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading), (pose2dDual, posePath, v) -> intakeSpecimenVelocityConstraint)
+                .strafeToLinearHeading(new Vector2d(getSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
                 .afterTime(0, new SequentialAction(
                         RobotActions.setRollers(-1, outtakeSampleDelay),
                         RobotActions.setRollers(0, 0)
                 ))
 
                 .afterTime(waitToExtendTo2ndSample, RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS))
-                .strafeToLinearHeading(new Vector2d(getSampleX, intakeSampleY), Math.toRadians(getSampleX), (pose2dDual, posePath, v) -> intakeSpecimenVelocityConstraint)
+                .strafeToLinearHeading(new Vector2d(getSampleX, intakeSampleY), Math.toRadians(getSampleX))
                 .afterTime(0, new SequentialAction(
                         RobotActions.setRollers(1, intakeSampleDelay),
                         RobotActions.setRollers(0, 0)
                 ))
-                .strafeToLinearHeading(new Vector2d(getSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading), (pose2dDual, posePath, v) -> intakeSpecimenVelocityConstraint)
+                .strafeToLinearHeading(new Vector2d(getSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
                 .afterTime(0, new SequentialAction(
                         RobotActions.setRollers(-1, outtakeSampleDelay),
                         RobotActions.setRollers(0, 0)
@@ -255,35 +246,36 @@ public class Specimen6Plus0 extends AbstractAuto {
                         RobotActions.setRollers(1, intakeSampleDelay),
                         RobotActions.setRollers(0, 0)
                 ))
-                .strafeToLinearHeading(new Vector2d(getThirdSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading), (pose2dDual, posePath, v) -> intakeSpecimenVelocityConstraint)
+                .strafeToLinearHeading(new Vector2d(getThirdSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
                 .afterTime(0, new SequentialAction(
                         RobotActions.setRollers(-1, outtakeSampleDelay),
+                        RobotActions.retractExtendo(),
                         RobotActions.setRollers(0, 0),
-                        RobotActions.retractExtendo()
+                        RobotActions.setupWallPickup()
                 ));
 
         return builder;
     }
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
+        if (isSixPlusZero) {
+            builder = builder
+                    .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
+                            new InstantAction(() -> autoAlignToSample.activateLimelight()),
+                            RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
+                    ))
+                    .afterTime(sleepSecondsBeforeSubDetection, new Actions.SingleCheckAction(
+                            () -> autoAlignToSample.lockSampleCounter != 9,
+                            new InstantAction(() -> autoAlignToSample.isSampleLocked = autoAlignToSample.lockTargetSample())
+                    ));
+        }
+
         builder = builder
                 .afterTime(0, RobotActions.setupSpecimen())
-                .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
-                        new InstantAction(() -> autoAlignToSample.activateLimelight()),
-                        RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
-                ))
-                .afterTime(sleepSecondsBeforeSubDetection, new Actions.SingleCheckAction(
-                        () -> autoAlignToSample.lockSampleCounter != 9,
-                        new InstantAction(() -> autoAlignToSample.isSampleLocked = autoAlignToSample.lockTargetSample())
-                ))
-                .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
-                        RobotActions.scoreSpecimen(),
-                        new SleepAction(scoreToRetractWait),
-                        RobotActions.retractToNeutral(0)
-                ))
-                .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
+                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
+                .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90));//, (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
 
-        if (autoAlignToSample.isSampleLocked) {
+        if (autoAlignToSample.isSampleLocked && isSixPlusZero) {
             builder = builder
                     .stopAndAdd(new SequentialAction(
                             new ParallelAction(

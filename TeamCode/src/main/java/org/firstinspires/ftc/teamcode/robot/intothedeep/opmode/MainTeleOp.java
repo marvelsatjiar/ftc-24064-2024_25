@@ -159,6 +159,10 @@ public final class MainTeleOp extends LinearOpMode {
                 // CHAMBER =========================================================================
                 case SETUP_SPECIMEN:
                     if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimen());
+
+                    doExtendoControls();
+                    doIntakeControls();
+
                     if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
                     break;
                 // WALL PICKUP =====================================================================
@@ -174,11 +178,6 @@ public final class MainTeleOp extends LinearOpMode {
                     break;
                 case CLIMB_LEVEL_TWO_HANG:
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
-                    break;
-                // DROP SAMPLE =====================================================================
-                case SETUP_DROP_SAMPLE:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.dropSample());
-                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupBasket(true));
                     break;
             }
 
@@ -233,7 +232,7 @@ public final class MainTeleOp extends LinearOpMode {
             double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             if (trigger != 0) {
                 robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
-                robot.intake.setRollerPower(trigger);
+                robot.intake.setRollerPower(trigger * 0.8);
             } else {
                 robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
                 robot.intake.setRollerPower(0);

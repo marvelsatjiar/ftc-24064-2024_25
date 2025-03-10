@@ -47,6 +47,7 @@ public class RobotActions {
     public static class DropSamples {
         public double
                 setArmToDropSampleWait = 0.3,
+                setWristWait = 0.25,
                 unclampClawForDropoffWait = 0.3,
                 setV4BWait = 0,
                 retractToNeutralDelay = 0.4;
@@ -341,20 +342,9 @@ public class RobotActions {
                 new SequentialAction(
                         setV4B(Intake.V4BAngle.DOWN, DROP_SAMPLES.setV4BWait),
                         setArm(Arm.ArmAngle.BASKET, DROP_SAMPLES.setArmToDropSampleWait),
-                        setWrist(Arm.WristAngle.BASKET, 0),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_DROP_SAMPLE)
-                )
-        );
-    }
-
-    // DONE
-    public static Action dropSample() {
-        return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.NEUTRAL,
-                new SequentialAction(
+                        setWrist(Arm.WristAngle.BASKET, DROP_SAMPLES.setWristWait),
                         setClaw(Claw.ClawAngles.DEPOSIT, DROP_SAMPLES.unclampClawForDropoffWait),
-                        retractToNeutral(DROP_SAMPLES.retractToNeutralDelay),
-                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                        retractToNeutral(0)
                 )
         );
     }

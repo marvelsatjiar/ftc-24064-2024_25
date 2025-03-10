@@ -74,7 +74,7 @@ public class SubDetectionTest extends AbstractAuto{
         //robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         //robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
         robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
-        robot.setCurrentState(Robot.State.FRONT_WALL_PICKUP);
+
 
         robot.arm.run();
         robot.claw.run();
