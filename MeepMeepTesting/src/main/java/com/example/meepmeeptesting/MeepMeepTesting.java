@@ -1,11 +1,6 @@
 package com.example.meepmeeptesting;
 
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
-import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
@@ -25,18 +20,23 @@ public class MeepMeepTesting {
             startingPositionX = 7.375,
             startingPositionY = -60,
             scoreSpecimenY = -33.5,
-            dropoffFirstSampleX = 25,
+            intermediaryX = 25,
             waitBeforeOuttakeSample = 0.4,
             waitToExtendTo2ndSample = 0.4,
             setBackWallPickupWait = 0.8,
             outtakeSampleDelay = 0.3,
             intakeSampleDelay = 0.5,
             getSampleX = 37.5,
-            getThirdSampleX = 46,
-            intakeSampleY = -32.5,
+            firstSampleX = 30.5,
+            secondSampleX = 43,
+            thirdSampleX = 45,
+            giveFirstSampleX = 41,
+            giveSecondSampleX = 44,
+            giveThirdSampleX = 46,
+            intakeSampleY = -39,
             outtakeSampleY = -44,
-            outtakeSampleHeading = 300,
-            intakeSampleHeading = 25,
+            outtakeSampleHeading = 330,
+            intakeSampleHeading = 45,
             parkX = 23,
             parkY = -44.6,
             extendSleep = 0.2,
@@ -58,7 +58,7 @@ public class MeepMeepTesting {
             bumpSpecimen = -62.5,
             bumpSecondSpecimen = -62,
             pickupSecondSpecimenX = 40,
-            intakeSpecimenY = -56,
+            intakeSpecimenY = -62.5,
             wallPickupX = 41.5,
             startBumpToClampTime = 0.4,
             intakeSpecimenVelocityConstraint = 90,
@@ -68,16 +68,16 @@ public class MeepMeepTesting {
             minScoreProfileAccel = -50,
             maxScoreProfileAccel = 60,
             minFirstProfileAccel = -45,
-            estimatedSixthSample = 5,
+            subSampleX = 5,
             scoreToRetractWait = 0.3,
             sleepSecondsBeforeLimelightActivation = 0.5,
             sleepSecondsBeforeSubDetection = 0.8,
             sleepSecondsBeforeUnclampFirst = 1.2,
-            sleepSecondsBeforeUnclampSecond = 2.3,
-            sleepSecondsBeforeUnclampThird = 2.1,
+            sleepSecondsBeforeUnclampSecond = 2,
+            sleepSecondsBeforeUnclampThird = 2,
             sleepSecondsBeforeUnclampFourth = 2,
             sleepSecondsBeforeUnclampFifth = 2,
-            sleepSecondsBeforeUnclampSixth = 1.9,
+            sleepSecondsBeforeUnclampSixth = 2,
             secondSpecimenSleepBeforeSetup = 0.5,
             bumpSpecimenVelConstraint = 20,
 //            Sample variables start here
@@ -160,17 +160,18 @@ public class MeepMeepTesting {
         builder = builder
                 .setTangent(90)
 //                .afterTime(sleepSecondsBeforeUnclamp, RobotActions.scoreSpecimen())
-                .strafeToConstantHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY))//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
-                .setTangent(Math.toRadians(270))
+                .strafeToLinearHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(100))//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
+                .setTangent(Math.toRadians(315))
 //                .afterTime(setBackWallPickupWait, RobotActions.setupWallPickup())
-                .strafeToConstantHeading(new Vector2d(wallPickupX, intakeSpecimenY)); //, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel));
+                .splineToLinearHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270));
+
 
         // Setting up for the next cycle
-        if (!doPark) {
-            builder = builder
-//                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimen())
-                    .lineToY(bumpSpecimen); // ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint)
-        }
+//        if (!doPark) {
+//            builder = builder
+////                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimen())
+//                    .lineToY(bumpSpecimen); // ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint)
+//        }
 
         return builder;
     }
@@ -178,65 +179,66 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder scoreAllSpecimens(TrajectoryActionBuilder builder) {
 
         builder = builder
-                .setTangent(180)
-                .splineToSplineHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270));
+                .setTangent(Math.toRadians(270))
+                .splineToSplineHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270))
+                .lineToY(bumpSpecimen);
 //                .afterTime(startBumpToClampTime, RobotActions.setupSpecimen());
 
-        builder = scoreSpecimen(builder, secondSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
-        builder = scoreSpecimen(builder, thirdSpecimenOffsetX, thirdSpecimenOffsetY, false, sleepSecondsBeforeSetupThird, sleepSecondsBeforeUnclampThird);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, thirdSpecimenOffsetY, false, sleepSecondsBeforeSetupThird, sleepSecondsBeforeUnclampThird);
         builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, false, sleepSecondsBeforeSetupFourth, sleepSecondsBeforeUnclampFourth);
-        builder = scoreSpecimen(builder, fifthSpecimenOffsetX, fifthSpecimenOffsetY, !isSixPlusZero, sleepSecondsBeforeSetupFifth, sleepSecondsBeforeUnclampFifth);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fifthSpecimenOffsetY, !isSixPlusZero, sleepSecondsBeforeSetupFifth, sleepSecondsBeforeUnclampFifth);
 
-        if (isSixPlusZero) builder = scoreSpecimen(builder, sixthSpecimenOffsetX, sixthSpecimenOffsetY, true, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
+        if (isSixPlusZero) builder = scoreSpecimen(builder, fourthSpecimenOffsetX, sixthSpecimenOffsetY, true, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
 
         return builder;
     }
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                .setTangent(Math.toRadians(90))
+//                .setTangent(Math.toRadians(90))
 //                .afterTime(waitBeforeOuttakeSample, RobotActions.extendIntake(Extendo.Extension.ONE_HALF))
-                .splineToConstantHeading(new Vector2d(dropoffFirstSampleX, outtakeSampleY), Math.toRadians(0))
-//                .afterTime(0, new SequentialAction(
-//                        RobotActions.setRollers(-1, outtakeSampleDelay),
-//                        RobotActions.setRollers(0, 0)
-//                ))
-
-                .splineToSplineHeading(new Pose2d(getSampleX, intakeSampleY, Math.toRadians(intakeSampleHeading)), Math.toRadians(110))
-//                .afterTime(0, new SequentialAction(
-//                        RobotActions.setRollers(1, intakeSampleDelay),
-//                        RobotActions.setRollers(0, 0)
-//                ))
-                .strafeToLinearHeading(new Vector2d(getSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
-//                .afterTime(0, new SequentialAction(
-//                        RobotActions.setRollers(-1, outtakeSampleDelay),
-//                        RobotActions.setRollers(0, 0)
-//                ))
-
-//                .afterTime(waitToExtendTo2ndSample, RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS))
-                .strafeToLinearHeading(new Vector2d(getSampleX, intakeSampleY), Math.toRadians(getSampleX))
+                .splineToSplineHeading(new Pose2d(intermediaryX, intakeSampleY, Math.toRadians(90)), Math.toRadians(0))
+////                .afterTime(0, new SequentialAction(
+////                        RobotActions.setRollers(-1, outtakeSampleDelay),
+////                        RobotActions.setRollers(0, 0)
+////                ))
+//
+                .splineToSplineHeading(new Pose2d(firstSampleX, intakeSampleY, Math.toRadians(intakeSampleHeading)), Math.toRadians(0))
 //                .afterTime(0, new SequentialAction(
 //                        RobotActions.setRollers(1, intakeSampleDelay),
 //                        RobotActions.setRollers(0, 0)
 //                ))
-                .strafeToLinearHeading(new Vector2d(getSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
-//                .afterTime(0, new SequentialAction(
-//                        RobotActions.setRollers(-1, outtakeSampleDelay),
-//                        RobotActions.setRollers(0, 0)
-//                ))
-
-                .setTangent(90)
-                .splineToSplineHeading(new Pose2d(getThirdSampleX, intakeSampleY, Math.toRadians(intakeSampleHeading)), Math.toRadians(intakeSampleHeading))
-//                .afterTime(0, new SequentialAction(
-//                        RobotActions.setRollers(1, intakeSampleDelay),
-//                        RobotActions.setRollers(0, 0)
-//                ))
-                .strafeToLinearHeading(new Vector2d(getThirdSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading));
-//                .afterTime(0, new SequentialAction(
-//                        RobotActions.setRollers(-1, outtakeSampleDelay),
-//                        RobotActions.retractExtendo(),
-//                        RobotActions.setRollers(0, 0),
-//                        RobotActions.setupWallPickup()
-//                ))
+                .strafeToLinearHeading(new Vector2d(giveFirstSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
+////                .afterTime(0, new SequentialAction(
+////                        RobotActions.setRollers(-1, outtakeSampleDelay),
+////                        RobotActions.setRollers(0, 0)
+////                ))
+//
+////                .afterTime(waitToExtendTo2ndSample, RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS))
+                .strafeToLinearHeading(new Vector2d(secondSampleX, intakeSampleY), Math.toRadians(intakeSampleHeading))
+////                .afterTime(0, new SequentialAction(
+////                        RobotActions.setRollers(1, intakeSampleDelay),
+////                        RobotActions.setRollers(0, 0)
+////                ))
+                .strafeToLinearHeading(new Vector2d(giveSecondSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
+////                .afterTime(0, new SequentialAction(
+////                        RobotActions.setRollers(-1, outtakeSampleDelay),
+////                        RobotActions.setRollers(0, 0)
+////                ))
+//
+//                .setTangent(180)
+                .strafeToLinearHeading(new Vector2d(thirdSampleX, intakeSampleY), Math.toRadians(intakeSampleHeading))
+////                .afterTime(0, new SequentialAction(
+////                        RobotActions.setRollers(1, intakeSampleDelay),
+////                        RobotActions.setRollers(0, 0)
+////                ))
+                .strafeToLinearHeading(new Vector2d(giveThirdSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading));
+////                .afterTime(0, new SequentialAction(
+////                        RobotActions.setRollers(-1, outtakeSampleDelay),
+////                        RobotActions.retractExtendo(),
+////                        RobotActions.setRollers(0, 0),
+////                        RobotActions.setupWallPickup()
+////                ))
 
         return builder;
     }
@@ -257,7 +259,7 @@ public class MeepMeepTesting {
         builder = builder
 //                .afterTime(0, RobotActions.setupSpecimen())
 //                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
-                .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90));//, (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
+                .strafeToConstantHeading(new Vector2d(subSampleX, scoreSpecimenY));//, (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
 
 //        if (autoAlignToSample.isSampleLocked && isSixPlusZero) {
 //            builder = builder

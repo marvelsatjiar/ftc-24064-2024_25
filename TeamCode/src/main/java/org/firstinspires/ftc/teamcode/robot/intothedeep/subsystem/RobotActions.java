@@ -110,14 +110,6 @@ public class RobotActions {
         );
     }
 
-    // DONE
-    public static Action extendIntake(double angle) {
-        return new SequentialAction(
-                setV4B(Intake.V4BAngle.UP, 0),
-                setExtendo(angle, EXTEND_INTAKE.extendExtendoWait),
-                new InstantAction(() -> robot.currentState = Robot.State.EXTENDO_OUT)
-        );
-    }
 
 
 
@@ -355,6 +347,7 @@ public class RobotActions {
                 setRollers(0.7 , 0),
                 setV4B(Intake.V4BAngle.UP, RETRACTION_FOR_TRANSFER.setV4BUpWait),
                 setExtendo(Extendo.Extension.RETRACTED, RETRACTION_FOR_TRANSFER.retractExtendoWait),
+                setRollers(0 , 0),
                 new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
         );
     }
