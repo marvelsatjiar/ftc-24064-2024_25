@@ -19,21 +19,22 @@ public class MeepMeepTesting {
             parkVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -60,
-            scoreSpecimenY = -33.5,
-            intermediaryX = 25,
+            scoreSpecimenY = -37.5,
+            intermediaryX = 22,
+            intermediaryY = -39,
             waitBeforeOuttakeSample = 0.4,
             waitToExtendTo2ndSample = 0.4,
             setBackWallPickupWait = 0.8,
             outtakeSampleDelay = 0.3,
             intakeSampleDelay = 0.5,
             getSampleX = 37.5,
-            firstSampleX = 30.5,
-            secondSampleX = 43,
+            firstSampleX = 32.5,
+            secondSampleX = 45,
             thirdSampleX = 45,
             giveFirstSampleX = 41,
             giveSecondSampleX = 44,
             giveThirdSampleX = 46,
-            intakeSampleY = -39,
+            intakeSampleY = -40,
             outtakeSampleY = -44,
             outtakeSampleHeading = 330,
             intakeSampleHeading = 45,
@@ -59,7 +60,7 @@ public class MeepMeepTesting {
             bumpSecondSpecimen = -62,
             pickupSecondSpecimenX = 40,
             intakeSpecimenY = -62.5,
-            wallPickupX = 41.5,
+            wallPickupX = 45.5,
             startBumpToClampTime = 0.4,
             intakeSpecimenVelocityConstraint = 90,
             scoreSpecimenVelocityConstraint = 140,
@@ -167,11 +168,11 @@ public class MeepMeepTesting {
 
 
         // Setting up for the next cycle
-//        if (!doPark) {
-//            builder = builder
-////                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimen())
-//                    .lineToY(bumpSpecimen); // ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint)
-//        }
+        if (!doPark) {
+            builder = builder
+//                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimen())
+                    .lineToY(bumpSpecimen); // ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint)
+        }
 
         return builder;
     }
@@ -180,8 +181,8 @@ public class MeepMeepTesting {
 
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToSplineHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270))
-                .lineToY(bumpSpecimen);
+                .strafeToLinearHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(90));
+//                .lineToY(bumpSpecimen);
 //                .afterTime(startBumpToClampTime, RobotActions.setupSpecimen());
 
         builder = scoreSpecimen(builder, fourthSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
@@ -197,7 +198,7 @@ public class MeepMeepTesting {
         builder = builder
 //                .setTangent(Math.toRadians(90))
 //                .afterTime(waitBeforeOuttakeSample, RobotActions.extendIntake(Extendo.Extension.ONE_HALF))
-                .splineToSplineHeading(new Pose2d(intermediaryX, intakeSampleY, Math.toRadians(90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(intermediaryX, intermediaryY, Math.toRadians(90)), Math.toRadians(0))
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(-1, outtakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)

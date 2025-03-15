@@ -39,44 +39,48 @@ public class Specimen6Plus0 extends AbstractAuto {
     public static class GiveSamples {
         public double
                 // Position
-                intermediaryX = 25,
-                intakeSampleY = -39,
+                intermediaryX = 22,
+                intermediaryY = -39,
+
+                intakeFirstSampleY = -38.5,
+                intakeSecondSampleY = -39.5,
+                intakeThirdSampleY = -39.5,
                 outtakeSampleY = -44,
 
-                firstSampleX = 30.5,
-                secondSampleX = 43,
-                thirdSampleX = 45,
+                firstSampleX = 35.5,
+                secondSampleX = 45,
+                thirdSampleX = 49,
 
                 giveFirstSampleX = 41,
                 giveSecondSampleX = 44,
                 giveThirdSampleX = 46,
 
                 // Headings
-                intakeFirstSampleHeading = 45,
-                intakeSecondSampleHeading = 45,
-                intakeThirdSampleHeading = 45,
-                outtakeFirstSampleHeading = 330,
-                outtakeSecondSampleHeading = 330,
-                outtakeThirdSampleHeading = 330,
-                firstExtendoAngle = 78,
-                secondExtendoAngle = 78,
-                thirdExtendoAngle = 78,
+                intakeFirstSampleHeading = 30,
+                intakeSecondSampleHeading = 78,
+                intakeThirdSampleHeading = 71.5,
+                outtakeFirstSampleHeading = -60,
+                outtakeSecondSampleHeading = -65,
+                outtakeThirdSampleHeading = -68,
+                firstExtendoAngle = 130,
+                secondExtendoAngle = 135,
+                thirdExtendoAngle = 130,
 
                 // Timings
                 sleepSecondsBeforeLimelightActivation = 0.5,
                 sleepSecondsBeforeSubDetection = 0.8,
-                firstSleepBeforeTurning = 0.1,
-                secondSleepBeforeTurning = 0.1,
-                thirdSleepBeforeTurning = 0.1,
-                outtakeSampleDelay = 1,
-                sleepBeforeV4B = 0.1,
+                firstSleepBeforeTurning = 0.8,
+                secondSleepBeforeTurning = 0.7,
+                thirdSleepBeforeTurning = 0.9,
+                outtakeFirstSampleDelay = 0.4,
+                outtakeSecondSampleDelay = 0.5,
+                outtakeThirdSampleDelay = 0.5,
+                sleepBeforeV4B = 0.3,
 
                 // Roller Power
-                intakeRollerPower = 0.8,
+                intakeRollerPower = 1,
                 outtakeRollerPower = -0.8;
-
     }
-
     public static class ScoreSpecimens {
         public double
                 // Positions
@@ -84,26 +88,33 @@ public class Specimen6Plus0 extends AbstractAuto {
                 scoreSpecimenY = -33.5,
 
                 wallPickupX = 41.5,
-                intakeSpecimenY = -62.5,
+                secondWallPickupX = 46,
+                intakeSpecimenY = -63.5,
+                intakeSecondSpecimenY = -47,
 
-                specimenOffsetX = -5.5,
-                secondSpecimenOffsetY = 2.5,
-                thirdSpecimenOffsetY = 2.5,
-                fourthSpecimenOffsetY = 2.5,
-                fifthSpecimenOffsetY = 2.5,
-                sixthSpecimenOffsetY = 2.5,
+                specimenOffsetX = -11.5,
+                secondSpecimenOffsetY = 9.5,
+                thirdSpecimenOffsetY = 9.5,
+                fourthSpecimenOffsetY = 9.5,
+                fifthSpecimenOffsetY = 9.5,
+                sixthSpecimenOffsetY = 9.5,
 
                 // Headings
                 scoringAngle = 100,
 
                 // Timings
-                sleepBeforeGrab = 0,
+                timeBeforeWallPickup = 0.5,
+                lastFourSleepBeforeGrab = 0,
+                secondSleepBeforeSetup = 0.1,
                 sleepSecondsBeforeUnclampFirst = 1.2,
-                sleepSecondsBeforeUnclampSecond = 2,
-                sleepSecondsBeforeUnclampThird = 2,
-                sleepSecondsBeforeUnclampFourth = 2,
-                sleepSecondsBeforeUnclampFifth = 2,
-                sleepSecondsBeforeUnclampSixth = 2;
+                sleepSecondsBeforeUnclampSecond = 2.2,
+                sleepSecondsBeforeUnclampThird = 2.2,
+                sleepSecondsBeforeUnclampFourth = 2.2,
+                sleepSecondsBeforeUnclampFifth = 2.2,
+                sleepSecondsBeforeUnclampSixth = 2.2,
+
+                //Constraints
+                scoreSpecimenVelocityConstraint = 140;
     }
     public static GiveSamples G_S = new GiveSamples();
     public static ScoreSpecimens S_S = new ScoreSpecimens();
@@ -190,15 +201,15 @@ public class Specimen6Plus0 extends AbstractAuto {
         builder = builder
                 .setTangent(90)
                 .afterTime(sleepSecondsBeforeUnclamp, RobotActions.scoreSpecimen())
-                .strafeToLinearHeading(new Vector2d(10 + offsetX, S_S.scoreSpecimenY + offsetY), Math.toRadians(S_S.scoringAngle))//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
+                .strafeToLinearHeading(new Vector2d(10 + offsetX, S_S.scoreSpecimenY + offsetY), Math.toRadians(S_S.scoringAngle), (pose2dDual, posePath, v) -> S_S.scoreSpecimenVelocityConstraint)
                 .setTangent(Math.toRadians(315));
 
-        if (!doPark) builder = builder.afterTime(0, RobotActions.setupWallPickup());
+        if (!doPark) builder = builder.afterTime(S_S.timeBeforeWallPickup, RobotActions.setupWallPickup());
 
         builder = builder.splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270));
 
         // Setting up for the next cycle
-        if (!doPark) builder = builder.afterTime(S_S.sleepBeforeGrab, RobotActions.setupSpecimen());
+        if (!doPark) builder = builder.afterTime(S_S.lastFourSleepBeforeGrab, RobotActions.setupSpecimen());
 
 
         return builder;
@@ -208,7 +219,13 @@ public class Specimen6Plus0 extends AbstractAuto {
 
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToSplineHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270));
+                .strafeToLinearHeading(new Vector2d(S_S.secondWallPickupX, S_S.intakeSecondSpecimenY), Math.toRadians(90))
+                .lineToY(S_S.intakeSpecimenY)
+                .stopAndAdd(new SequentialAction(
+                        RobotActions.setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, RobotActions.SETUP_SPECIMEN.clampClawWait),
+                        RobotActions.setWrist(Arm.WristAngle.GRAB_OFF_WALL, RobotActions.SETUP_SPECIMEN.setWristWait)
+                ))
+                .afterTime(S_S.secondSleepBeforeSetup, RobotActions.setupSpecimen());
 
         builder = scoreSpecimen(builder, S_S.specimenOffsetX, S_S.secondSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampSecond);
         builder = scoreSpecimen(builder, S_S.specimenOffsetX, S_S.thirdSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampThird);
@@ -221,9 +238,9 @@ public class Specimen6Plus0 extends AbstractAuto {
     }
     private TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                .splineToSplineHeading(new Pose2d(G_S.intermediaryX, G_S.intakeSampleY, Math.toRadians(90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(G_S.intermediaryX, G_S.intermediaryY, Math.toRadians(90)), Math.toRadians(0))
                 // Intaking 1st
-                .splineToSplineHeading(new Pose2d(G_S.firstSampleX, G_S.intakeSampleY, Math.toRadians(G_S.intakeFirstSampleHeading)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(G_S.firstSampleX, G_S.intakeFirstSampleY, Math.toRadians(G_S.intakeFirstSampleHeading)), Math.toRadians(0))
                 .stopAndAdd(new ParallelAction(
                         RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
                         RobotActions.setExtendo(G_S.firstExtendoAngle, 0),
@@ -231,30 +248,30 @@ public class Specimen6Plus0 extends AbstractAuto {
                 ))
 
                 // Outtaking 1st
-                .afterTime(G_S.outtakeSampleDelay, new SequentialAction(
+                .afterTime(0, RobotActions.setExtendo(68, 0))
+                .afterTime(G_S.outtakeFirstSampleDelay, new SequentialAction(
                         RobotActions.setRollers(G_S.outtakeRollerPower, G_S.sleepBeforeV4B),
                         RobotActions.setV4B(Intake.V4BAngle.UP, 0)
                 ))
                 .strafeToLinearHeading(new Vector2d(G_S.giveFirstSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeFirstSampleHeading))
-                .afterTime(0, RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH))
-
-                // Intaking 2nd
-                .strafeToLinearHeading(new Vector2d(G_S.secondSampleX, G_S.intakeSampleY), Math.toRadians(G_S.intakeSecondSampleHeading))
+//                 Intaking 2nd
+                .strafeToLinearHeading(new Vector2d(G_S.secondSampleX, G_S.intakeSecondSampleY), Math.toRadians(G_S.intakeSecondSampleHeading))
                 .stopAndAdd(new ParallelAction(
                         RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
                         RobotActions.setExtendo(G_S.secondExtendoAngle, 0),
                         RobotActions.setRollers(G_S.intakeRollerPower, G_S.secondSleepBeforeTurning)
                 ))
                 // Outtaking 2nd
-                .afterTime(G_S.outtakeSampleDelay, new SequentialAction(
+                .afterTime(0, RobotActions.setExtendo(68, 0))
+                .afterTime(G_S.outtakeSecondSampleDelay, new SequentialAction(
                         RobotActions.setRollers(G_S.outtakeRollerPower, G_S.sleepBeforeV4B),
                         RobotActions.setV4B(Intake.V4BAngle.UP, 0)
                 ))
-                .strafeToLinearHeading(new Vector2d(G_S.giveSecondSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeSecondSampleHeading))
-                .afterTime(0, RobotActions.extendIntake(Extendo.Extension.ONE_FOURTH))
 
+                .strafeToLinearHeading(new Vector2d(G_S.giveSecondSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeSecondSampleHeading))
+//
                 //Intaking 3rd
-                .strafeToLinearHeading(new Vector2d(G_S.thirdSampleX, G_S.intakeSampleY), Math.toRadians(G_S.intakeThirdSampleHeading))
+                .strafeToLinearHeading(new Vector2d(G_S.thirdSampleX, G_S.intakeThirdSampleY), Math.toRadians(G_S.intakeThirdSampleHeading))
                 .stopAndAdd(new ParallelAction(
                         RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
                         RobotActions.setExtendo(G_S.thirdExtendoAngle, 0),
@@ -262,8 +279,8 @@ public class Specimen6Plus0 extends AbstractAuto {
                 ))
 
                 //Outtaking 3rd
-                .afterTime(0, RobotActions.setExtendo(Extendo.Extension.ONE_HALF, 0))
-                .afterTime(G_S.outtakeSampleDelay, new SequentialAction(
+                .afterTime(0, RobotActions.setExtendo(68, 0))
+                .afterTime(G_S.outtakeThirdSampleDelay, new SequentialAction(
                         RobotActions.setRollers(G_S.outtakeRollerPower, G_S.sleepBeforeV4B),
                         RobotActions.setV4B(Intake.V4BAngle.UP, 0)
                 ))

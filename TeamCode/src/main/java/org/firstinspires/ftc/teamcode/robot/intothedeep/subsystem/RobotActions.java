@@ -80,7 +80,7 @@ public class RobotActions {
 
     public static class ScoreSpecimen {
         public double
-                retractArmstendoWait = 0.2,
+                retractArmstendoWait = 0.3,
                 unclampClawWait = 0.2;
     }
 

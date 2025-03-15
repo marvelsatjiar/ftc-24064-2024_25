@@ -18,21 +18,21 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 200, //215,
+            NEUTRAL_ARM_ANGLE = 184, //215,
             TRANSFERRED_WRIST_ANGLE = 145,
-            COLLECTING_ARM_ANGLE = 235, //240,
-            COLLECTING_WRIST_ANGLE = 85, //140,
-            BASKET_ARM_ANGLE = 70,
+            COLLECTING_ARM_ANGLE = 240, //240,
+            COLLECTING_WRIST_ANGLE = 90, //140,
+            BASKET_ARM_ANGLE = 75,
             BASKET_WRIST_ANGLE = 40,
 
-            WALL_PICKUP_ARM_ANGLE = 355,
-            WALL_PICKUP_WRIST_ANGLE = 80,
+            WALL_PICKUP_ARM_ANGLE = 345,
+            WALL_PICKUP_WRIST_ANGLE = 95,
 
 
             GRAB_OFF_WALL_WRIST_ANGLE = 190,
 
-            SCORE_SPECIMEN_ARM_ANGLE = 180,
-            SCORE_SPECIMEN_WRIST_ANGLE = 95,
+            SCORE_SPECIMEN_ARM_ANGLE = 170,
+            SCORE_SPECIMEN_WRIST_ANGLE = 100,
 
             WALL_PICKUP_ARMSTENDO_ANGLE = 105,
             EXTENDED_ARMSTENDO_ANGLE = 10,

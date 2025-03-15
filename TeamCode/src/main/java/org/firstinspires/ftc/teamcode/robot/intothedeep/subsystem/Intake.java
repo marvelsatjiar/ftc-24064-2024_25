@@ -20,11 +20,11 @@ public final class Intake {
     private final MotorEx intake;
 
     public static int
-            V4B_DOWN_ANGLE = 48,
+            V4B_DOWN_ANGLE = 60,
             V4B_CLEARING_ANGLE = 85,
-            V4B_UP_ANGLE = 85,
+            V4B_UP_ANGLE = 100,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
-            V4B_TRANSFER_ANGLE = 50,
+            V4B_TRANSFER_ANGLE = 65,
             V4B_HOVERING_ANGLE = 45;
 
     private V4BAngle targetAngle = V4BAngle.UP;
