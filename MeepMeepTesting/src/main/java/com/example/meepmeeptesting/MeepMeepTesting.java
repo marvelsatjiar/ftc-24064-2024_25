@@ -28,7 +28,7 @@ public class MeepMeepTesting {
             outtakeSampleDelay = 0.3,
             intakeSampleDelay = 0.5,
             getSampleX = 37.5,
-            firstSampleX = 35.5,
+            firstSampleX = 46,
             secondSampleX = 45,
             thirdSampleX = 45,
             giveFirstSampleX = 41,
@@ -115,7 +115,7 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity drive = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(50, 60, Math.toRadians(180), Math.toRadians(180), 11.75)
+                .setConstraints(50, 60, 5, 10, 11.75)
                 .setDimensions(14,  16.5)
                 .build();
 
@@ -209,7 +209,7 @@ public class MeepMeepTesting {
 //                        RobotActions.setRollers(1, intakeSampleDelay),
 //                        RobotActions.setRollers(0, 0)
 //                ))
-                .strafeToLinearHeading(new Vector2d(firstSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
+                .strafeToLinearHeading(new Vector2d(firstSampleX, intakeSampleY), Math.toRadians(outtakeSampleHeading))
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(-1, outtakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)
@@ -221,19 +221,19 @@ public class MeepMeepTesting {
 ////                        RobotActions.setRollers(1, intakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)
 ////                ))
-                .strafeToLinearHeading(new Vector2d(firstSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
+                .strafeToLinearHeading(new Vector2d(firstSampleX, intakeSampleY), Math.toRadians(outtakeSampleHeading))
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(-1, outtakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)
 ////                ))
 //
 //                .setTangent(180)
-                .strafeToLinearHeading(new Vector2d(thirdSampleX, intakeSampleY), Math.toRadians(intakeSampleHeading))
+                .strafeToLinearHeading(new Vector2d(firstSampleX, intakeSampleY), Math.toRadians(intakeSampleHeading))
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(1, intakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)
 ////                ))
-                .strafeToLinearHeading(new Vector2d(giveThirdSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading));
+                .strafeToLinearHeading(new Vector2d(giveThirdSampleX, intakeSampleY), Math.toRadians(outtakeSampleHeading));
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(-1, outtakeSampleDelay),
 ////                        RobotActions.retractExtendo(),

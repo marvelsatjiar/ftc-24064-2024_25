@@ -74,7 +74,7 @@ public class RobotActions {
                 clampClawWait = 0.2,
                 setWristWait = 0.2,
                 setArmWait = 0.3,
-                setArmstendoWait = 0,
+                setArmstendoWait = 0.2,
                 extendArmstendoWait = 0.3;
     }
 
