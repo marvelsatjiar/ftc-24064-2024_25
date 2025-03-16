@@ -63,6 +63,7 @@ public class AutoAlignToSample {
     public int lockSampleCounter = 0;
     public boolean
             isSampleLocked = false,
+            isOppositeSample = false,
             isYellowSample = false;
 
     private boolean isExpired = false;
@@ -136,6 +137,29 @@ public class AutoAlignToSample {
         );
     }
 
+    private void setEdgeCases() {
+        boolean ifBlueSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.BLUE;
+        boolean ifRedSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.RED;
+        boolean ifYellowSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.YELLOW;
+
+        switch (targetColor) {
+            case RED: {
+                isOppositeSample = ifBlueSample;
+                isYellowSample = ifYellowSample;
+                break;
+            }
+            case BLUE: {
+                isOppositeSample = ifRedSample;
+                isYellowSample = ifYellowSample;
+                break;
+            }
+            case YELLOW: {
+                isOppositeSample = ifBlueSample || ifRedSample;
+                break;
+            }
+        }
+    }
+
 
     public Action driveToTarget() {
         return new Actions.SingleCheckAction(
@@ -147,8 +171,7 @@ public class AutoAlignToSample {
                                 new InstantAction(() -> robot.drivetrain.setFieldCentricPowers(calculateTarget())),
                                 new InstantAction(() -> robot.drivetrain.updatePoseEstimate())
                         ),
-                        new InstantAction(() -> isYellowSample = robot.intake.getCurrentSample() != ColorRangefinderEx.SampleColor.YELLOW)
-
+                        new InstantAction(this::setEdgeCases)
                 )
         );
     }
