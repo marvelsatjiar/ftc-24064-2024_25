@@ -89,7 +89,7 @@ public final class Robot {
         actionScheduler.run();
         extendo.run(intake.getTargetV4BAngle().isV4BUnsafe());
         sweeper.run();
-        intake.run();
+        intake.run(extendo.getTargetAngle());
         lift.run();
         claw.run();
         arm.run();
