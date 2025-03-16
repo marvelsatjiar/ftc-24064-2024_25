@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo.LINKAGE_MAX_ANGLE;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo.LINKAGE_MIN_ANGLE;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
@@ -118,7 +120,7 @@ public final class Intake {
 
         for (ServoEx servos : intakeLinkGroup)
             if (getTargetV4BAngle() == V4BAngle.DOWN) {
-                V4B_DOWN_ANGLE = lerp(extendoAngle, 13, 142, V4B_MIN_DOWN_ANGLE, V4B_MAX_DOWN_ANGLE);
+                V4B_DOWN_ANGLE = lerp(extendoAngle, LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE, V4B_MIN_DOWN_ANGLE, V4B_MAX_DOWN_ANGLE);
             } else {
                 servos.turnToAngle(targetAngle.getAngle());
             }
