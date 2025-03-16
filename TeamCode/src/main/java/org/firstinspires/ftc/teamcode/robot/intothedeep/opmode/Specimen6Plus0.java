@@ -57,14 +57,14 @@ public class Specimen6Plus0 extends AbstractAuto {
 
                 // Headings
                 intakeFirstSampleHeading = 30,
-                intakeSecondSampleHeading = 78,
-                intakeThirdSampleHeading = 71.5,
+                intakeSecondSampleHeading = 77.5,
+                intakeThirdSampleHeading = 67,
                 outtakeFirstSampleHeading = -60,
                 outtakeSecondSampleHeading = -65,
                 outtakeThirdSampleHeading = -68,
                 firstExtendoAngle = 130,
                 secondExtendoAngle = 135,
-                thirdExtendoAngle = 130,
+                thirdExtendoAngle = 125,
 
                 // Timings
                 sleepSecondsBeforeLimelightActivation = 0.5,
@@ -89,24 +89,24 @@ public class Specimen6Plus0 extends AbstractAuto {
 
                 wallPickupX = 41.5,
                 secondWallPickupX = 46,
-                intakeSpecimenY = -63.5,
+                intakeSpecimenY = -56.5,
                 intakeSecondSpecimenY = -47,
-
-                specimenOffsetX = -11.5,
-                secondSpecimenOffsetY = 9.5,
-                thirdSpecimenOffsetY = 9.5,
-                fourthSpecimenOffsetY = 9.5,
-                fifthSpecimenOffsetY = 9.5,
-                sixthSpecimenOffsetY = 9.5,
+                intakeSecondBumpSpecimenY = -64.5,
+                specimenOffsetX = -16,
+                secondSpecimenOffsetY = 11,
+                thirdSpecimenOffsetY = 11,
+                fourthSpecimenOffsetY = 11,
+                fifthSpecimenOffsetY = 11,
+                sixthSpecimenOffsetY = 11,
 
                 // Headings
-                scoringAngle = 100,
+                scoringAngle = 112,
 
                 // Timings
-                timeBeforeWallPickup = 0.5,
+                timeBeforeWallPickup = 1,
                 lastFourSleepBeforeGrab = 0,
                 secondSleepBeforeSetup = 0.1,
-                sleepSecondsBeforeUnclampFirst = 1.2,
+                sleepSecondsBeforeUnclampFirst = 1.4,
                 sleepSecondsBeforeUnclampSecond = 2.2,
                 sleepSecondsBeforeUnclampThird = 2.2,
                 sleepSecondsBeforeUnclampFourth = 2.2,
@@ -114,7 +114,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 sleepSecondsBeforeUnclampSixth = 2.2,
 
                 //Constraints
-                scoreSpecimenVelocityConstraint = 140;
+                scoreSpecimenVelocityConstraint = 60;
     }
     public static GiveSamples G_S = new GiveSamples();
     public static ScoreSpecimens S_S = new ScoreSpecimens();
@@ -206,10 +206,15 @@ public class Specimen6Plus0 extends AbstractAuto {
 
         if (!doPark) builder = builder.afterTime(S_S.timeBeforeWallPickup, RobotActions.setupWallPickup());
 
-        builder = builder.splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270));
+        builder = builder.splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSpecimenY, Math.toRadians(90)), Math.toRadians(S_S.scoringAngle), (pose2dDual, posePath, v) -> S_S.scoreSpecimenVelocityConstraint);
 
         // Setting up for the next cycle
-        if (!doPark) builder = builder.afterTime(S_S.lastFourSleepBeforeGrab, RobotActions.setupSpecimen());
+        if (!doPark) builder = builder
+                .stopAndAdd(new SequentialAction(
+                        RobotActions.setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, RobotActions.SETUP_SPECIMEN.clampClawWait),
+                        RobotActions.setWrist(Arm.WristAngle.GRAB_OFF_WALL, RobotActions.SETUP_SPECIMEN.setWristWait)
+                ))
+                .afterTime(S_S.lastFourSleepBeforeGrab, RobotActions.setupSpecimen());
 
 
         return builder;
@@ -220,7 +225,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         builder = builder
                 .setTangent(Math.toRadians(270))
                 .strafeToLinearHeading(new Vector2d(S_S.secondWallPickupX, S_S.intakeSecondSpecimenY), Math.toRadians(90))
-                .lineToY(S_S.intakeSpecimenY)
+                .lineToY(S_S.intakeSecondBumpSpecimenY)
                 .stopAndAdd(new SequentialAction(
                         RobotActions.setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, RobotActions.SETUP_SPECIMEN.clampClawWait),
                         RobotActions.setWrist(Arm.WristAngle.GRAB_OFF_WALL, RobotActions.SETUP_SPECIMEN.setWristWait)

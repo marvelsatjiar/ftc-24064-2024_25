@@ -28,7 +28,7 @@ public class MeepMeepTesting {
             outtakeSampleDelay = 0.3,
             intakeSampleDelay = 0.5,
             getSampleX = 37.5,
-            firstSampleX = 32.5,
+            firstSampleX = 35.5,
             secondSampleX = 45,
             thirdSampleX = 45,
             giveFirstSampleX = 41,
@@ -41,14 +41,14 @@ public class MeepMeepTesting {
             parkX = 23,
             parkY = -44.6,
             extendSleep = 0.2,
-            secondSpecimenOffsetY = 2,
-            thirdSpecimenOffsetY = 2.5,
-            fourthSpecimenOffsetY = 2.5,
-            fifthSpecimenOffsetY = 2.5,
-            sixthSpecimenOffsetY = 2.5,
+            secondSpecimenOffsetY = 11,
+            thirdSpecimenOffsetY = 11,
+            fourthSpecimenOffsetY = 1,
+            fifthSpecimenOffsetY = 11,
+            sixthSpecimenOffsetY = 11,
             secondSpecimenOffsetX = -11,
             thirdSpecimenOffsetX = -9,
-            fourthSpecimenOffsetX = -5.5,
+            fourthSpecimenOffsetX = -16,
             fifthSpecimenOffsetX = -1,
             sixthSpecimenOffsetX = 0.5,
             sleepSecondsBeforeSetupSecond = 0.8,
@@ -209,19 +209,19 @@ public class MeepMeepTesting {
 //                        RobotActions.setRollers(1, intakeSampleDelay),
 //                        RobotActions.setRollers(0, 0)
 //                ))
-                .strafeToLinearHeading(new Vector2d(giveFirstSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
+                .strafeToLinearHeading(new Vector2d(firstSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(-1, outtakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)
 ////                ))
 //
 ////                .afterTime(waitToExtendTo2ndSample, RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS))
-                .strafeToLinearHeading(new Vector2d(secondSampleX, intakeSampleY), Math.toRadians(intakeSampleHeading))
+                .strafeToLinearHeading(new Vector2d(firstSampleX, intakeSampleY), Math.toRadians(intakeSampleHeading))
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(1, intakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)
 ////                ))
-                .strafeToLinearHeading(new Vector2d(giveSecondSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
+                .strafeToLinearHeading(new Vector2d(firstSampleX, outtakeSampleY), Math.toRadians(outtakeSampleHeading))
 ////                .afterTime(0, new SequentialAction(
 ////                        RobotActions.setRollers(-1, outtakeSampleDelay),
 ////                        RobotActions.setRollers(0, 0)

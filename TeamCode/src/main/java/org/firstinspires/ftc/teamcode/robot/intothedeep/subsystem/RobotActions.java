@@ -72,9 +72,9 @@ public class RobotActions {
     public static class SetupSpecimen {
         public double
                 clampClawWait = 0.2,
-                setWristWait = 0.1,
+                setWristWait = 0.2,
                 setArmWait = 0.3,
-                setArmstendoWait = 0.3,
+                setArmstendoWait = 0,
                 extendArmstendoWait = 0.3;
     }
 
