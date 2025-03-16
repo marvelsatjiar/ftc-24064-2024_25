@@ -1,8 +1,13 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import static com.acmerobotics.roadrunner.Math.lerp;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.MAX_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo.LINKAGE_MAX_ANGLE;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo.LINKAGE_MIN_ANGLE;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
@@ -19,8 +24,11 @@ public final class Intake {
 
     private final MotorEx intake;
 
-    public static int
-            V4B_DOWN_ANGLE = 56,
+
+    public static double
+            V4B_MIN_DOWN_ANGLE = 56,
+            V4B_MAX_DOWN_ANGLE = 62,
+            V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
             V4B_CLEARING_ANGLE = 85,
             V4B_UP_ANGLE = 100,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
@@ -39,9 +47,9 @@ public final class Intake {
         TRANSFER,
         HOVERING;
 
-        private int getAngle() {
+        private double getAngle() {
             switch (this) {
-                case DOWN: return  V4B_DOWN_ANGLE;
+                case DOWN: return V4B_DOWN_ANGLE;
                 case CLEARING: return V4B_CLEARING_ANGLE;
                 case UNSAFE: return V4B_UNSAFE_THRESHOLD_ANGLE;
                 case TRANSFER: return V4B_TRANSFER_ANGLE;
@@ -108,11 +116,15 @@ public final class Intake {
         return setRollerPower(power, false);
     }
 
-    public void run() {
+    public void run(double extendoAngle) {
         rangefinder.run();
 
         for (ServoEx servos : intakeLinkGroup)
-            servos.turnToAngle(targetAngle.getAngle());
+            if (getTargetV4BAngle() == V4BAngle.DOWN) {
+                V4B_DOWN_ANGLE = lerp(extendoAngle, LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE, V4B_MIN_DOWN_ANGLE, V4B_MAX_DOWN_ANGLE);
+            } else {
+                servos.turnToAngle(targetAngle.getAngle());
+            }
     }
 
     public ColorRangefinderEx.SampleColor getCurrentSample() {

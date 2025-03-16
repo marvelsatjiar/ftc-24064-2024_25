@@ -1,9 +1,14 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.LIMELIGHT_BLUE_DETECTION_PIPELINE;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.LIMELIGHT_RED_DETECTION_PIPELINE;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
@@ -20,6 +25,7 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -39,7 +45,8 @@ public class SubDetectionTest extends AbstractAuto{
             scoreToRetractWait = 0.7,
             sleepSecondsBeforeLimelightActivation = 0.5,
             sleepSecondsBeforeSubDetection = 0.8,
-            sleepSecondsBeforeUnclampFirst = 1.2;
+            sleepSecondsBeforeUnclampFirst = 1.2,
+            extendoAngleEstimate = Extendo.LINKAGE_MIN_ANGLE;
 
 
     @Override
@@ -55,10 +62,17 @@ public class SubDetectionTest extends AbstractAuto{
         while (opModeInInit() && !(gamepadEx1.isDown(RIGHT_BUMPER) && gamepadEx1.isDown(LEFT_BUMPER))) {
             gamepadEx1.readButtons();
 
+            if (gamepadEx1.wasJustPressed(A)) IS_RED = !IS_RED;
+
+            if (gamepadEx1.wasJustPressed(DPAD_UP)) extendoAngleEstimate++;
+            if (gamepadEx1.wasJustPressed(DPAD_UP)) extendoAngleEstimate--;
+
             if (gamepadEx1.wasJustPressed(DPAD_LEFT)) estimatedSixthSample--;
             if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) estimatedSixthSample++;
 
             mTelemetry.addLine("Estimated 6th sample is : " + estimatedSixthSample);
+            mTelemetry.addLine("Estimated extendo angle is : " + extendoAngleEstimate);
+            mTelemetry.addLine("Alliance is : " + (IS_RED ? "RED" : "BLUE"));
 
             mTelemetry.addLine("Press both shoulder buttons to confirm!");
             mTelemetry.update();
@@ -93,7 +107,7 @@ public class SubDetectionTest extends AbstractAuto{
         builder = builder
                 .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(sleepSecondsBeforeLimelightActivation, new ParallelAction(
-                        new InstantAction(() -> autoAlignToSample.activateLimelight()),
+                        new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE )),
                         RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
                 ))
                 .afterTime(sleepSecondsBeforeSubDetection, new Actions.SingleCheckAction(
@@ -114,7 +128,8 @@ public class SubDetectionTest extends AbstractAuto{
                                     RobotActions.setRollers(1, 0),
                                     autoAlignToSample.driveToTarget()
                             ),
-                            RobotActions.retractExtendo()
+                            RobotActions.retractExtendo(),
+                            new InstantAction(() -> autoAlignToSample.driveToTimer.reset())
                     ));
         }
 

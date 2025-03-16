@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
@@ -60,7 +61,10 @@ public class AutoAlignToSample {
     public ElapsedTime driveToTimer = new ElapsedTime();
 
     public int lockSampleCounter = 0;
-    public boolean isSampleLocked = false;
+    public boolean
+            isSampleLocked = false,
+            isOppositeSample = false,
+            isYellowSample = false;
 
     private boolean isExpired = false;
 
@@ -76,12 +80,12 @@ public class AutoAlignToSample {
         headingPID.setTarget(new State(Math.toRadians(90)));
     }
 
-    public void activateLimelight() {
+    public void activateLimelight(int detectionPipeline) {
         targetColor = IS_RED ? ColorRangefinderEx.SampleColor.RED : ColorRangefinderEx.SampleColor.BLUE;
 
         limelightEx.enableStagelite(true);
 
-        limelightEx.getLimelight().pipelineSwitch(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE);
+        limelightEx.getLimelight().pipelineSwitch(detectionPipeline);
         limelightEx.getLimelight().setPollRateHz(10);
     }
 
@@ -133,14 +137,41 @@ public class AutoAlignToSample {
         );
     }
 
+    private void setEdgeCases() {
+        boolean ifBlueSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.BLUE;
+        boolean ifRedSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.RED;
+        boolean ifYellowSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.YELLOW;
+
+        switch (targetColor) {
+            case RED: {
+                isOppositeSample = ifBlueSample;
+                isYellowSample = ifYellowSample;
+                break;
+            }
+            case BLUE: {
+                isOppositeSample = ifRedSample;
+                isYellowSample = ifYellowSample;
+                break;
+            }
+            case YELLOW: {
+                isOppositeSample = ifBlueSample || ifRedSample;
+                break;
+            }
+        }
+    }
+
 
     public Action driveToTarget() {
         return new Actions.SingleCheckAction(
-                () -> robot.intake.getCurrentSample() != targetColor || isExpired,
+                () -> robot.intake.getCurrentSample() != targetColor || !isExpired || isYellowSample,
                 new SequentialAction(
                         new InstantAction(() -> driveToTimer.startTime()),
                         new InstantAction(() -> isExpired = driveToTimer.milliseconds() > 1000),
-                        new InstantAction(() -> robot.drivetrain.setFieldCentricPowers(calculateTarget()))
+                        new ParallelAction(
+                                new InstantAction(() -> robot.drivetrain.setFieldCentricPowers(calculateTarget())),
+                                new InstantAction(() -> robot.drivetrain.updatePoseEstimate())
+                        ),
+                        new InstantAction(this::setEdgeCases)
                 )
         );
     }
