@@ -119,12 +119,14 @@ public final class Intake {
     public void run(double extendoAngle) {
         rangefinder.run();
 
-        for (ServoEx servos : intakeLinkGroup)
+        for (ServoEx servos : intakeLinkGroup) {
             if (getTargetV4BAngle() == V4BAngle.DOWN) {
                 V4B_DOWN_ANGLE = lerp(extendoAngle, LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE, V4B_MIN_DOWN_ANGLE, V4B_MAX_DOWN_ANGLE);
-            } else {
-                servos.turnToAngle(targetAngle.getAngle());
             }
+
+            servos.turnToAngle(targetAngle.getAngle());
+        }
+
     }
 
     public ColorRangefinderEx.SampleColor getCurrentSample() {

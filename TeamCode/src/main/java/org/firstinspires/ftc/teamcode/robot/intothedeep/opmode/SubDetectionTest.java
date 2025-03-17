@@ -22,6 +22,7 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
@@ -31,6 +32,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 
+@Autonomous(name = "Sub Detection Test")
 public class SubDetectionTest extends AbstractAuto{
     private AutoAlignToSample autoAlignToSample;
 
