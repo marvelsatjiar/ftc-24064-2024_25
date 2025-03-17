@@ -124,10 +124,12 @@ public class SubDetectionTest extends AbstractAuto{
                 .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
 
         if (autoAlignToSample.isSampleLocked) {
+            double rollerPower = autoAlignToSample.isOppositeSample ? -1 : 1;
+
             builder = builder
                     .stopAndAdd(new SequentialAction(
                             new ParallelAction(
-                                    RobotActions.setRollers(1, 0),
+                                    RobotActions.setRollers(rollerPower, 0),
                                     autoAlignToSample.driveToTarget()
                             ),
                             RobotActions.retractExtendo(),
