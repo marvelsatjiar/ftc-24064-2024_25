@@ -95,7 +95,7 @@ public class AutoAlignToSample {
 
         List<LLResultTypes.ColorResult> targets = limelightEx.getColorResult();
 
-        if (targets != null && !targets.isEmpty()) return false;
+        if (targets == null || targets.isEmpty()) return false;
 
         desiredSample = targets.get(0);
 
