@@ -170,7 +170,7 @@ public class Specimen6Plus0 extends AbstractAuto {
     protected void onInit() {
         super.onInit();
 
-        autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
+        autoAlignToSample = new AutoAlignToSample(robot.limelightEx, robot);
 
         robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
         robot.arm.setWristAngle(Arm.WristAngle.GRAB_OFF_WALL);
