@@ -19,8 +19,6 @@ import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.motion.State;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 
@@ -29,8 +27,6 @@ import java.util.List;
 @Config
 public class AutoAlignToSample {
     private final LimelightEx limelightEx;
-
-    private final Robot robot;
 
     public ColorRangefinderEx.SampleColor targetColor;
 
@@ -72,9 +68,8 @@ public class AutoAlignToSample {
 
     private boolean isExpired = false;
 
-    public AutoAlignToSample(LimelightEx limelightEx, Robot robot) {
+    public AutoAlignToSample(LimelightEx limelightEx) {
         this.limelightEx = limelightEx;
-        this.robot = robot;
 
         axialPID.setGains(axialPIDGains);
         lateralPID.setGains(lateralPIDGains);
@@ -174,7 +169,7 @@ public class AutoAlignToSample {
                         new InstantAction(() -> isExpired = driveToTimer.milliseconds() > 1000),
                         new ParallelAction(
                                 new InstantAction(() -> robot.drivetrain.setFieldCentricPowers(calculateTarget())),
-                                new InstantAction(robot.drivetrain::updatePoseEstimate)
+                                new InstantAction(() -> robot.drivetrain.updatePoseEstimate())
                         ),
                         new InstantAction(this::setEdgeCases)
                 )

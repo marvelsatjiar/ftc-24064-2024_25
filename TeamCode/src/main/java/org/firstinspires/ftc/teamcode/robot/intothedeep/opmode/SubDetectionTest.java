@@ -85,11 +85,12 @@ public class SubDetectionTest extends AbstractAuto{
     protected void onInit() {
         super.onInit();
 
-        autoAlignToSample = new AutoAlignToSample(robot.limelightEx, robot);
+        autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
         //robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
         //robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
         robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
+
 
         robot.arm.run();
         robot.claw.run();
