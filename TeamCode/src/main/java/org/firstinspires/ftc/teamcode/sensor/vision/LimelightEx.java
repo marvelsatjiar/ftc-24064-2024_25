@@ -16,9 +16,9 @@ import java.net.InetAddress;
 import java.util.List;
 
 public final class LimelightEx {
-    LLResult result;
+    private LLResult result;
     private final Limelight3A limelight;
-    LED stagelite;
+    private final LED stagelite;
 
     public LimelightEx(Limelight3A limelight, HardwareMap hardwareMap) {
         this.limelight = limelight;

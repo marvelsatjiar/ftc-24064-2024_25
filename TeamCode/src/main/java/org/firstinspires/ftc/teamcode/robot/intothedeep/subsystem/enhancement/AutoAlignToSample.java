@@ -1,21 +1,18 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.LIMELIGHT_BLUE_DETECTION_PIPELINE;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.LIMELIGHT_RED_DETECTION_PIPELINE;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
+import androidx.annotation.NonNull;
+
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.control.controller.PIDController;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.motion.State;
@@ -23,6 +20,7 @@ import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 
 import java.util.List;
+import java.util.TreeMap;
 
 @Config
 public class AutoAlignToSample {
@@ -30,8 +28,6 @@ public class AutoAlignToSample {
 
     public ColorRangefinderEx.SampleColor targetColor;
 
-    private final PIDController axialPID = new PIDController();
-    private final PIDController lateralPID = new PIDController();
     private final PIDController headingPID = new PIDController();
 
     public static PIDGains headingGains = new PIDGains(
@@ -40,44 +36,32 @@ public class AutoAlignToSample {
             0.0001
     );
 
-    public static PIDGains axialPIDGains = new PIDGains(
-            0,
-            0,
-            0
-    );
+    private final TreeMap<Double, Double> estimatedExtendoAngles = new TreeMap<>();
 
-    public static PIDGains lateralPIDGains = new PIDGains(
-            0.0288875,
-            0.00007125,
-            0.00001486525
-    );
+    public static double tXAngle = 0;
 
-    public static double
-        targetAxial = 1,
-        targetLateral = 0;
+    public static double secondsToExpire = 1;
 
     private LLResultTypes.ColorResult desiredSample;
 
-    public ElapsedTime driveToTimer = new ElapsedTime();
-
-    public int lockSampleCounter = 0;
     public boolean
-            isSampleLocked = false,
+            isSampleDetected = false,
             isOppositeSample = false,
             isYellowSample = false;
 
-    private boolean isExpired = false;
 
     public AutoAlignToSample(LimelightEx limelightEx) {
         this.limelightEx = limelightEx;
 
-        axialPID.setGains(axialPIDGains);
-        lateralPID.setGains(lateralPIDGains);
         headingPID.setGains(headingGains);
 
-        axialPID.setTarget(new State(targetAxial));
-        lateralPID.setTarget(new State(targetLateral));
-        headingPID.setTarget(new State(Math.toRadians(90)));
+        // sets hashmap keys and values
+        estimatedExtendoAngles.put(25.0, 96.75);
+        estimatedExtendoAngles.put(37.5, 80.625);
+        estimatedExtendoAngles.put(50.0, 64.5);
+        estimatedExtendoAngles.put(62.5, 48.375);
+        estimatedExtendoAngles.put(75.0, 32.25);
+        estimatedExtendoAngles.put(87.5, 16.125);
     }
 
     public void activateLimelight(int detectionPipeline) {
@@ -90,48 +74,50 @@ public class AutoAlignToSample {
     }
 
     // add lock mechanism here (for sample)- for this you must also get current detections!!!
-    public boolean lockTargetSample() {
+    public boolean targetSample() {
         limelightEx.update();
 
         List<LLResultTypes.ColorResult> targets = limelightEx.getColorResult();
 
-        if (targets == null || targets.isEmpty()) return false;
+        // checks and returns detection
+        if (targets != null || !targets.isEmpty()) {
+            desiredSample = targets.get(0);
 
-        desiredSample = targets.get(0);
-
-        for (LLResultTypes.ColorResult target : targets) {
-            if (target.getTargetArea() > desiredSample.getTargetArea()) desiredSample = target;
+            return true;
         }
 
-        lockSampleCounter++;
-
-        return true;
+        return false;
     }
 
-    private PoseVelocity2d calculateTarget() {
-        double theta = robot.drivetrain.headingOffset - robot.drivetrain.pose.heading.toDouble();
+    private Double calculateExtendoTarget() {
+        double currentArea = desiredSample.getTargetArea();
 
-        if (theta < 0) theta += Math.PI * 2;
+        if (estimatedExtendoAngles.containsKey(currentArea)) return estimatedExtendoAngles.get(currentArea);
 
-        State currentAxial = new State(desiredSample.getTargetArea());
-        State currentLateral = new State(desiredSample.getTargetXDegrees());
+        // x = tArea; y = target extendo angle
+
+        double upperBound = estimatedExtendoAngles.ceilingKey(currentArea); // x2
+        double lowerBound = estimatedExtendoAngles.floorKey(currentArea); // x1
+
+        double upperValue = estimatedExtendoAngles.get(upperBound); // y2
+        double lowerValue = estimatedExtendoAngles.get(lowerBound); // y1
+
+        // linear interpolation formula
+        return lowerValue + (currentArea - lowerBound) * ((upperValue - lowerValue) / (upperBound - lowerBound));
+    }
+
+    private PoseVelocity2d calculateHeadingTarget() {
+        double theta = desiredSample.getTargetXDegrees();
+
+        headingPID.setTarget(new State(tXAngle));
+
         State currentHeading = new State(theta);
-        
-        double axialPower = axialPID.calculate(currentAxial);
-        double headingPower = -headingPID.calculate(currentHeading);
-        double lateralPower = lateralPID.calculate(currentLateral);
-
-        double kMovement = 0.0573;
-        if (axialPower < kMovement && axialPower > 0) axialPower = kMovement;
-        else if (axialPower < 0 && axialPower > -kMovement) axialPower = kMovement;
-
-        if (lateralPower < kMovement && lateralPower > 0) lateralPower = kMovement;
-        else if (lateralPower < 0 && lateralPower > -kMovement) lateralPower = kMovement;
+        double headingPower = headingPID.calculate(currentHeading);
 
         return new PoseVelocity2d(
                 new Vector2d(
-                        axialPower,
-                        lateralPower
+                        0,
+                        0
                 ),
                 headingPower
         );
@@ -162,17 +148,30 @@ public class AutoAlignToSample {
 
 
     public Action driveToTarget() {
-        return new Actions.SingleCheckAction(
-                () -> robot.intake.getCurrentSample() != targetColor || !isExpired || isYellowSample,
-                new SequentialAction(
-                        new InstantAction(() -> driveToTimer.startTime()),
-                        new InstantAction(() -> isExpired = driveToTimer.milliseconds() > 1000),
-                        new ParallelAction(
-                                new InstantAction(() -> robot.drivetrain.setFieldCentricPowers(calculateTarget())),
-                                new InstantAction(() -> robot.drivetrain.updatePoseEstimate())
-                        ),
-                        new InstantAction(this::setEdgeCases)
-                )
-        );
+        return new Action() {
+            boolean isFirstTime = true;
+            final ElapsedTime expirationTimer = new ElapsedTime();
+
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                if (isFirstTime) {
+                    isFirstTime = false;
+                    expirationTimer.startTime();
+                }
+
+                // update detections
+                limelightEx.update();
+                targetSample();
+
+                // send out output to motors/servos
+                robot.extendo.setTargetAngle(calculateExtendoTarget(), true);
+                robot.drivetrain.setFieldCentricPowers(calculateHeadingTarget());
+
+                robot.drivetrain.updatePoseEstimate();
+//                setEdgeCases();
+
+                return expirationTimer.seconds() <= secondsToExpire;
+            }
+        };
     }
 }

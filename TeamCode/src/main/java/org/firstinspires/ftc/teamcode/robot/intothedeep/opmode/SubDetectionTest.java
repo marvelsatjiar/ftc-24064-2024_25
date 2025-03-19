@@ -24,11 +24,8 @@ import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 
@@ -112,10 +109,11 @@ public class SubDetectionTest extends AbstractAuto{
                         new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE )),
                         RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
                 ))
-                .afterTime(sleepSecondsBeforeSubDetection, new Actions.SingleCheckAction(
-                        () -> autoAlignToSample.lockSampleCounter != 9,
-                        new InstantAction(() -> autoAlignToSample.isSampleLocked = autoAlignToSample.lockTargetSample())
-                ))
+                .afterTime(sleepSecondsBeforeSubDetection, new org.firstinspires.ftc.teamcode.auto.Actions.RunnableAction(() -> {
+                            autoAlignToSample.isSampleDetected = autoAlignToSample.targetSample();
+                            return !autoAlignToSample.isSampleDetected;
+                        })
+                )
                 .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
                         RobotActions.scoreSpecimen(),
                         new SleepAction(scoreToRetractWait),
@@ -123,8 +121,8 @@ public class SubDetectionTest extends AbstractAuto{
                 ))
                 .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
 
-        if (autoAlignToSample.isSampleLocked) {
-            double rollerPower = autoAlignToSample.isOppositeSample ? -1 : 1;
+        if (autoAlignToSample.isSampleDetected) {
+            double rollerPower = 1;
 
             builder = builder
                     .stopAndAdd(new SequentialAction(
@@ -132,8 +130,7 @@ public class SubDetectionTest extends AbstractAuto{
                                     RobotActions.setRollers(rollerPower, 0),
                                     autoAlignToSample.driveToTarget()
                             ),
-                            RobotActions.retractExtendo(),
-                            new InstantAction(() -> autoAlignToSample.driveToTimer.reset())
+                            RobotActions.retractExtendo()
                     ));
         }
 
