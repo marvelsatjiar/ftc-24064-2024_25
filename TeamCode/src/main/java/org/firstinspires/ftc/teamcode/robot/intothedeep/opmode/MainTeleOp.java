@@ -89,14 +89,10 @@ public final class MainTeleOp extends LinearOpMode {
 
             PoseVelocity2d autoWallPickupPowers = null;
             if (gamepadEx1.isDown(X)) {
-                robot.limelightEx.enableStagelite(true);
-                autoWallPickupPowers = robot.autoWallPickUp.run(-gamepadEx1.getLeftY() * slowMult, gamepadEx1.getLeftX() * slowMult);
 
                 if (autoWallPickupPowers != null) {
                     robot.drivetrain.setDrivePowers(autoWallPickupPowers);
                 }
-            } else robot.limelightEx.enableStagelite(false);
-
             if (autoWallPickupPowers == null) {
                 robot.drivetrain.setFieldCentricPowers(
                         new PoseVelocity2d(
@@ -139,6 +135,7 @@ public final class MainTeleOp extends LinearOpMode {
                     if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupBasket(true));
                     if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupBasket(false));
                     if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupDropSample());
+                    if (keyPressed(2, B)) robot.actionScheduler.addAction(RobotActions.interleaveDropSample());
                     break;
                 // BASKET ==========================================================================
                 case SETUP_SCORE_BASKET:

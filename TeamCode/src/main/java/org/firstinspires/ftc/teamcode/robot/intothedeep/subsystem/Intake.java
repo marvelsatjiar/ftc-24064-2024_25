@@ -26,11 +26,11 @@ public final class Intake {
 
 
     public static double
-            V4B_MIN_DOWN_ANGLE = 56,
-            V4B_MAX_DOWN_ANGLE = 62,
+            V4B_MIN_DOWN_ANGLE = 79,
+            V4B_MAX_DOWN_ANGLE = 91,
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
             V4B_CLEARING_ANGLE = 85,
-            V4B_UP_ANGLE = 100,
+            V4B_UP_ANGLE = 130,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
             V4B_TRANSFER_ANGLE = 65,
             V4B_HOVERING_ANGLE = 45;

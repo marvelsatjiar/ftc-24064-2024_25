@@ -51,7 +51,7 @@ public final class IntakePrototype extends LinearOpMode {
             if (gamepadEx1.wasJustPressed(A)) targetPosition = Extendo.Extension.RETRACTED;
             if (gamepadEx1.wasJustPressed(B)) targetPosition = Extendo.Extension.EXTENDED;
 
-            intake.run();
+            intake.run(extendo.getTargetAngle());
 
             extendo.setTargetExtension(targetPosition);
 

@@ -42,7 +42,7 @@ public class MaxExtension extends LinearOpMode {
             arm.run();
             extendo.run(false);
             lift.run();
-            intake.run();
+            intake.run(extendo.getTargetAngle());
         }
     }
 }

@@ -21,18 +21,19 @@ public final class Arm {
             NEUTRAL_ARM_ANGLE = 184, //215,
             TRANSFERRED_WRIST_ANGLE = 145,
             COLLECTING_ARM_ANGLE = 240, //240,
-            COLLECTING_WRIST_ANGLE = 90, //140,
+            COLLECTING_WRIST_ANGLE = 80, //140,
             BASKET_ARM_ANGLE = 75,
-            BASKET_WRIST_ANGLE = 40,
+            BASKET_WRIST_ANGLE = 30,
 
             WALL_PICKUP_ARM_ANGLE = 345,
-            WALL_PICKUP_WRIST_ANGLE = 95,
+            WALL_PICKUP_WRIST_ANGLE = 85,
 
+            AUTON_TRANSFER_ARM_ANGLE = 175,
 
             GRAB_OFF_WALL_WRIST_ANGLE = 190,
 
             SCORE_SPECIMEN_ARM_ANGLE = 170,
-            SCORE_SPECIMEN_WRIST_ANGLE = 100,
+            SCORE_SPECIMEN_WRIST_ANGLE = 90,
 
             WALL_PICKUP_ARMSTENDO_ANGLE = 105,
             EXTENDED_ARMSTENDO_ANGLE = 10,
@@ -64,11 +65,13 @@ public final class Arm {
         WALL_PICKUP,
         SCORE_SPECIMEN,
         COLLECTING,
+        AUTON_TRANSFER,
         BASKET;
 
         public double getAngle() {
             switch (this) {
                 case BASKET:                    return BASKET_ARM_ANGLE;
+                case AUTON_TRANSFER:            return AUTON_TRANSFER_ARM_ANGLE;
                 case WALL_PICKUP:               return WALL_PICKUP_ARM_ANGLE;
                 case SCORE_SPECIMEN:            return SCORE_SPECIMEN_ARM_ANGLE;
                 case COLLECTING:                return COLLECTING_ARM_ANGLE;
