@@ -109,30 +109,18 @@ public class SubDetectionTest extends AbstractAuto{
                         new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE )),
                         RobotActions.extendIntake(Extendo.Extension.THREE_FOURTHS)
                 ))
-                .afterTime(sleepSecondsBeforeSubDetection, new org.firstinspires.ftc.teamcode.auto.Actions.RunnableAction(() -> {
-                            autoAlignToSample.isSampleDetected = autoAlignToSample.targetSample();
-                            return !autoAlignToSample.isSampleDetected;
-                        })
-                )
+                .afterTime(sleepSecondsBeforeSubDetection, new org.firstinspires.ftc.teamcode.auto.Actions.RunnableAction(() -> autoAlignToSample.targetSample()))
                 .afterTime(sleepSecondsBeforeUnclampFirst, new SequentialAction(
                         RobotActions.scoreSpecimen(),
                         new SleepAction(scoreToRetractWait),
                         RobotActions.retractToNeutral(0)
                 ))
-                .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
-
-        if (autoAlignToSample.isSampleDetected) {
-            double rollerPower = 1;
-
-            builder = builder
-                    .stopAndAdd(new SequentialAction(
-                            new ParallelAction(
-                                    RobotActions.setRollers(rollerPower, 0),
-                                    autoAlignToSample.driveToTarget()
-                            ),
-                            RobotActions.retractExtendo()
-                    ));
-        }
+                .splineToConstantHeading(new Vector2d(estimatedSixthSample, scoreSpecimenY), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel))
+                .stopAndAdd(
+                    new SequentialAction(
+                        autoAlignToSample.driveToTarget(2),
+                        RobotActions.retractExtendo()
+                ));
 
         return builder;
     }

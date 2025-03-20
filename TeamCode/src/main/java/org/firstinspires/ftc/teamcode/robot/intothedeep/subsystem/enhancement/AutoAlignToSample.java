@@ -40,8 +40,6 @@ public class AutoAlignToSample {
 
     public static double tXAngle = 0;
 
-    public static double secondsToExpire = 1;
-
     private LLResultTypes.ColorResult desiredSample;
 
     public boolean
@@ -90,36 +88,50 @@ public class AutoAlignToSample {
     }
 
     private Double calculateExtendoTarget() {
-        double currentArea = desiredSample.getTargetArea();
+        if (desiredSample != null) {
+            double currentArea = desiredSample.getTargetArea();
 
-        if (estimatedExtendoAngles.containsKey(currentArea)) return estimatedExtendoAngles.get(currentArea);
+            if (estimatedExtendoAngles.containsKey(currentArea)) return estimatedExtendoAngles.get(currentArea);
 
-        // x = tArea; y = target extendo angle
+            // x = tArea; y = target extendo angle
 
-        double upperBound = estimatedExtendoAngles.ceilingKey(currentArea); // x2
-        double lowerBound = estimatedExtendoAngles.floorKey(currentArea); // x1
+            double upperBound = estimatedExtendoAngles.ceilingKey(currentArea); // x2
+            double lowerBound = estimatedExtendoAngles.floorKey(currentArea); // x1
 
-        double upperValue = estimatedExtendoAngles.get(upperBound); // y2
-        double lowerValue = estimatedExtendoAngles.get(lowerBound); // y1
+            double upperValue = estimatedExtendoAngles.get(upperBound); // y2
+            double lowerValue = estimatedExtendoAngles.get(lowerBound); // y1
 
-        // linear interpolation formula
-        return lowerValue + (currentArea - lowerBound) * ((upperValue - lowerValue) / (upperBound - lowerBound));
+            // linear interpolation formula
+            return lowerValue + (currentArea - lowerBound) * ((upperValue - lowerValue) / (upperBound - lowerBound));
+        }
+
+        return robot.extendo.getTargetAngle();
     }
 
     private PoseVelocity2d calculateHeadingTarget() {
-        double theta = desiredSample.getTargetXDegrees();
+        if (desiredSample != null) {
+            double theta = desiredSample.getTargetXDegrees();
 
-        headingPID.setTarget(new State(tXAngle));
+            headingPID.setTarget(new State(tXAngle));
 
-        State currentHeading = new State(theta);
-        double headingPower = headingPID.calculate(currentHeading);
+            State currentHeading = new State(theta);
+            double headingPower = headingPID.calculate(currentHeading);
+
+            return new PoseVelocity2d(
+                    new Vector2d(
+                            0,
+                            0
+                    ),
+                    headingPower
+            );
+        }
 
         return new PoseVelocity2d(
                 new Vector2d(
                         0,
                         0
                 ),
-                headingPower
+                0
         );
     }
 
@@ -147,7 +159,7 @@ public class AutoAlignToSample {
     }
 
 
-    public Action driveToTarget() {
+    public Action driveToTarget(double secondsToExpire) {
         return new Action() {
             boolean isFirstTime = true;
             final ElapsedTime expirationTimer = new ElapsedTime();
@@ -161,14 +173,15 @@ public class AutoAlignToSample {
 
                 // update detections
                 limelightEx.update();
-                targetSample();
 
-                // send out output to motors/servos
-                robot.extendo.setTargetAngle(calculateExtendoTarget(), true);
-                robot.drivetrain.setFieldCentricPowers(calculateHeadingTarget());
+                if (targetSample()) {
+                    // send out output to motors/servos
+                    robot.extendo.setTargetAngle(calculateExtendoTarget(), true);
+                    robot.drivetrain.setFieldCentricPowers(calculateHeadingTarget());
 
-                robot.drivetrain.updatePoseEstimate();
+                    robot.drivetrain.updatePoseEstimate();
 //                setEdgeCases();
+                }
 
                 return expirationTimer.seconds() <= secondsToExpire;
             }
