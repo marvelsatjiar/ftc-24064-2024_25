@@ -23,8 +23,8 @@ public final class Common {
             SERVO_AXON_MAX = 355;
 
     public static final int
-            LIMELIGHT_RED_DETECTION_PIPELINE = 1,
-            LIMELIGHT_BLUE_DETECTION_PIPELINE = 2,
+            LIMELIGHT_RED_DETECTION_PIPELINE = 7,
+            LIMELIGHT_BLUE_DETECTION_PIPELINE = 6 ,
             LIMELIGHT_SPECIMEN_NN_PIPELINE = 4;
 
     public static final double MAX_VOLTAGE = 13;

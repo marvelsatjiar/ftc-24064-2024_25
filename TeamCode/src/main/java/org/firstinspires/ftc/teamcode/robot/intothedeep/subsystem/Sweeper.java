@@ -12,8 +12,8 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class Sweeper {
 
     public static double
-            RETRACTED_ANGLE = 120,
-            ACTIVE_ANGLE = 0,
+            RETRACTED_ANGLE = 170,
+            ACTIVE_ANGLE = 80,
             AUTON_ACTIVE_ANGLE = 0;
 
     public enum SweeperAngles {

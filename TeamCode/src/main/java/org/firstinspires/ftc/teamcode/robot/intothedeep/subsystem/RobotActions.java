@@ -42,7 +42,12 @@ public class RobotActions {
     }
 
     public static class ScoreBasket {
-        public double unclampClawToScoreWait = 0;
+        public double
+                unclampClawToScoreWait = 0,
+                retractArmstendoWait = 0,
+                retractArmWait = 0.5;
+
+
     }
 
     public static class DropSamples {
@@ -213,8 +218,8 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
-                        RobotActions.setArmstendo(Arm.Extension.RETRACTED,0.5),
-                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, 0.5),
+                        RobotActions.setArmstendo(Arm.Extension.RETRACTED,SCORE_BASKET.retractArmstendoWait),
+                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, SCORE_BASKET.retractArmWait),
                         RobotActions.retractToNeutral(0)
                 )
         );
@@ -290,7 +295,7 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new ParallelAction(
                         setArmstendo(Arm.Extension.RETRACTED, sleepSeconds),
-                        setClaw(Claw.ClawAngles.DEPOSIT, sleepSeconds),
+                        setClaw(Claw.ClawAngles.DEPOSIT, 0),
                         setArm(Arm.ArmAngle.NEUTRAL, 0),
                         setWrist(Arm.WristAngle.COLLECTING, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL),

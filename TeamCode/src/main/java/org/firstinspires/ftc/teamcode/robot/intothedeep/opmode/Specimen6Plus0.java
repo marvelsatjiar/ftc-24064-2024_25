@@ -103,6 +103,7 @@ public class Specimen6Plus0 extends AbstractAuto {
 
                 // Headings
                 scoringAngle = 105,
+                intakeSubSampleExtendoAngle = 135,
 
                 // Timings
                 timeBeforeWallPickup = 1,
@@ -215,16 +216,6 @@ public class Specimen6Plus0 extends AbstractAuto {
 
         builder = builder.strafeToLinearHeading(new Vector2d(10 + offsetX, S_S.scoreSpecimenY + offsetY), Math.toRadians(S_S.scoringAngle), (pose2dDual, posePath, v) -> S_S.scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(S_S.minScoreProfileAccel, S_S.maxScoreProfileAccel));
 
-        if (isInterleaved) builder = builder
-                .stopAndAdd(new SequentialAction(
-                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, S_S.v4bWait),
-                        new ParallelAction(
-                                RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                                RobotActions.setRollers(1, S_S.sleepBeforeTransfer)),
-                        RobotActions.transfer()
-                ))
-                .afterTime(S_S.timeBeforeInterleave, RobotActions.interleaveDropSample()
-                );
 
         if (!doPark) builder = builder.afterTime(S_S.timeBeforeWallPickup, RobotActions.setupWallPickup());
 
@@ -346,6 +337,17 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(S_S.sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
                 .strafeToConstantHeading(new Vector2d(S_S.subSampleX, S_S.scoreSpecimenY));//, (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
+
+        if (isSixPlusZero) builder = builder
+                .stopAndAdd(new SequentialAction(
+                        RobotActions.setExtendo(S_S.intakeSubSampleExtendoAngle, S_S.v4bWait),
+                        new ParallelAction(
+                                RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
+                                RobotActions.setRollers(1, S_S.sleepBeforeTransfer)),
+                        RobotActions.transfer()
+                ))
+                .afterTime(S_S.timeBeforeInterleave, RobotActions.interleaveDropSample());
+
 
 //        if (autoAlignToSample.isSampleLocked && isSixPlusZero) {
 //            builder = builder

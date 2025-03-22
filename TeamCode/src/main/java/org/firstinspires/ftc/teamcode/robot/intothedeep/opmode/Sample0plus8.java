@@ -121,7 +121,7 @@ public class Sample0plus8 extends AbstractAuto {
     protected Action onRun() {
         TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
         builder = scoreFirstFourSamples(builder);
-        builder = scoreAllSubSamples(builder);
+//        builder = scoreAllSubSamples(builder);
 
         return builder.build();
     }

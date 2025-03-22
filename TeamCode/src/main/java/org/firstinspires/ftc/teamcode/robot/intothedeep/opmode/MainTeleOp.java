@@ -11,6 +11,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
@@ -33,156 +34,170 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
+import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @TeleOp(group = "24064 Main")
 public final class MainTeleOp extends LinearOpMode {
-    // Gamepads and the 'robot' class is imported to save lines and to import controls
-    public static GamepadEx gamepadEx1, gamepadEx2;
+// Gamepads and the 'robot' class is imported to save lines and to import controls
+public static GamepadEx gamepadEx1, gamepadEx2;
 
-    // Quick method that is used for better handling the controller
-    public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
-        return (gamepad == 2 ? gamepadEx2 : gamepadEx1).wasJustPressed(button);
+// Quick method that is used for better handling the controller
+public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
+    return (gamepad == 2 ? gamepadEx2 : gamepadEx1).wasJustPressed(button);
+}
+
+@Override
+public void runOpMode() {
+    mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
+    gamepadEx1 = new GamepadEx(gamepad1);
+    gamepadEx2 = new GamepadEx(gamepad2);
+
+    robot = new Robot(hardwareMap);
+
+    Pose2d endPose = Common.AUTO_END_POSE;
+    if (endPose != null) {
+        robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - Common.FORWARD);
     }
 
-    @Override
-    public void runOpMode() {
-        mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+    waitForStart();
 
-        gamepadEx1 = new GamepadEx(gamepad1);
-        gamepadEx2 = new GamepadEx(gamepad2);
+    while (opModeIsActive()) {
+        // Read sensors + gamepads:
+        robot.readSensors();
+        gamepadEx1.readButtons();
+        gamepadEx2.readButtons();
 
-        robot = new Robot(hardwareMap);
 
-        Pose2d endPose = Common.AUTO_END_POSE;
-        if (endPose != null) {
-            robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - Common.FORWARD);
+        // Gamepad 1
+        // Change the heading of the drivetrain in field-centric mode
+        double x = gamepadEx1.getRightX();
+        if (gamepadEx1.isDown(RIGHT_STICK_BUTTON)) {
+            double y = gamepadEx1.getRightY();
+            if (hypot(x, y) >= 0.8) robot.drivetrain.setCurrentHeading(atan2(y, x));
+            x = 0;
         }
 
-        waitForStart();
+        double slowMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
 
-        while (opModeIsActive()) {
-            // Read sensors + gamepads:
-            robot.readSensors();
-            gamepadEx1.readButtons();
-            gamepadEx2.readButtons();
+        double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
 
-
-            // Gamepad 1
-            // Change the heading of the drivetrain in field-centric mode
-            double x = gamepadEx1.getRightX();
-            if (gamepadEx1.isDown(RIGHT_STICK_BUTTON)) {
-                double y = gamepadEx1.getRightY();
-                if (hypot(x, y) >= 0.8) robot.drivetrain.setCurrentHeading(atan2(y, x));
-                x = 0;
-            }
-
-            double slowMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
-
-            double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
-
-            if (robot.extendo.getTargetExtension() != Extendo.Extension.RETRACTED) {
-                slowMult = 0.3;
-                slowTurningMult = 0.3;
+        if (robot.extendo.getTargetExtension() != Extendo.Extension.RETRACTED) {
+            slowMult = 0.3;
+            slowTurningMult = 0.3;
 //                if (gamepadEx2.isDown(RIGHT_BUMPER))
 //                    slowMult = 1;
-            }
-
-            PoseVelocity2d autoWallPickupPowers = null;
-            if (gamepadEx1.isDown(X)) {
-
-                if (autoWallPickupPowers != null) {
-                    robot.drivetrain.setDrivePowers(autoWallPickupPowers);
-                }
-            if (autoWallPickupPowers == null) {
-                robot.drivetrain.setFieldCentricPowers(
-                        new PoseVelocity2d(
-                                new Vector2d(
-                                        gamepadEx1.getLeftY() * slowMult,
-                                        -gamepadEx1.getLeftX() * slowMult
-                                ),
-                                -gamepadEx1.getRightX() * slowTurningMult
-                        )
-                );
-            }
-
-            if (keyPressed(1, B)) robot.drivetrain.setCurrentHeading(Math.PI);
-
-            if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.5) {
-                robot.lift.runManual(gamepadEx2.getLeftY() * 0.2);
-                robot.lift.reset();
-            } else robot.lift.runManual((0));
-
-            switch (robot.getCurrentState()) {
-                // MISC ============================================================================
-                case NEUTRAL:
-                    doExtendoControls();
-                    doIntakeControls();
-
-                    if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupWallPickup());
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transfer());
-                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
-                    break;
-                case EXTENDO_OUT:
-                    doExtendoControls();
-                    doIntakeControls();
-
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.transfer());
-                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.retractExtendo());
-                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
-                    break;
-                case TRANSFERRED:
-                    if (keyPressed(2, A)) robot.actionScheduler.addAction(RobotActions.setupBasket(true));
-                    if (keyPressed(2, Y)) robot.actionScheduler.addAction(RobotActions.setupBasket(false));
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.setupDropSample());
-                    if (keyPressed(2, B)) robot.actionScheduler.addAction(RobotActions.interleaveDropSample());
-                    break;
-                // BASKET ==========================================================================
-                case SETUP_SCORE_BASKET:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.scoreBasket());
-
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
-
-                    break;
-                case SCORED_BASKET:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractAfterScoreBasket());
-
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
-
-                    doExtendoControls();
-                    doIntakeControls();
-
-                    break;
-                // CHAMBER =========================================================================
-                case SETUP_SPECIMEN:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.scoreSpecimen());
-
-                    doExtendoControls();
-                    doIntakeControls();
-
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
-                    break;
-                // WALL PICKUP =====================================================================
-                case WALL_PICKUP:
-                    if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupSpecimen());
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
-                    break;
-
-                // HANG ============================================================================
-                case SETUP_LEVEL_TWO_HANG:
-                    if (keyPressed(2, LEFT_BUMPER)) robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
-                    break;
-                case CLIMB_LEVEL_TWO_HANG:
-                    if (keyPressed(2, X)) robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
-                    break;
-            }
-
-            robot.drivetrain.updatePoseEstimate();
-            robot.run();
-//            robot.printTelemetry();
         }
+        robot.drivetrain.setFieldCentricPowers(
+                new PoseVelocity2d(
+                        new Vector2d(
+                                gamepadEx1.getLeftY() * slowMult,
+                                -gamepadEx1.getLeftX() * slowMult
+                        ),
+                        -gamepadEx1.getRightX() * slowTurningMult
+                )
+        );
+
+    if (keyPressed(1, B)) robot.drivetrain.setCurrentHeading(Math.PI);
+
+    if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.5) {
+        robot.lift.runManual(gamepadEx2.getLeftY() * 0.2);
+        robot.lift.reset();
+    } else robot.lift.runManual((0));
+
+    switch (robot.getCurrentState()) {
+        // MISC ============================================================================
+        case NEUTRAL:
+            doExtendoControls();
+            doIntakeControls();
+
+            if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.setupWallPickup());
+            if (keyPressed(2, X))
+                robot.actionScheduler.addAction(RobotActions.transfer());
+            if (keyPressed(2, A))
+                robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
+            if (keyPressed(2, LEFT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+            break;
+        case EXTENDO_OUT:
+            doExtendoControls();
+            doIntakeControls();
+
+            if (keyPressed(2, X))
+                robot.actionScheduler.addAction(RobotActions.transfer());
+            if (keyPressed(2, Y))
+                robot.actionScheduler.addAction(RobotActions.retractExtendo());
+            if (keyPressed(2, A))
+                robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
+            break;
+        case TRANSFERRED:
+            if (keyPressed(2, A))
+                robot.actionScheduler.addAction(RobotActions.setupBasket(true));
+            if (keyPressed(2, Y))
+                robot.actionScheduler.addAction(RobotActions.setupBasket(false));
+            if (keyPressed(2, X))
+                robot.actionScheduler.addAction(RobotActions.setupDropSample());
+            if (keyPressed(2, B))
+                robot.actionScheduler.addAction(RobotActions.interleaveDropSample());
+            break;
+        // BASKET ==========================================================================
+        case SETUP_SCORE_BASKET:
+            if (keyPressed(2, X))
+                robot.actionScheduler.addAction(RobotActions.scoreBasket());
+
+            if (keyPressed(2, LEFT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+
+            break;
+        case SCORED_BASKET:
+            if (keyPressed(2, X))
+                robot.actionScheduler.addAction(RobotActions.retractAfterScoreBasket());
+
+            if (keyPressed(2, LEFT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+
+            doExtendoControls();
+            doIntakeControls();
+
+            break;
+        // CHAMBER =========================================================================
+        case SETUP_SPECIMEN:
+            if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.scoreSpecimen());
+
+            doExtendoControls();
+            doIntakeControls();
+
+            if (keyPressed(2, LEFT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+            break;
+        // WALL PICKUP =====================================================================
+        case WALL_PICKUP:
+            if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.setupSpecimen());
+            if (keyPressed(2, LEFT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+            break;
+
+        // HANG ============================================================================
+        case SETUP_LEVEL_TWO_HANG:
+            if (keyPressed(2, LEFT_BUMPER))
+                robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
+            if (keyPressed(2, X))
+                robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
+            break;
+        case CLIMB_LEVEL_TWO_HANG:
+            if (keyPressed(2, X))
+                robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
+            break;
     }
+
+    robot.drivetrain.updatePoseEstimate();
+    robot.run();
+//            robot.printTelemetry();
+}
+}
 
     public void doExtendoControls() {
 //        boolean isExtendoRetracted = robot.extendo.getTargetAngle() != Extendo.LINKAGE_MIN_ANGLE;
@@ -211,11 +226,11 @@ public final class MainTeleOp extends LinearOpMode {
         if (gamepadEx2.getRightY() != 0) robot.extendo.setTargetAngleWithStick(-gamepadEx2.getRightY());
     }
 
-    public void doIntakeControls() {
+    public void doIntakeControls () {
 //        boolean isIntakeAlreadyPowered = robot.intake.getRollerPower() != -1;
 //        boolean isV4BDown = robot.intake.getTargetV4BAngle() == Intake.V4BAngle.DOWN;
-//        boolean isOppositeAllianceSample = robot.intake.getCurrentSample() == BLUE && IS_RED || robot.intake.getCurrentSample() == RED && !IS_RED;
-
+//        boolean isOppositeAllianceSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.BLUE && IS_RED || robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.RED && !IS_RED;
+//
 //        if (isIntakeAlreadyPowered && isV4BDown) {
 //            if (isOppositeAllianceSample) {
 //                robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP, true);
@@ -225,7 +240,7 @@ public final class MainTeleOp extends LinearOpMode {
 
         if (keyPressed(1, A)) robot.sweeper.toggleSweeper();
 
-//        if (!gamepadEx1.isDown(RIGHT_BUMPER) && !gamepadEx2.isDown(RIGHT_BUMPER)) {
+        if (!gamepadEx1.isDown(RIGHT_BUMPER) && !gamepadEx2.isDown(RIGHT_BUMPER)) {
             double trigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - gamepadEx1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             if (trigger != 0) {
                 robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
@@ -234,10 +249,6 @@ public final class MainTeleOp extends LinearOpMode {
                 robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
                 robot.intake.setRollerPower(0);
             }
-//        } else {
-//            robot.intake.setTargetV4BAngle(Intake.V4BAngle.CLEARING);
-//            robot.intake.setRollerPower(-1);
-//        }
+        }
     }
-
 }

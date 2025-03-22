@@ -26,8 +26,13 @@ public final class LimelightEx {
         stagelite.enable(false);
     }
 
-    public void update() {
+    public LLResult update() {
         result = limelight.getLatestResult();
+        return result;
+    }
+
+    public LLResult getResult() {
+        return result;
     }
 
     public List<LLResultTypes.ColorResult> getColorResult() {
