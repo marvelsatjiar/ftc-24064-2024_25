@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement;
 
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.FORWARD;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
@@ -12,7 +11,6 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -43,9 +41,9 @@ public class AutoAlignToSample {
     private final TreeMap<Double, Double> estimatedExtendoAngles = new TreeMap<>();
 
     public static double
-            tXAngle = 2;
+            tXAngle = 10;
 
-    private LLResult desiredSample;
+    private LLResultTypes.DetectorResult desiredSample;
 
     public boolean
             isDrivingToSample = false,
@@ -76,19 +74,16 @@ public class AutoAlignToSample {
         limelightEx.getLimelight().pipelineSwitch(detectionPipeline);
 
         limelightEx.getLimelight().setPollRateHz(100);
-
-        limelightEx.getLimelight().start();
     }
 
     // add lock mechanism here (for sample)- for this you must also get current detections!!!
     public boolean targetSample() {
-        LLResult result = limelightEx.update();
         limelightEx.getLimelight().reloadPipeline();
-//        List<LLResultTypes.DetectorResult> targets = limelightEx.getDetectorResult();
+        List<LLResultTypes.DetectorResult> targets = limelightEx.getDetectorResult();
 
         // checks and returns detection
-        if (result != null && result.isValid()) {
-            desiredSample = result;
+        if (targets != null && !targets.isEmpty()) {
+            desiredSample = targets.get(0);
 
             return true;
         }
@@ -98,7 +93,7 @@ public class AutoAlignToSample {
 
     private Double calculateExtendoTarget() {
         if (desiredSample != null) {
-            double currentArea = desiredSample.getTa();
+            double currentArea = desiredSample.getTargetArea();
 
             mTelemetry.addData("current area : ", currentArea);
 
@@ -126,7 +121,7 @@ public class AutoAlignToSample {
 
     private PoseVelocity2d calculateHeadingTarget() {
         if (desiredSample != null) {
-            double theta = desiredSample.getTx();
+            double theta = desiredSample.getTargetXDegrees();
 
             mTelemetry.addData(" current x degrees : ", theta);
 

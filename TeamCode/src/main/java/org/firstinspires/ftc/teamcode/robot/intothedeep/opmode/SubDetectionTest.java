@@ -120,7 +120,7 @@ public class SubDetectionTest extends AbstractAuto{
         builder = builder
 //                .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(sleepSecondsBeforeLimelightActivation, new SequentialAction(
-                        new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE )),
+                        new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE)),
                         RobotActions.setExtendo(minSubExtendoAngle, 0)
                 ))
 //                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
