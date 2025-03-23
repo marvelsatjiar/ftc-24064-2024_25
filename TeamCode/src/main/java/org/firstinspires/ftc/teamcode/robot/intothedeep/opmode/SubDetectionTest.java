@@ -15,11 +15,8 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
-import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -40,21 +37,14 @@ public class SubDetectionTest extends AbstractAuto{
 
     public static double
             minSubExtendoAngle = 70,
-            secondsToExpire = 100,
+            secondsToExpire = 4,
             startingPositionX = 7.375,
             startingPositionY = -62,
             scoreSpecimenY = -30.5,
             firstSpecimenOffsetY = 5,
-            scoreFirstSpecimenVelocityConstraint = 140,
-            maxProfileAccel = 60,
-            minFirstProfileAccel = -45,
             estimatedSixthSample = 10,
-            scoreToRetractWait = 0.7,
             sleepSecondsBeforeLimelightActivation = 0.1,
-            sleepSecondsBeforeSubDetection = 1.1,
-            sleepSecondsBeforeUnclampFirst = 1.2,
-            extendoAngleEstimate = Extendo.LINKAGE_MIN_ANGLE;
-
+            sleepSecondsBeforeUnclampFirst = 1.2;
 
     @Override
     protected Pose2d getStartPose() {
@@ -71,14 +61,10 @@ public class SubDetectionTest extends AbstractAuto{
 
             if (gamepadEx1.wasJustPressed(A)) IS_RED = !IS_RED;
 
-            if (gamepadEx1.wasJustPressed(DPAD_UP)) extendoAngleEstimate++;
-            if (gamepadEx1.wasJustPressed(DPAD_UP)) extendoAngleEstimate--;
-
             if (gamepadEx1.wasJustPressed(DPAD_LEFT)) estimatedSixthSample--;
             if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) estimatedSixthSample++;
 
             mTelemetry.addLine("Estimated 6th sample is : " + estimatedSixthSample);
-            mTelemetry.addLine("Estimated extendo angle is : " + extendoAngleEstimate);
             mTelemetry.addLine("Alliance is : " + (IS_RED ? "RED" : "BLUE"));
 
             mTelemetry.addLine("Press both shoulder buttons to confirm!");
@@ -92,8 +78,6 @@ public class SubDetectionTest extends AbstractAuto{
 
         autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
-        //robot.arm.setArmAngle(Arm.ArmAngle.CHAMBER_FRONT_SETUP);
-        //robot.arm.setWristAngle(Arm.WristAngle.FRONT_WALL_SPECIMEN_SCORE);
         robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
         robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
         robot.arm.setWristAngle(Arm.WristAngle.GRAB_OFF_WALL);
@@ -118,20 +102,26 @@ public class SubDetectionTest extends AbstractAuto{
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-//                .afterTime(0, RobotActions.setupSpecimen())
+                .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(sleepSecondsBeforeLimelightActivation, new SequentialAction(
                         new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE)),
                         RobotActions.setExtendo(minSubExtendoAngle, 0)
                 ))
-//                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
-//                .splineToConstantHeading(new Vector2d(estimatedSixthSample, (scoreSpecimenY + firstSpecimenOffsetY)), Math.toRadians(90))
+                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
+                .splineToConstantHeading(new Vector2d(estimatedSixthSample, (scoreSpecimenY + firstSpecimenOffsetY)), Math.toRadians(90))
                 .stopAndAdd(
                     new SequentialAction(
-                        autoAlignToSample.driveToTarget(secondsToExpire),
-                        RobotActions.retractExtendo(),
+                        autoAlignToSample.detectTarget(secondsToExpire),
                         new InstantAction(() -> robot.limelightEx.enableStagelite(false))
-                ));
-//                .strafeToLinearHeading(new Vector2d(startingPositionX, startingPositionY), Math.toRadians(90));
+                ))
+                .strafeToLinearHeading(
+                        new Vector2d(
+                                robot.drivetrain.pose.position.x + autoAlignToSample.getTargetedPoseOffset().position.x,
+                                robot.drivetrain.pose.position.y + autoAlignToSample.getTargetedPoseOffset().position.y
+                        ),
+                        robot.drivetrain.pose.heading.plus(autoAlignToSample.getTargetedPoseOffset().heading.real)
+                )
+                .afterTime(0, RobotActions.setRollers(1, 0));
 
         return builder;
     }

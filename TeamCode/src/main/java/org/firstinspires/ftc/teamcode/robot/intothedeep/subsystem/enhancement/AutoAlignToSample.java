@@ -9,15 +9,10 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
-import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
-import org.firstinspires.ftc.teamcode.control.motion.State;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 
@@ -30,32 +25,22 @@ public class AutoAlignToSample {
 
     public ColorRangefinderEx.SampleColor targetColor;
 
-    private final PIDController headingPID = new PIDController();
-
-    public static PIDGains headingGains = new PIDGains(
-            0.02125,
-            0,
-            0
-    );
-
     private final TreeMap<Double, Double> estimatedExtendoAngles = new TreeMap<>();
 
     public static double
-            tXAngle = 10;
+            limelightHeight = 11,
+            limelightCrosshairDistance = 20;
 
     private LLResultTypes.DetectorResult desiredSample;
 
     public boolean
-            isDrivingToSample = false,
-            isSampleTargeted = false,
             isOppositeSample = false,
             isYellowSample = false;
 
+    private Pose2d targetedPoseOffset = new Pose2d(0, 0, 0);
 
     public AutoAlignToSample(LimelightEx limelightEx) {
         this.limelightEx = limelightEx;
-
-        headingPID.setGains(headingGains);
 
         // sets hashmap keys and values
         estimatedExtendoAngles.put(0.25, 96.75);
@@ -73,17 +58,20 @@ public class AutoAlignToSample {
 
         limelightEx.getLimelight().pipelineSwitch(detectionPipeline);
 
-        limelightEx.getLimelight().setPollRateHz(100);
+        limelightEx.getLimelight().setPollRateHz(10);
     }
 
     // add lock mechanism here (for sample)- for this you must also get current detections!!!
     public boolean targetSample() {
-        limelightEx.getLimelight().reloadPipeline();
         List<LLResultTypes.DetectorResult> targets = limelightEx.getDetectorResult();
 
         // checks and returns detection
         if (targets != null && !targets.isEmpty()) {
-            desiredSample = targets.get(0);
+            for (LLResultTypes.DetectorResult result : targets) {
+                if (desiredSample == null || result.getTargetArea() > desiredSample.getTargetArea()) {
+                    desiredSample = result;
+                }
+            }
 
             return true;
         }
@@ -93,22 +81,20 @@ public class AutoAlignToSample {
 
     private Double calculateExtendoTarget() {
         if (desiredSample != null) {
-            double currentArea = desiredSample.getTargetArea();
+            double yDistance = Math.tan(Math.atan(limelightCrosshairDistance/limelightHeight) - desiredSample.getTargetYDegrees()) * limelightHeight;;
 
-            mTelemetry.addData("current area : ", currentArea);
-
-            if (estimatedExtendoAngles.containsKey(currentArea)) return estimatedExtendoAngles.get(currentArea);
+            if (estimatedExtendoAngles.containsKey(yDistance)) return estimatedExtendoAngles.get(yDistance);
 
             // x = tArea; y = target extendo angle
 
-            if (currentArea > estimatedExtendoAngles.firstKey() && currentArea < estimatedExtendoAngles.lastKey()) {
-                double upperBound = estimatedExtendoAngles.ceilingKey(currentArea); // x2
-                double lowerBound = estimatedExtendoAngles.floorKey(currentArea); // x1
+            if (yDistance > estimatedExtendoAngles.firstKey() && yDistance < estimatedExtendoAngles.lastKey()) {
+                double upperBound = estimatedExtendoAngles.ceilingKey(yDistance); // x2
+                double lowerBound = estimatedExtendoAngles.floorKey(yDistance); // x1
 
                 double upperValue = estimatedExtendoAngles.get(upperBound); // y2
                 double lowerValue = estimatedExtendoAngles.get(lowerBound); // y1
 
-                double interpolation = lowerValue + (currentArea - lowerBound) * ((upperValue - lowerValue) / (upperBound - lowerBound));
+                double interpolation = lowerValue + (yDistance - lowerBound) * ((upperValue - lowerValue) / (upperBound - lowerBound));
                 mTelemetry.addData("extendo interpolation : ", interpolation);
 
                 // linear interpolation formula
@@ -119,34 +105,17 @@ public class AutoAlignToSample {
         return robot.extendo.getTargetAngle();
     }
 
-    private PoseVelocity2d calculateHeadingTarget() {
-        if (desiredSample != null) {
-            double theta = desiredSample.getTargetXDegrees();
+    private Pose2d calculateTargetPosition() {
+        double yDistance = Math.tan(Math.atan(limelightCrosshairDistance/limelightHeight) - desiredSample.getTargetYDegrees()) * limelightHeight;
+        double xDistance = Math.tan(desiredSample.getTargetXDegrees()) * yDistance;
 
-            mTelemetry.addData(" current x degrees : ", theta);
+        double headingDistance = Math.atan2(yDistance, xDistance);
 
-            State currentHeading = new State(theta);
+        mTelemetry.addData(" x distance : ", xDistance);
+        mTelemetry.addData(" y distance : ", yDistance);
+        mTelemetry.addData(" heading distance : ", headingDistance);
 
-            double headingPower = headingPID.calculate(currentHeading);
-
-            mTelemetry.addData("heading power : ", headingPower);
-
-            return new PoseVelocity2d(
-                    new Vector2d(
-                            0,
-                            0
-                    ),
-                    headingPower
-            );
-        }
-
-        return new PoseVelocity2d(
-                new Vector2d(
-                        0,
-                        0
-                ),
-                0
-        );
+        return new Pose2d(xDistance, yDistance, headingDistance);
     }
 
 //    private ColorRangefinderEx.SampleColor getTargetColor() {
@@ -186,38 +155,37 @@ public class AutoAlignToSample {
 //        }
 //    }
 
-    public Action driveToTarget(double secondsToExpire) {
+    public Action detectTarget(double secondsToExpire) {
         return new Action() {
             boolean isFirstTime = true;
+            boolean isSampleDetected = false;
             final ElapsedTime expirationTimer = new ElapsedTime();
 
             @Override
-            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            public boolean run(TelemetryPacket telemetryPacket) {
                 if (isFirstTime) {
                     isFirstTime = false;
                     expirationTimer.startTime();
-                    robot.intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);
-
-                    headingPID.setTarget(new State(tXAngle));
                 }
 
-                // update detections
-                isSampleTargeted = targetSample();
-
-                if (isSampleTargeted) {
+                if (!isSampleDetected) {
+                    isSampleDetected = targetSample();
+                } else {
                     // send out output to motors/servos
                     robot.extendo.setTargetAngle(calculateExtendoTarget(), true);
-                    robot.drivetrain.setFieldCentricPowers(calculateHeadingTarget());
-
-                    robot.drivetrain.updatePoseEstimate();
-//                setEdgeCases();
+                    targetedPoseOffset = calculateTargetPosition();
+//                  setEdgeCases();
                 }
 
-                mTelemetry.addData("is sample targeted? ", isSampleTargeted);
+                mTelemetry.addData("is sample targeted? ", isSampleDetected);
                 mTelemetry.addData("is expired? ", expirationTimer.seconds() > secondsToExpire);
 
-                return expirationTimer.seconds() <= secondsToExpire;
+                return expirationTimer.seconds() <= secondsToExpire || !isSampleDetected;
             }
         };
+    }
+
+    public Pose2d getTargetedPoseOffset() {
+        return targetedPoseOffset;
     }
 }
