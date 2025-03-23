@@ -38,6 +38,7 @@ public class RobotActions {
                 extendLiftToSetupWait = 0.4,
                 setArmWait = 0.1,
                 setClawWait = 0.1,
+                sleepBeforeSetupAfterTransfer = 0.1,
                 setV4BWait = 0;
     }
 
@@ -45,6 +46,7 @@ public class RobotActions {
         public double
                 unclampClawToScoreWait = 0,
                 retractArmstendoWait = 0,
+                retractAutonArmWait = 0.2,
                 retractArmWait = 0.5;
 
 
@@ -159,6 +161,7 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.SETUP_SCORE_BASKET,
                 new SequentialAction(
                         transfer(),
+                        new SleepAction(SETUP_BASKET.sleepBeforeSetupAfterTransfer),
                         setupBasket(true)
                 )
         );
@@ -191,13 +194,28 @@ public class RobotActions {
                 new SequentialAction(
                         setV4B(Intake.V4BAngle.TRANSFER, SETUP_BASKET.setV4BWait),
                         setArm(Arm.ArmAngle.BASKET, SETUP_BASKET.setArmWait),
-                        setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, SETUP_BASKET.setClawWait),
                         setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
                         new ParallelAction(
                             setWrist(Arm.WristAngle.BASKET, 0),
                             setArmstendo(Arm.Extension.EXTENDED,0)
                         ),
                         setV4B(Intake.V4BAngle.UP, 0),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
+                )
+        );
+    }
+
+    public static Action setupWithoutV4BBasket(boolean isHighBasket) {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_SCORE_BASKET,
+                new SequentialAction(
+                        setArm(Arm.ArmAngle.BASKET, SETUP_BASKET.setArmWait),
+                        setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, SETUP_BASKET.setClawWait),
+                        setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
+                        new ParallelAction(
+                                setWrist(Arm.WristAngle.BASKET, 0),
+                                setArmstendo(Arm.Extension.EXTENDED,0)
+                        ),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
                 )
         );
@@ -224,6 +242,19 @@ public class RobotActions {
                 )
         );
     }
+
+    public static Action autoRetractAfterScoreBasket() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.NEUTRAL,
+                new SequentialAction(
+                        RobotActions.setArmstendo(Arm.Extension.RETRACTED,SCORE_BASKET.retractArmstendoWait),
+                        RobotActions.setArm(Arm.ArmAngle.NEUTRAL, SCORE_BASKET.retractAutonArmWait),
+                        RobotActions.retractToNeutral(0)
+                )
+        );
+    }
+
+
 
     // TODO
     public static Action setupWallPickup() {

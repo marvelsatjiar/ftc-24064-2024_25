@@ -35,16 +35,16 @@ public class Sample0plus8 extends AbstractAuto {
         public double
                 startingPositionX = -39,
                 startingPositionY = -63.375,
-                xBasket1 = -58,
-                yBasket1 = -51,
                 xBasket2 = -62,
-                yBasket2 = -51,
-                xIntakeSample3 = -51,
-                yIntakeSample3 = -46,
+                yBasket2 = -50,
+                xBasket3 = -63,
+                yBasket3 = -52.5,
+                xIntakeSample3 = -47,
+                yIntakeSample3 = -42,
                 subX = -25,
                 subY = -12,
-                xBasketSub = -53,
-                yBasketSub = -53,
+                xBasketSub = -56,
+                yBasketSub = -56.5,
                 sample5thOffset = 1,
                 sample6thOffset = 1,
                 sample7thOffset = 1,
@@ -53,28 +53,42 @@ public class Sample0plus8 extends AbstractAuto {
 
     public static class Headings {
         public double
-                intake1stSampleAngle = 68,
+                intake1stSampleAngle = 77,
                 intake2ndSampleAngle = 82,
-                intake3rdSampleAngle = 125,
-                basketAngle = 45;
+                intake3rdSampleAngle = 150,
+                basketAngle = 25;
     }
 
     public static class Timings {
         public double
-                waitBefore2ndTransfer = 2,
-                waitBefore3rdTransfer = 2,
-                sleep3rdBeforeExtending = 3,
-                sleep4thBeforeExtending = 3,
-                intake4thDelayAfter3rd = 2,
-                waitBefore3rdRetract = 2,
-                sleepBefore4thScore = 2
+                waitBefore2ndTransfer = 0.6,
+                waitBefore3rdTransfer = 1,
+                sleep3rdBeforeExtending = 1,
+                sleep4thBeforeExtending = 2.7,
+                intake4thDelayAfter3rd = 0.7,
+                waitBefore3rdRetract = 0.3,
+                waitBefore4thTransfer = 0.3,
+                waitBefore3rdIntake = 2,
+                extendWhile2ndTurningDelay = 1,
+                delayBefore1stUnclamp = 0.9,
+                sleepAfter1stUnclamp = 0.5,
+                sleepAfter2ndUnclamp = 0.5,
+                sleepBefore3rdUnclamp = 0.5,
+                sleepBefore4thUnclamp = 1.3,
+                timeFor2ndIntaking = 0.3
         ;
 
     }
 
 
     public static class Miscellaneous {
-
+        public double
+                setupIntake2ndExtendoAngle = 70,
+                setupIntake3rdExtendoAngle = 80,
+                setupIntake4thExtendoAngle = 90,
+                intake2ndExtendoAngle = 141,
+                intake3rdExtendoAngle = 127,
+                intake4thExtendoAngle = 137;
     }
 
     public static Positions POS = new Positions();
@@ -112,7 +126,9 @@ public class Sample0plus8 extends AbstractAuto {
         robot.arm.setArmAngle(Arm.ArmAngle.NEUTRAL);
         robot.arm.setWristAngle(Arm.WristAngle.BASKET);
         robot.setCurrentState(Robot.State.TRANSFERRED);
+        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
 
+        robot.intake.run(robot.extendo.getTargetAngle());
         robot.arm.run();
         robot.claw.run();
     }
@@ -132,72 +148,86 @@ public class Sample0plus8 extends AbstractAuto {
 
                 // Setup Score 1st Sample Objectively + Extends for 2nd Objectively
                 .afterTime(0, new ParallelAction(
-                        RobotActions.setupBasket(true),
-                        RobotActions.setExtendo(100, 0)
+                        RobotActions.setExtendo(MISC.setupIntake2ndExtendoAngle, 0),
+                        RobotActions.setupWithoutV4BBasket(true)
                 ))
-                .strafeToLinearHeading(new Vector2d(POS.xBasket1, POS.yBasket1), Math.toRadians(HEAD.intake1stSampleAngle))
+                .afterTime(TIME.extendWhile2ndTurningDelay, new ParallelAction(
+                        RobotActions.setExtendo(MISC.intake2ndExtendoAngle, 0),
+                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
+                        RobotActions.setRollers(0.8, 0)
+                ))
+
+                .afterTime(TIME.delayBefore1stUnclamp, new SequentialAction(
+                        RobotActions.scoreBasket(),
+                        new SleepAction(TIME.sleepAfter1stUnclamp),
+                        RobotActions.autoRetractAfterScoreBasket()
+
+                ))
+                .strafeToLinearHeading(new Vector2d(POS.xBasket2, POS.yBasket2), Math.toRadians(HEAD.intake1stSampleAngle))
 
                 // Score 1st Sample + Intakes 2nd Objectively TODO waitBefore2ndTransfer
-                .stopAndAdd(new ParallelAction(
-                        new SequentialAction(
-                                RobotActions.scoreBasket(),
-                                RobotActions.retractAfterScoreBasket()
-                        ),
-                        RobotActions.setExtendo(132, 0),
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                        RobotActions.setRollers(1, TIME.waitBefore2ndTransfer)
+                .stopAndAdd(new SequentialAction(
+                        new SleepAction(TIME.timeFor2ndIntaking),
+                        new ParallelAction(
+                                RobotActions.setV4B(Intake.V4BAngle.UP, 0),
+                                RobotActions.setExtendo(Extendo.Extension.RETRACTED, 0)
+                        )
                 ))
 
 
                 // Transfer & Setup 2nd Objectively + Extend for 3rd Objectively TODO sleep3rdBeforeExtending
-                .afterTime(0, new ParallelAction(
+                .afterTime(TIME.waitBefore2ndTransfer, new ParallelAction(
                         RobotActions.retractTransferAndSetupBasket(),
                         new SequentialAction(
                                 new SleepAction(TIME.sleep3rdBeforeExtending),
-                                RobotActions.setExtendo(100, 0)
+                                RobotActions.setExtendo(MISC.setupIntake3rdExtendoAngle, 0)
                         )
                 ))
 
-                .strafeToLinearHeading(new Vector2d(POS.xBasket2, POS.yBasket2), Math.toRadians(HEAD.intake2ndSampleAngle))
+                .strafeToLinearHeading(new Vector2d(POS.xBasket3, POS.yBasket3), Math.toRadians(HEAD.intake2ndSampleAngle))
 
+
+                .waitSeconds(TIME.waitBefore3rdIntake)
                 // Score 2nd + Intake 3rd Objectively TODO waitBefore3rdTransfer
                 .stopAndAdd(new ParallelAction(
                         new SequentialAction(
                                 RobotActions.scoreBasket(),
-                                RobotActions.retractAfterScoreBasket()
+                                new SleepAction(TIME.sleepAfter2ndUnclamp),
+                                RobotActions.autoRetractAfterScoreBasket()
                         ),
-                        RobotActions.setExtendo(132, 0),
+                        RobotActions.setExtendo(MISC.intake3rdExtendoAngle, 0),
                         RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                        RobotActions.setRollers(1, TIME.waitBefore3rdTransfer)
+                        RobotActions.setRollers(0.8, TIME.waitBefore3rdTransfer)
                 ))
                 // Transfer, Setup, & Scores 3rd Objectively + Extend for 4th Objectively TODO sleep4thBeforeExtending
                 .stopAndAdd(new ParallelAction(
                         new SequentialAction(
                                 RobotActions.retractTransferAndSetupBasket(),
+                                new SleepAction(TIME.sleepBefore3rdUnclamp),
                                 RobotActions.scoreBasket()
                         ),
                         new SequentialAction(
                                 new SleepAction(TIME.sleep4thBeforeExtending),
-                                RobotActions.setExtendo(100, 0)
+                                RobotActions.setExtendo(MISC.setupIntake4thExtendoAngle, 0)
                         )
                 ))
                 // Retract after 3rd Scored Objectively
-                .afterTime(TIME.waitBefore3rdRetract, RobotActions.retractAfterScoreBasket())
+                .afterTime(TIME.waitBefore3rdRetract, RobotActions.autoRetractAfterScoreBasket())
 
                 // Moving to & Intaking 4th sample Objectively
                 .afterTime(TIME.intake4thDelayAfter3rd, new ParallelAction(
                         RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                        RobotActions.setExtendo(132, 0),
-                        RobotActions.setRollers(1, 0)
+                        RobotActions.setExtendo(MISC.intake4thExtendoAngle, 0),
+                        RobotActions.setRollers(0.8, 0)
                 ))
-
+//
                 .strafeToLinearHeading(new Vector2d(POS.xIntakeSample3, POS.yIntakeSample3), Math.toRadians(HEAD.intake3rdSampleAngle))
-                .waitSeconds(TIME.sleepBefore4thScore)
-
+                .waitSeconds(TIME.waitBefore4thTransfer)
                 //Transfer while moving to Score 4th Sample Objectively
                 .afterTime(0, RobotActions.retractTransferAndSetupBasket())
                 .strafeToLinearHeading(new Vector2d(POS.xBasketSub, POS.yBasketSub), Math.toRadians(HEAD.basketAngle))
                 //Scoring 4th Sample Objectively
+                .waitSeconds(TIME.sleepBefore4thUnclamp)
                 .stopAndAdd(RobotActions.scoreBasket());
         return builder;
     }
@@ -215,7 +245,7 @@ public class Sample0plus8 extends AbstractAuto {
     private static TrajectoryActionBuilder scoreSubSamples(TrajectoryActionBuilder builder, double offsetY) {
         builder = builder
                 // Retract while moving to Sub from Scoring
-                .afterTime(0.5, RobotActions.retractAfterScoreBasket())
+                .afterTime(0.5, RobotActions.autoRetractAfterScoreBasket())
                 .setTangent(Math.toRadians(45))
                 .splineToLinearHeading(new Pose2d(POS.subX, POS.subY + offsetY, Math.toRadians(0)), Math.toRadians(0))
                 // Sweeping + Intaking Sub Sample TODO vision + remove hardcoded waits

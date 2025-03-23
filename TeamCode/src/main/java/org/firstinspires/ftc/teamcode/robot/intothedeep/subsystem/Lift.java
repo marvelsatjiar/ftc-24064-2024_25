@@ -46,7 +46,7 @@ public final class Lift {
             MAX_MOTOR_TICKS = 2550,
             MIN_MOTOR_TICKS = -5,
             LOW_BASKET_TICKS = 297,
-            HIGH_BASKET_TICKS = 1500,
+            HIGH_BASKET_TICKS = 1600,
             WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
             SPECIMEN_SETUP_TICKS = 1228,
