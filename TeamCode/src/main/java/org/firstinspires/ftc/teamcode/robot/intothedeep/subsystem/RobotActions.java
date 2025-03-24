@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
+import android.graphics.RenderNode;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -10,6 +12,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
+import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
 public class RobotActions {
@@ -403,6 +406,14 @@ public class RobotActions {
                 setExtendo(Extendo.Extension.RETRACTED, RETRACTION_FOR_TRANSFER.retractExtendoWait),
                 setRollers(0 , 0),
                 new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+        );
+    }
+
+    public static Action runRollersUntilCollected(double rollerPower, ColorRangefinderEx.SampleColor targetColor, double expireTime) {
+        return new SequentialAction(
+                new InstantAction(() -> robot.intake.targetSampleTimer.reset()),
+                setRollers(rollerPower, 0),
+                telemetryPacket -> robot.intake.getCurrentSample() != targetColor && robot.intake.targetSampleTimer.seconds() <= expireTime
         );
     }
 

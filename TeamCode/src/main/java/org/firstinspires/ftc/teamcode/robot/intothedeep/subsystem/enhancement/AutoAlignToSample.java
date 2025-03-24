@@ -4,15 +4,18 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
-import androidx.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
+import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 
@@ -31,7 +34,11 @@ public class AutoAlignToSample {
             limelightHeight = 11,
             limelightCrosshairDistance = 20;
 
+    public static double secondsUntilCollected = 3;
+
     private LLResultTypes.DetectorResult desiredSample;
+
+    private boolean isSampleDetected = false;
 
     public boolean
             isOppositeSample = false,
@@ -43,11 +50,11 @@ public class AutoAlignToSample {
         this.limelightEx = limelightEx;
 
         // sets hashmap keys and values
-        estimatedExtendoAngles.put(0.25, 96.75);
-        estimatedExtendoAngles.put(0.5, 80.625);
-        estimatedExtendoAngles.put(0.75, 64.5);
-        estimatedExtendoAngles.put(1.0, 48.375);
-        estimatedExtendoAngles.put(1.25, 32.25);
+        estimatedExtendoAngles.put(4.0, 96.75);
+        estimatedExtendoAngles.put(3.5, 80.625);
+        estimatedExtendoAngles.put(3.0, 64.5);
+        estimatedExtendoAngles.put(2.5, 48.375);
+        estimatedExtendoAngles.put(2.0, 32.25);
         estimatedExtendoAngles.put(1.5, 16.125);
     }
 
@@ -87,14 +94,15 @@ public class AutoAlignToSample {
 
             // x = tArea; y = target extendo angle
 
-            if (yDistance > estimatedExtendoAngles.firstKey() && yDistance < estimatedExtendoAngles.lastKey()) {
+            if (yDistance >= estimatedExtendoAngles.firstKey() && yDistance <= estimatedExtendoAngles.lastKey()) {
                 double upperBound = estimatedExtendoAngles.ceilingKey(yDistance); // x2
                 double lowerBound = estimatedExtendoAngles.floorKey(yDistance); // x1
 
                 double upperValue = estimatedExtendoAngles.get(upperBound); // y2
                 double lowerValue = estimatedExtendoAngles.get(lowerBound); // y1
 
-                double interpolation = lowerValue + (yDistance - lowerBound) * ((upperValue - lowerValue) / (upperBound - lowerBound));
+                // y = y1 + ((x-x1)(y2-y1))/(x2-x1)
+                double interpolation = lowerValue + ((yDistance - lowerBound) * (upperValue - lowerValue)) / (upperBound - lowerBound);
                 mTelemetry.addData("extendo interpolation : ", interpolation);
 
                 // linear interpolation formula
@@ -158,19 +166,20 @@ public class AutoAlignToSample {
     public Action detectTarget(double secondsToExpire) {
         return new Action() {
             boolean isFirstTime = true;
-            boolean isSampleDetected = false;
             final ElapsedTime expirationTimer = new ElapsedTime();
 
             @Override
             public boolean run(TelemetryPacket telemetryPacket) {
                 if (isFirstTime) {
                     isFirstTime = false;
-                    expirationTimer.startTime();
+                    expirationTimer.reset();
                 }
 
                 if (!isSampleDetected) {
                     isSampleDetected = targetSample();
-                } else {
+                }
+
+                if (isSampleDetected) {
                     // send out output to motors/servos
                     robot.extendo.setTargetAngle(calculateExtendoTarget(), true);
                     targetedPoseOffset = calculateTargetPosition();
@@ -185,7 +194,24 @@ public class AutoAlignToSample {
         };
     }
 
-    public Pose2d getTargetedPoseOffset() {
-        return targetedPoseOffset;
+    public void driveToTarget() {
+        Actions.runBlocking(robot.drivetrain.actionBuilder(robot.drivetrain.pose)
+                .strafeToLinearHeading(
+                    new Vector2d(
+                            robot.drivetrain.pose.position.x + targetedPoseOffset.position.x,
+                            robot.drivetrain.pose.position.y + targetedPoseOffset.position.y
+                    ),
+                    robot.drivetrain.pose.heading.toDouble() + targetedPoseOffset.heading.toDouble()
+                )
+                .afterTime(0, new ParallelAction(
+                        RobotActions.runRollersUntilCollected(1, targetColor, secondsUntilCollected),
+                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0)
+                ))
+                .build()
+        );
+    }
+
+    public boolean wasSampleDetected() {
+        return isSampleDetected;
     }
 }

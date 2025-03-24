@@ -15,6 +15,7 @@ import com.arcrobotics.ftclib.hardware.SimpleServo;
 import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
@@ -24,6 +25,7 @@ public final class Intake {
 
     private final MotorEx intake;
 
+    public final ElapsedTime targetSampleTimer = new ElapsedTime();
 
     public static double
             V4B_MIN_DOWN_ANGLE = 87,
