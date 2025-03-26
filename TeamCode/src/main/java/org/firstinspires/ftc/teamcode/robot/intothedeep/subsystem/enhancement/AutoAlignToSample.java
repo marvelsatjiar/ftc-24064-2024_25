@@ -4,13 +4,13 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
+import androidx.core.math.MathUtils;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -31,18 +31,27 @@ public class AutoAlignToSample {
     private final TreeMap<Double, Double> estimatedExtendoAngles = new TreeMap<>();
 
     public static double
-            limelightHeight = 11,
-            limelightCrosshairDistance = 20;
+            xOffset = -4,
+            yOffset = -1,
+            limelightTilt = 60,
+            limelightCrosshairDistance = 60,
+            limelightHeight = 11;
 
     public static double secondsUntilCollected = 3;
 
     private LLResultTypes.DetectorResult desiredSample;
 
-    private boolean isSampleDetected = false;
+    private Action targetSampleTrajectory;
+
+    private boolean
+            isSampleDetected = false,
+            isTurningOnly = false;
 
     public boolean
             isOppositeSample = false,
             isYellowSample = false;
+
+    private double targetedExtendoAngle = 0;
 
     private Pose2d targetedPoseOffset = new Pose2d(0, 0, 0);
 
@@ -50,12 +59,12 @@ public class AutoAlignToSample {
         this.limelightEx = limelightEx;
 
         // sets hashmap keys and values
-        estimatedExtendoAngles.put(4.0, 96.75);
-        estimatedExtendoAngles.put(3.5, 80.625);
-        estimatedExtendoAngles.put(3.0, 64.5);
-        estimatedExtendoAngles.put(2.5, 48.375);
-        estimatedExtendoAngles.put(2.0, 32.25);
-        estimatedExtendoAngles.put(1.5, 16.125);
+        estimatedExtendoAngles.put(7.0, 96.75);
+        estimatedExtendoAngles.put(3.0, 80.625);
+        estimatedExtendoAngles.put(0.0, 64.5);
+        estimatedExtendoAngles.put(-3., 48.375);
+        estimatedExtendoAngles.put(-6.0, 32.25);
+        estimatedExtendoAngles.put(-14.5, 16.125);
     }
 
     public void activateLimelight(int detectionPipeline) {
@@ -70,12 +79,13 @@ public class AutoAlignToSample {
 
     // add lock mechanism here (for sample)- for this you must also get current detections!!!
     public boolean targetSample() {
+        limelightEx.update();
         List<LLResultTypes.DetectorResult> targets = limelightEx.getDetectorResult();
 
         // checks and returns detection
         if (targets != null && !targets.isEmpty()) {
             for (LLResultTypes.DetectorResult result : targets) {
-                if (desiredSample == null || result.getTargetArea() > desiredSample.getTargetArea()) {
+                if (desiredSample == null || result.getTargetYDegrees() - result.getTargetArea() > desiredSample.getTargetYDegrees() - desiredSample.getTargetArea()) {
                     desiredSample = result;
                 }
             }
@@ -86,9 +96,11 @@ public class AutoAlignToSample {
         return false;
     }
 
-    private Double calculateExtendoTarget() {
+    private double calculateExtendoTarget() {
         if (desiredSample != null) {
-            double yDistance = Math.tan(Math.atan(limelightCrosshairDistance/limelightHeight) - desiredSample.getTargetYDegrees()) * limelightHeight;;
+            double yDistance = Math.tan(Math.atan(limelightCrosshairDistance/limelightHeight) + desiredSample.getTargetYDegrees()) * limelightHeight;
+
+            yDistance += yOffset;
 
             if (estimatedExtendoAngles.containsKey(yDistance)) return estimatedExtendoAngles.get(yDistance);
 
@@ -113,17 +125,24 @@ public class AutoAlignToSample {
         return robot.extendo.getTargetAngle();
     }
 
-    private Pose2d calculateTargetPosition() {
-        double yDistance = Math.tan(Math.atan(limelightCrosshairDistance/limelightHeight) - desiredSample.getTargetYDegrees()) * limelightHeight;
-        double xDistance = Math.tan(desiredSample.getTargetXDegrees()) * yDistance;
+    private Pose2d calculateTargetPosition(boolean isTurning) {
+        double yDistance = Math.tan(Math.toRadians(limelightTilt + desiredSample.getTargetYDegrees())) * limelightHeight;
+        double xDistance = Math.tan(Math.toRadians(desiredSample.getTargetXDegrees())) * yDistance + xOffset;
 
-        double headingDistance = Math.atan2(yDistance, xDistance);
+        yDistance += yOffset;
+
+        double headingDistance = Math.atan2(xDistance + xOffset, yDistance + yOffset);
 
         mTelemetry.addData(" x distance : ", xDistance);
         mTelemetry.addData(" y distance : ", yDistance);
         mTelemetry.addData(" heading distance : ", headingDistance);
 
-        return new Pose2d(xDistance, yDistance, headingDistance);
+        if (isTurning) {
+            isTurningOnly = true;
+            return new Pose2d(0, 0, headingDistance);
+        } else {
+            return new Pose2d(xDistance, 0, 0); // should be xDistance TODO
+        }
     }
 
 //    private ColorRangefinderEx.SampleColor getTargetColor() {
@@ -163,7 +182,7 @@ public class AutoAlignToSample {
 //        }
 //    }
 
-    public Action detectTarget(double secondsToExpire) {
+    public Action detectTarget(double secondsToExpire, boolean isTurning) {
         return new Action() {
             boolean isFirstTime = true;
             final ElapsedTime expirationTimer = new ElapsedTime();
@@ -181,37 +200,46 @@ public class AutoAlignToSample {
 
                 if (isSampleDetected) {
                     // send out output to motors/servos
-                    robot.extendo.setTargetAngle(calculateExtendoTarget(), true);
-                    targetedPoseOffset = calculateTargetPosition();
+                    targetedPoseOffset = calculateTargetPosition(isTurning);
+                    targetedExtendoAngle = calculateExtendoTarget();
 //                  setEdgeCases();
                 }
 
                 mTelemetry.addData("is sample targeted? ", isSampleDetected);
                 mTelemetry.addData("is expired? ", expirationTimer.seconds() > secondsToExpire);
 
-                return expirationTimer.seconds() <= secondsToExpire || !isSampleDetected;
+                return expirationTimer.seconds() <= secondsToExpire && !isSampleDetected;
             }
         };
     }
 
-    public void driveToTarget() {
-        Actions.runBlocking(robot.drivetrain.actionBuilder(robot.drivetrain.pose)
-                .strafeToLinearHeading(
-                    new Vector2d(
-                            robot.drivetrain.pose.position.x + targetedPoseOffset.position.x,
-                            robot.drivetrain.pose.position.y + targetedPoseOffset.position.y
-                    ),
-                    robot.drivetrain.pose.heading.toDouble() + targetedPoseOffset.heading.toDouble()
-                )
-                .afterTime(0, new ParallelAction(
-                        RobotActions.runRollersUntilCollected(1, targetColor, secondsUntilCollected),
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0)
-                ))
-                .build()
-        );
+    public void generateTargetTrajectory() {
+        if (!isTurningOnly) {
+            targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
+                    .lineToX(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x)
+                    .afterTime(0, new ParallelAction(
+                            RobotActions.runRollersUntilCollected(1, targetColor, secondsUntilCollected),
+                            RobotActions.setExtendo(targetedExtendoAngle, 0),
+                            RobotActions.setV4B(Intake.V4BAngle.DOWN, 0)
+                    ))
+                    .build();
+        } else {
+            targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
+                    .turn(robot.drivetrain.pose.heading.toDouble() + targetedPoseOffset.heading.toDouble())
+                    .afterTime(0, new ParallelAction(
+                            RobotActions.runRollersUntilCollected(1, targetColor, secondsUntilCollected),
+                            RobotActions.setV4B(Intake.V4BAngle.DOWN, 0)
+                    ))
+                    .build();
+        }
+
     }
 
     public boolean wasSampleDetected() {
         return isSampleDetected;
+    }
+
+    public Action getTargetSampleTrajectory() {
+        return targetSampleTrajectory;
     }
 }

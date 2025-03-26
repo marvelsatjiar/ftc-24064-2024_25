@@ -17,15 +17,12 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
-import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 
@@ -99,20 +96,21 @@ public class SubDetectionTest extends AbstractAuto{
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
 //                .afterTime(0, RobotActions.setupSpecimen())
-                .afterTime(0, new SequentialAction(
-                        new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE)),
-                        RobotActions.setExtendo(minSubExtendoAngle, 0)
-                ))
+                .afterTime(0, new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE)))
 //                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
 //                .splineToConstantHeading(new Vector2d(estimatedSixthSample, (scoreSpecimenY + firstSpecimenOffsetY)), Math.toRadians(90))
                 .stopAndAdd(
                     new SequentialAction(
-                        autoAlignToSample.detectTarget(secondsToExpire),
+                        autoAlignToSample.detectTarget(secondsToExpire, true),
                         new InstantAction(() -> robot.limelightEx.enableStagelite(false))
                 ))
-                .stopAndAdd(new Actions.SingleCheckAction(
-                        () -> autoAlignToSample.wasSampleDetected(),
-                        new InstantAction(autoAlignToSample::driveToTarget)
+
+                .stopAndAdd(new SequentialAction(
+                        new InstantAction(autoAlignToSample::generateTargetTrajectory),
+                        telemetryPacket -> {
+                            robot.drivetrain.updatePoseEstimate();
+                            return autoAlignToSample.getTargetSampleTrajectory().run(telemetryPacket);
+                        }
                 ));
 
         return builder;
