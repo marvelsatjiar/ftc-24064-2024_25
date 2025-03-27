@@ -195,7 +195,7 @@ public void runOpMode() {
 
     robot.drivetrain.updatePoseEstimate();
     robot.run();
-//            robot.printTelemetry();
+            robot.printTelemetry();
 }
 }
 

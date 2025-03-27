@@ -11,9 +11,11 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
@@ -31,9 +33,9 @@ public class AutoAlignToSample {
     private final TreeMap<Double, Double> estimatedExtendoAngles = new TreeMap<>();
 
     public static double
-            xOffset = -4,
-            yOffset = -1,
-            limelightTilt = 60,
+            xOffset = 4,
+            yOffset = 2,
+            limelightTilt = 55,
             limelightCrosshairDistance = 60,
             limelightHeight = 11;
 
@@ -47,6 +49,11 @@ public class AutoAlignToSample {
             isSampleDetected = false,
             isTurningOnly = false;
 
+    private double
+            xDistance = 0,
+            yDistance = 0,
+            headingDistance = 0;
+
     public boolean
             isOppositeSample = false,
             isYellowSample = false;
@@ -59,12 +66,12 @@ public class AutoAlignToSample {
         this.limelightEx = limelightEx;
 
         // sets hashmap keys and values
-        estimatedExtendoAngles.put(7.0, 96.75);
-        estimatedExtendoAngles.put(3.0, 80.625);
-        estimatedExtendoAngles.put(0.0, 64.5);
-        estimatedExtendoAngles.put(-3., 48.375);
-        estimatedExtendoAngles.put(-6.0, 32.25);
-        estimatedExtendoAngles.put(-14.5, 16.125);
+        estimatedExtendoAngles.put(21.5, 142.0);
+        estimatedExtendoAngles.put(18.1, 130.0);
+        estimatedExtendoAngles.put(14.7, 108.1);
+        estimatedExtendoAngles.put(11.3, 83.4);
+        estimatedExtendoAngles.put(7.9, 66.75);
+        estimatedExtendoAngles.put(4.5, 13.0);
     }
 
     public void activateLimelight(int detectionPipeline) {
@@ -98,23 +105,24 @@ public class AutoAlignToSample {
 
     private double calculateExtendoTarget() {
         if (desiredSample != null) {
-            double yDistance = Math.tan(Math.atan(limelightCrosshairDistance/limelightHeight) + desiredSample.getTargetYDegrees()) * limelightHeight;
+            double finalDistance;
+            
+            if (isTurningOnly) finalDistance = Math.sqrt(yDistance*yDistance + xDistance*xDistance);
+            else finalDistance = yDistance;
 
-            yDistance += yOffset;
-
-            if (estimatedExtendoAngles.containsKey(yDistance)) return estimatedExtendoAngles.get(yDistance);
+            if (estimatedExtendoAngles.containsKey(finalDistance)) return estimatedExtendoAngles.get(finalDistance);
 
             // x = tArea; y = target extendo angle
 
-            if (yDistance >= estimatedExtendoAngles.firstKey() && yDistance <= estimatedExtendoAngles.lastKey()) {
-                double upperBound = estimatedExtendoAngles.ceilingKey(yDistance); // x2
-                double lowerBound = estimatedExtendoAngles.floorKey(yDistance); // x1
+            if (finalDistance >= estimatedExtendoAngles.firstKey() && finalDistance <= estimatedExtendoAngles.lastKey()) {
+                double upperBound = estimatedExtendoAngles.ceilingKey(finalDistance); // x2
+                double lowerBound = estimatedExtendoAngles.floorKey(finalDistance); // x1
 
                 double upperValue = estimatedExtendoAngles.get(upperBound); // y2
                 double lowerValue = estimatedExtendoAngles.get(lowerBound); // y1
 
                 // y = y1 + ((x-x1)(y2-y1))/(x2-x1)
-                double interpolation = lowerValue + ((yDistance - lowerBound) * (upperValue - lowerValue)) / (upperBound - lowerBound);
+                double interpolation = lowerValue + ((finalDistance - lowerBound) * (upperValue - lowerValue)) / (upperBound - lowerBound);
                 mTelemetry.addData("extendo interpolation : ", interpolation);
 
                 // linear interpolation formula
@@ -126,17 +134,8 @@ public class AutoAlignToSample {
     }
 
     private Pose2d calculateTargetPosition(boolean isTurning) {
-        double yDistance = Math.tan(Math.toRadians(limelightTilt + desiredSample.getTargetYDegrees())) * limelightHeight;
-        double xDistance = Math.tan(Math.toRadians(desiredSample.getTargetXDegrees())) * yDistance + xOffset;
-
         yDistance += yOffset;
-
-        double headingDistance = Math.atan2(xDistance + xOffset, yDistance + yOffset);
-
-        mTelemetry.addData(" x distance : ", xDistance);
-        mTelemetry.addData(" y distance : ", yDistance);
-        mTelemetry.addData(" heading distance : ", headingDistance);
-
+        xDistance += xOffset;
         if (isTurning) {
             isTurningOnly = true;
             return new Pose2d(0, 0, headingDistance);
@@ -199,6 +198,11 @@ public class AutoAlignToSample {
                 }
 
                 if (isSampleDetected) {
+                    yDistance = Math.tan(Math.toRadians(limelightTilt + desiredSample.getTargetYDegrees())) * limelightHeight;
+                    xDistance = Math.tan(Math.toRadians(desiredSample.getTargetXDegrees())) * yDistance;
+
+                    headingDistance = Math.atan2(xDistance + xOffset, yDistance + yOffset);
+
                     // send out output to motors/servos
                     targetedPoseOffset = calculateTargetPosition(isTurning);
                     targetedExtendoAngle = calculateExtendoTarget();
@@ -208,6 +212,8 @@ public class AutoAlignToSample {
                 mTelemetry.addData("is sample targeted? ", isSampleDetected);
                 mTelemetry.addData("is expired? ", expirationTimer.seconds() > secondsToExpire);
 
+                mTelemetry.update();
+
                 return expirationTimer.seconds() <= secondsToExpire && !isSampleDetected;
             }
         };
@@ -216,7 +222,7 @@ public class AutoAlignToSample {
     public void generateTargetTrajectory() {
         if (!isTurningOnly) {
             targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
-                    .lineToX(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x)
+                    .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
                     .afterTime(0, new ParallelAction(
                             RobotActions.runRollersUntilCollected(1, targetColor, secondsUntilCollected),
                             RobotActions.setExtendo(targetedExtendoAngle, 0),
@@ -225,14 +231,26 @@ public class AutoAlignToSample {
                     .build();
         } else {
             targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
-                    .turn(robot.drivetrain.pose.heading.toDouble() + targetedPoseOffset.heading.toDouble())
+                    .turn(-targetedPoseOffset.heading.toDouble())
                     .afterTime(0, new ParallelAction(
                             RobotActions.runRollersUntilCollected(1, targetColor, secondsUntilCollected),
+                            RobotActions.setExtendo(targetedExtendoAngle, 0),
                             RobotActions.setV4B(Intake.V4BAngle.DOWN, 0)
                     ))
                     .build();
         }
 
+    }
+
+    public Action updateTelemetry(boolean isOpModeActive) {
+        return new Actions.RunnableAction(
+                () -> {
+                    mTelemetry.addData("y distance : ", yDistance);
+                    mTelemetry.addData("x distance : ", xDistance);
+                    mTelemetry.addData("heading distance : ", headingDistance);
+                    return isOpModeActive;
+                }
+        );
     }
 
     public boolean wasSampleDetected() {

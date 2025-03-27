@@ -99,7 +99,7 @@ public final class Robot {
     public void printTelemetry() {
         mTelemetry.addData("Robot State", robot.currentState.name());
         mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
-//        extendo.printTelemetry();
+        extendo.printTelemetry();
         lift.printTelemetry();
 //        arm.printTelemetry();
 //        intake.printTelemetry();

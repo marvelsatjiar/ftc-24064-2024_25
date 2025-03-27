@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode;
 
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.A;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.B;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
@@ -14,9 +15,11 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -31,9 +34,11 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.Au
 public class SubDetectionTest extends AbstractAuto{
     private AutoAlignToSample autoAlignToSample;
 
+    public boolean IS_TURNING = false;
+
     public static double
             minSubExtendoAngle = 70,
-            secondsToExpire = 4,
+            secondsToExpire = 1,
             startingPositionX = 7.375,
             startingPositionY = -62,
             scoreSpecimenY = -30.5,
@@ -55,11 +60,13 @@ public class SubDetectionTest extends AbstractAuto{
             gamepadEx1.readButtons();
 
             if (gamepadEx1.wasJustPressed(A)) IS_RED = !IS_RED;
+            if (gamepadEx1.wasJustPressed(B)) IS_TURNING = !IS_TURNING;
 
             if (gamepadEx1.wasJustPressed(DPAD_LEFT)) estimatedSixthSample--;
             if (gamepadEx1.wasJustPressed(DPAD_RIGHT)) estimatedSixthSample++;
 
             mTelemetry.addLine("Estimated 6th sample is : " + estimatedSixthSample);
+            mTelemetry.addLine("Targeted movement is : " + (IS_TURNING ? "TURNING" : "STRAFING"));
             mTelemetry.addLine("Alliance is : " + (IS_RED ? "RED" : "BLUE"));
 
             mTelemetry.addLine("Press both shoulder buttons to confirm!");
@@ -73,9 +80,9 @@ public class SubDetectionTest extends AbstractAuto{
 
         autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
-        robot.arm.setArmAngle(Arm.ArmAngle.NEUTRAL);
-        robot.arm.setArmstendoAngle(Arm.Extension.RETRACTED);
-        robot.arm.setWristAngle(Arm.WristAngle.COLLECTING);
+        robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
+        robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
+        robot.arm.setWristAngle(Arm.WristAngle.GRAB_OFF_WALL);
         robot.claw.setAngle(Claw.ClawAngles.SPECIMEN_CLAMPED);
         robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
 
@@ -95,15 +102,17 @@ public class SubDetectionTest extends AbstractAuto{
 
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-//                .afterTime(0, RobotActions.setupSpecimen())
+                .afterTime(0, RobotActions.setupSpecimen())
+                .afterTime(0, autoAlignToSample.updateTelemetry(opModeIsActive()))
                 .afterTime(0, new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE)))
-//                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
-//                .splineToConstantHeading(new Vector2d(estimatedSixthSample, (scoreSpecimenY + firstSpecimenOffsetY)), Math.toRadians(90))
+                .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
+                .splineToConstantHeading(new Vector2d(estimatedSixthSample, (scoreSpecimenY + firstSpecimenOffsetY)), Math.toRadians(90))
                 .stopAndAdd(
                     new SequentialAction(
-                        autoAlignToSample.detectTarget(secondsToExpire, true),
+                        autoAlignToSample.detectTarget(secondsToExpire, IS_TURNING),
                         new InstantAction(() -> robot.limelightEx.enableStagelite(false))
                 ))
+                .afterTime(0, RobotActions.setExtendo(minSubExtendoAngle, 0))
 
                 .stopAndAdd(new SequentialAction(
                         new InstantAction(autoAlignToSample::generateTargetTrajectory),
