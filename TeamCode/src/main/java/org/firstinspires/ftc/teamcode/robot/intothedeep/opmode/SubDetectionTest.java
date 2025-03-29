@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
@@ -112,15 +113,24 @@ public class SubDetectionTest extends AbstractAuto{
                         autoAlignToSample.detectTarget(secondsToExpire, IS_TURNING),
                         new InstantAction(() -> robot.limelightEx.enableStagelite(false))
                 ))
-                .afterTime(0, RobotActions.setExtendo(minSubExtendoAngle, 0))
 
                 .stopAndAdd(new SequentialAction(
                         new InstantAction(autoAlignToSample::generateTargetTrajectory),
                         telemetryPacket -> {
                             robot.drivetrain.updatePoseEstimate();
+                            robot.run();
                             return autoAlignToSample.getTargetSampleTrajectory().run(telemetryPacket);
                         }
-                ));
+                ))
+
+                .stopAndAdd(new SequentialAction(
+                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0.5),
+                        RobotActions.setRollers(0, 0),
+                        RobotActions.setV4B(Intake.V4BAngle.UP, 0)
+                ))
+
+                .splineToConstantHeading(new Vector2d(startingPositionX, startingPositionY), Math.toRadians(90))
+                .afterTime(0, RobotActions.setExtendo(Extendo.Extension.RETRACTED, 0));
 
         return builder;
     }

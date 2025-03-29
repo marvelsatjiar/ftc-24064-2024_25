@@ -261,7 +261,7 @@ public class Sample0plus8 extends AbstractAuto {
                         new SequentialAction(
                                 RobotActions.setExtendo(70, 0.5),
                                 RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                                RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, 0.5),
+                                RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, 0.5), // change extendo target TODO
 //                                RobotActions.setRollers(1, 0),
                                 RobotActions.setExtendo(120, 0.5)
                         )
