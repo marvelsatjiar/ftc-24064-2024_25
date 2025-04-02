@@ -20,8 +20,12 @@ public final class Extendo {
             LINKAGE_ONE_FOURTH_ANGLE = (LINKAGE_MAX_ANGLE - LINKAGE_MIN_ANGLE) * (1/4.0),
             LINKAGE_ONE_HALF_ANGLE = (LINKAGE_MAX_ANGLE - LINKAGE_MIN_ANGLE) * (1/2.0),
             LINKAGE_THREE_FOURTHS_ANGLE = (LINKAGE_MAX_ANGLE - LINKAGE_MIN_ANGLE) * (3/4.0),
-
             STICK_MULT = 4;
+
+    public static double
+            LINKAGE_LENGTH_A = 10,
+            LINKAGE_LENGTH_B = 11,
+            PIVOT_HEIGHT = 1.25;
 
     public enum Extension {
         RETRACTED,
@@ -102,6 +106,15 @@ public final class Extendo {
         }
 
         return true;
+    }
+
+    public double convertTargetInchesToExtensionAngle(double targetInches) {
+        targetInches = Range.clip(targetInches, 0, 20);
+
+        double c = (LINKAGE_LENGTH_B * LINKAGE_LENGTH_B - LINKAGE_LENGTH_A * LINKAGE_LENGTH_A - PIVOT_HEIGHT * PIVOT_HEIGHT - targetInches * targetInches);
+        double baseSquared = (-2 * LINKAGE_LENGTH_A) * Math.sqrt(PIVOT_HEIGHT * PIVOT_HEIGHT + targetInches * targetInches);
+
+        return Range.clip(Math.toDegrees(Math.asin(c / baseSquared) + Math.atan2(targetInches, PIVOT_HEIGHT)), LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE);
     }
 
     // Prints data on the driver hub for debugging and other uses

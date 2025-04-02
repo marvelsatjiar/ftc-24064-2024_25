@@ -29,6 +29,7 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
+import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
 @Autonomous(name = "Sub Detection Test")
@@ -105,7 +106,7 @@ public class SubDetectionTest extends AbstractAuto{
         builder = builder
                 .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(0, autoAlignToSample.updateTelemetry(opModeIsActive()))
-                .afterTime(0, new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE)))
+                .afterTime(0, new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE, IS_RED ? ColorRangefinderEx.SampleColor.RED : ColorRangefinderEx.SampleColor.BLUE)))
                 .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
                 .splineToConstantHeading(new Vector2d(estimatedSixthSample, (scoreSpecimenY + firstSpecimenOffsetY)), Math.toRadians(90))
                 .stopAndAdd(
@@ -124,9 +125,9 @@ public class SubDetectionTest extends AbstractAuto{
                 ))
 
                 .stopAndAdd(new SequentialAction(
-                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0.5),
-                        RobotActions.setRollers(0, 0),
-                        RobotActions.setV4B(Intake.V4BAngle.UP, 0)
+                        RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0.3),
+                        RobotActions.setV4B(Intake.V4BAngle.UP, 0.2),
+                        RobotActions.setRollers(0, 0)
                 ))
 
                 .splineToConstantHeading(new Vector2d(startingPositionX, startingPositionY), Math.toRadians(90))

@@ -1,6 +1,6 @@
 package com.example.meepmeeptesting;
-
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
@@ -9,7 +9,6 @@ import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
 public class MeepMeepTesting2 {
 
-
     public static double
             xBasket1 = -58,
             yBasket1 = -51,
@@ -17,15 +16,23 @@ public class MeepMeepTesting2 {
             yBasket2 = -51,
             xIntakeSample3 = -51,
             yIntakeSample3 = -46,
-            subX = -25,
+            midSubX = -35,
+            midSubY = -20,
+            midBasketX = -27,
+            midBasketY = -12,
+            subX = -22.5,
             subY = -12,
             xBasketSub = -53,
             yBasketSub = -53,
 
-            sample5thOffset = 1,
+            subVelocityConstraint = 160,
+            subMinAccelConstraint = -70,
+            subMaxAccelConstraint = 150,
+
+            sample5thOffset = 0,
             sample6thOffset = 1,
-            sample7thOffset = 1,
-            sample8thOffset = 1,
+            sample7thOffset = 2,
+            sample8thOffset = 3,
 
 
             intake1stSampleAngle = 68,
@@ -74,10 +81,13 @@ public class MeepMeepTesting2 {
 
     private static TrajectoryActionBuilder scoreSubSamples(TrajectoryActionBuilder builder, double offsetY) {
         builder = builder
-                .setTangent(Math.toRadians(45))
-                .splineToLinearHeading(new Pose2d(subX, subY, Math.toRadians(0)), Math.toRadians(0))
+                .setTangent(Math.toRadians(basketAngle))
+                .splineTo(new Vector2d(midSubX, midSubY), Math.toRadians(65), (pose2dDual, posePath, v) -> subVelocityConstraint, new ProfileAccelConstraint(subMinAccelConstraint, subMaxAccelConstraint))
+                .splineToSplineHeading(new Pose2d(subX, subY + offsetY, Math.toRadians(0)), Math.toRadians(0))
                 .setTangent(Math.toRadians(180))
-                .splineToLinearHeading(new Pose2d(xBasketSub, yBasketSub, Math.toRadians(basketAngle)), Math.toRadians(-135));
+                .strafeTo(new Vector2d(midBasketX, midBasketY))
+                .splineToSplineHeading(new Pose2d(xBasketSub, yBasketSub, Math.toRadians(basketAngle)), Math.toRadians(255), (pose2dDual, posePath, v) -> subVelocityConstraint, new ProfileAccelConstraint(subMinAccelConstraint, subMaxAccelConstraint));
+
         return builder;
     }
 

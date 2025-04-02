@@ -21,7 +21,7 @@ public final class Arm {
             NEUTRAL_ARM_ANGLE = 194, //215,
             TRANSFERRED_WRIST_ANGLE = 145,
             COLLECTING_ARM_ANGLE = 208, //240,
-            COLLECTING_WRIST_ANGLE = 85, //140,
+            COLLECTING_WRIST_ANGLE = 95, //140,
             BASKET_ARM_ANGLE = 55,
             BASKET_WRIST_ANGLE = 0,
 

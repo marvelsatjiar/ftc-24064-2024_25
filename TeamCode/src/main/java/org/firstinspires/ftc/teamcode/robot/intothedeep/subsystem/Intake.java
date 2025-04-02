@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static com.acmerobotics.roadrunner.Math.lerp;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.MAX_VOLTAGE;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
@@ -12,7 +11,6 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.hardware.ServoEx;
 import com.arcrobotics.ftclib.hardware.SimpleServo;
-import com.arcrobotics.ftclib.hardware.motors.CRServo;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -25,16 +23,20 @@ public final class Intake {
 
     private final MotorEx intake;
 
+    private boolean
+            isCorrectSample = false,
+            isOppositeSample = false;
+
     public final ElapsedTime targetSampleTimer = new ElapsedTime();
 
     public static double
-            V4B_MIN_DOWN_ANGLE = 87,
-            V4B_MAX_DOWN_ANGLE = 90,
+            V4B_MIN_DOWN_ANGLE = 55,
+            V4B_MAX_DOWN_ANGLE = 47,
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
             V4B_CLEARING_ANGLE = 85,
-            V4B_UP_ANGLE = 130,
+            V4B_UP_ANGLE = 85,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
-            V4B_TRANSFER_ANGLE = 95,
+            V4B_TRANSFER_ANGLE = 55,
             V4B_HOVERING_ANGLE = 45;
 
     private V4BAngle targetAngle = V4BAngle.UP;
@@ -112,6 +114,27 @@ public final class Intake {
         return rollerPower;
     }
 
+    public void setEdgeCases(ColorRangefinderEx.SampleColor targetColor) {
+        boolean ifBlueSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.BLUE;
+        boolean ifRedSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.RED;
+
+        isCorrectSample = robot.intake.getCurrentSample() == targetColor;
+
+        switch (targetColor) {
+            case RED: {
+                isOppositeSample = ifBlueSample;
+                break;
+            }
+            case BLUE: {
+                isOppositeSample = ifRedSample;
+                break;
+            }
+            case YELLOW: {
+                isOppositeSample = ifBlueSample || ifRedSample;
+                break;
+            }
+        }
+    }
 
 
     public boolean setRollerPower(double power) {
@@ -140,5 +163,13 @@ public final class Intake {
         mTelemetry.addData("Sample Color", getCurrentSample());
         mTelemetry.addData("V4B State", targetAngle.name());
 //        mTelemetry.addData("Raw Color", getRawColor());
+    }
+
+    public boolean isOppositeSample() {
+        return isOppositeSample;
+    }
+
+    public boolean isCorrectSample() {
+        return isCorrectSample;
     }
 }

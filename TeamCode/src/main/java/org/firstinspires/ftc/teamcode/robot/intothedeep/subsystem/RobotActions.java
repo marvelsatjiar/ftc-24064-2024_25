@@ -10,8 +10,10 @@ import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
@@ -38,8 +40,9 @@ public class RobotActions {
 
     public static class SetupBasket {
         public double
-                extendLiftToSetupWait = 0.4,
-                setArmWait = 0.1,
+                setArmstendoRetractedWait = 0.15,
+                extendLiftToSetupWait = 0.3,
+                setArmWait = 0.2,
                 setClawWait = 0.1,
                 sleepBeforeSetupAfterTransfer = 0.1,
                 setV4BWait = 0;
@@ -196,6 +199,7 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.SETUP_SCORE_BASKET,
                 new SequentialAction(
                         setV4B(Intake.V4BAngle.TRANSFER, SETUP_BASKET.setV4BWait),
+                        setArmstendo(Arm.Extension.RETRACTED, SETUP_BASKET.setArmstendoRetractedWait),
                         setArm(Arm.ArmAngle.BASKET, SETUP_BASKET.setArmWait),
                         setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
                         new ParallelAction(
@@ -410,10 +414,21 @@ public class RobotActions {
     }
 
     public static Action runRollersUntilCollected(double rollerPower, ColorRangefinderEx.SampleColor targetColor, double expireTime) {
+        ElapsedTime outtakeSampleTimer = new ElapsedTime();
+
         return new SequentialAction(
                 new InstantAction(() -> robot.intake.targetSampleTimer.reset()),
-                setRollers(rollerPower, 0),
-                telemetryPacket -> robot.intake.getCurrentSample() != targetColor && robot.intake.targetSampleTimer.seconds() <= expireTime
+                new InstantAction(() -> robot.intake.setEdgeCases(targetColor)),
+                telemetryPacket -> {
+                    if (robot.intake.isOppositeSample()) {
+                        robot.intake.setRollerPower(-1);
+                        outtakeSampleTimer.reset();
+                    } else {
+                        robot.intake.setRollerPower(rollerPower);
+                    }
+
+                    return robot.intake.getCurrentSample() != targetColor && robot.intake.targetSampleTimer.seconds() <= expireTime;
+                }
         );
     }
 

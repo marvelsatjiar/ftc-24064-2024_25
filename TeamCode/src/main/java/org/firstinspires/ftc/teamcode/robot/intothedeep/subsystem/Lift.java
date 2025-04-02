@@ -24,9 +24,9 @@ public final class Lift {
      * A PIDGains object being set to certain values (tweak these numbers!!)
      */
     public static PIDGains pidGains = new PIDGains(
-            0.005,
-            0.002,
-            0.0001,
+            0.006,
+            0.00004,
+            0,
             Double.POSITIVE_INFINITY
     );
 

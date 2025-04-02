@@ -1,31 +1,29 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement;
 
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
-
-import androidx.core.math.MathUtils;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
+import com.acmerobotics.roadrunner.NullAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 
 import java.util.List;
-import java.util.TreeMap;
 
 @Config
 public class AutoAlignToSample {
@@ -33,21 +31,25 @@ public class AutoAlignToSample {
 
     public ColorRangefinderEx.SampleColor targetColor;
 
-    private final TreeMap<Double, Double> estimatedExtendoAngles = new TreeMap<>();
-
     public static double
             xOffset = 4,
             yOffset = 2,
-            extendoOffset = 5,
-            limelightTilt = 55,
-            linkageLength = 10.75,
+            sampleOffset = 2.5,
+            limelightTilt = 35,
             limelightHeight = 11;
 
-    public static double secondsUntilCollected = 3;
+    public static double secondsUntilCollected = 0.6;
 
     private LLResultTypes.DetectorResult desiredSample;
 
     private Action targetSampleTrajectory;
+    
+    public static class AutoAlign {
+        public double
+                sleepSecondsBeforeV4bUp = 0.4,
+                sleepSecondsBeforeV4bDown = 0.125,
+                sleepSecondsBeforeRollersDeactivate = 0.2;
+    }
 
     private boolean
             isSampleDetected = false,
@@ -58,28 +60,18 @@ public class AutoAlignToSample {
             yDistance = 0,
             headingDistance = 0;
 
-    public boolean
-            isOppositeSample = false,
-            isYellowSample = false;
-
     private double targetedExtendoAngle = 0;
+
+    public static AutoAlign A_A = new AutoAlign();
 
     private Pose2d targetedPoseOffset = new Pose2d(0, 0, 0);
 
     public AutoAlignToSample(LimelightEx limelightEx) {
         this.limelightEx = limelightEx;
-
-        // sets hashmap keys and values
-        estimatedExtendoAngles.put(24.5, 142.0);
-        estimatedExtendoAngles.put(21.1, 130.0);
-        estimatedExtendoAngles.put(17.7, 108.1);
-        estimatedExtendoAngles.put(13.3, 83.4);
-        estimatedExtendoAngles.put(9.9, 66.75);
-        estimatedExtendoAngles.put(6.5, 13.0);
     }
 
-    public void activateLimelight(int detectionPipeline) {
-        targetColor = IS_RED ? ColorRangefinderEx.SampleColor.RED : ColorRangefinderEx.SampleColor.BLUE;
+    public void activateLimelight(int detectionPipeline, ColorRangefinderEx.SampleColor color) {
+        targetColor = color;
 
         limelightEx.enableStagelite(true);
 
@@ -111,12 +103,10 @@ public class AutoAlignToSample {
         if (desiredSample != null) {
             double finalDistance;
             
-            if (isTurningOnly) finalDistance = Math.sqrt(yDistance*yDistance + xDistance*xDistance);
-            else finalDistance = yDistance;
+            if (isTurningOnly) finalDistance = Math.sqrt((yDistance-sampleOffset)*(yDistance-sampleOffset) + xDistance*xDistance);
+            else finalDistance = (yDistance-sampleOffset);
 
-            double height = linkageLength - finalDistance;
-
-            return Range.clip(13, (Math.atan2((finalDistance/2), height) * (180/Math.PI)) + (13 - extendoOffset), 142);
+            return robot.extendo.convertTargetInchesToExtensionAngle(finalDistance);
         }
 
         return robot.extendo.getTargetAngle();
@@ -129,7 +119,7 @@ public class AutoAlignToSample {
             isTurningOnly = true;
             return new Pose2d(0, 0, headingDistance);
         } else {
-            return new Pose2d(xDistance, 0, 0); // should be xDistance TODO
+            return new Pose2d(0, xDistance, 0); // should be xDistance TODO
         }
     }
 
@@ -147,29 +137,6 @@ public class AutoAlignToSample {
 //        return ColorRangefinderEx.SampleColor.NOTHING;
 //    }
 
-//    private void setEdgeCases() {
-//        boolean ifBlueSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.BLUE;
-//        boolean ifRedSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.RED;
-//        boolean ifYellowSample = robot.intake.getCurrentSample() == ColorRangefinderEx.SampleColor.YELLOW;
-//
-//        switch (targetColor) {
-//            case RED: {
-//                isOppositeSample = ifBlueSample;
-//                isYellowSample = ifYellowSample;
-//                break;
-//            }
-//            case BLUE: {
-//                isOppositeSample = ifRedSample;
-//                isYellowSample = ifYellowSample;
-//                break;
-//            }
-//            case YELLOW: {
-//                isOppositeSample = ifBlueSample || ifRedSample;
-//                break;
-//            }
-//        }
-//    }
-
     public Action detectTarget(double secondsToExpire, boolean isTurning) {
         return new Action() {
             boolean isFirstTime = true;
@@ -179,6 +146,7 @@ public class AutoAlignToSample {
             public boolean run(TelemetryPacket telemetryPacket) {
                 if (isFirstTime) {
                     isFirstTime = false;
+                    limelightEx.getLimelight().captureSnapshot("detection");
                     expirationTimer.reset();
                 }
 
@@ -187,6 +155,7 @@ public class AutoAlignToSample {
                 }
 
                 if (isSampleDetected) {
+
                     yDistance = Math.tan(Math.toRadians(limelightTilt + desiredSample.getTargetYDegrees())) * limelightHeight;
                     xDistance = Math.tan(Math.toRadians(desiredSample.getTargetXDegrees())) * yDistance;
 
@@ -209,29 +178,57 @@ public class AutoAlignToSample {
     }
 
     public void generateTargetTrajectory() {
-        if (!isTurningOnly) {
-            targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
-                    .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
-                    .afterTime(0, new ParallelAction(
-                            RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected),
-                            RobotActions.setExtendo(targetedExtendoAngle, 0),
-                            RobotActions.setV4B(Intake.V4BAngle.DOWN, 0)
+        if (isSampleDetected) {
+            if (!isTurningOnly) {
+                targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
+                        .afterTime(0, new ParallelAction(
+                                RobotActions.setExtendo(targetedExtendoAngle, 0),
+                                new SequentialAction(
+                                        RobotActions.setSweeper(Sweeper.SweeperAngles.AUTON_ACTIVE, 1),
+                                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
+                                )
+                        ))
+                        .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
 
-                    ))
-                    .build();
+                        .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
+
+                        .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
+
+                        .stopAndAdd(this::setFullExtensionIfNotCollected)
+                        .build();
+            } else {
+                targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
+                        .afterTime(0, new ParallelAction(
+                                RobotActions.setExtendo(targetedExtendoAngle, 0),
+                                new SequentialAction(
+                                        RobotActions.setSweeper(Sweeper.SweeperAngles.AUTON_ACTIVE, 1),
+                                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
+                                )
+                        ))
+                        .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
+
+                        .turn(-targetedPoseOffset.heading.toDouble())
+
+                        .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
+
+                        .stopAndAdd(this::setFullExtensionIfNotCollected)
+                        .build();
+            }
         } else {
-            targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
-                    .turn(-targetedPoseOffset.heading.toDouble())
-
-                    .afterTime(0, new ParallelAction(
-                            RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected),
-                            RobotActions.setExtendo(targetedExtendoAngle, 0.3),
-                            RobotActions.setV4B(Intake.V4BAngle.DOWN, 0)
-
-                    ))
-                    .build();
+            targetSampleTrajectory = new NullAction();
         }
+    }
 
+    public Action setFullExtensionIfNotCollected() {
+        if (!robot.intake.isCorrectSample()) {
+            return new SequentialAction(
+                    RobotActions.setExtendo(Extendo.Extension.EXTENDED, A_A.sleepSecondsBeforeV4bUp),
+                    RobotActions.setV4B(Intake.V4BAngle.UP, A_A.sleepSecondsBeforeRollersDeactivate),
+                    RobotActions.retractForTransfer()
+            );
+        } else {
+            return RobotActions.retractForTransfer();
+        }
     }
 
     public Action updateTelemetry(boolean isOpModeActive) {
