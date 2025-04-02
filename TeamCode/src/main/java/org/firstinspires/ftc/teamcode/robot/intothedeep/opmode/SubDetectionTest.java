@@ -105,7 +105,7 @@ public class SubDetectionTest extends AbstractAuto{
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.setupSpecimen())
-                .afterTime(0, autoAlignToSample.updateTelemetry(opModeIsActive()))
+//                .afterTime(0, autoAlignToSample.updateTelemetry(opModeIsActive()))
                 .afterTime(0, new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE, IS_RED ? ColorRangefinderEx.SampleColor.RED : ColorRangefinderEx.SampleColor.BLUE)))
                 .afterTime(sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
                 .splineToConstantHeading(new Vector2d(estimatedSixthSample, (scoreSpecimenY + firstSpecimenOffsetY)), Math.toRadians(90))

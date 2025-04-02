@@ -195,6 +195,7 @@ public class AutoAlignToSample {
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
 
                         .stopAndAdd(this::setFullExtensionIfNotCollected)
+                        .stopAndAdd(new InstantAction(() -> isSampleDetected = false))
                         .build();
             } else {
                 targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
@@ -212,6 +213,7 @@ public class AutoAlignToSample {
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
 
                         .stopAndAdd(this::setFullExtensionIfNotCollected)
+                        .stopAndAdd(new InstantAction(() -> isSampleDetected = false))
                         .build();
             }
         } else {

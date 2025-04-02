@@ -26,7 +26,6 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
@@ -48,16 +47,13 @@ public class Sample0plus8 extends AbstractAuto {
                 yIntakeSample3 = -43,
                 subX = -22.5,
                 subY = -12,
-                midSubX = -35,
-                midSubY = -20,
-                midBasketX = -27,
-                midBasketY = -12,
-                xBasketSub = -61,
-                yBasketSub = -62.5,
-                sample5thOffset = 0,
-                sample6thOffset = 2,
-                sample7thOffset = 4,
-                sample8thOffset = 6;
+                midSubX = -40,
+                midSubY = -12,
+                yBasketSub = -53,
+                sample5thOffset = 20,
+                sample6thOffset = 20,
+                sample7thOffset = 20,
+                sample8thOffset = 20;
     }
 
     public static class Headings {
@@ -71,7 +67,8 @@ public class Sample0plus8 extends AbstractAuto {
 
     public static class Timings {
         public double
-                waitAfterUnclampSub = 0.9,
+                sleepUntilLiftRetracted = 0.4,
+                waitBeforeUnclampSubBasket = 0.9,
                 sleepBeforeStartVision = 0.3,
                 secondsToExpire = 0.5,
                 waitBefore2ndTransfer = 0.9,
@@ -93,12 +90,12 @@ public class Sample0plus8 extends AbstractAuto {
 
     public static class Miscellaneous {
         public double
-                subVelocityConstraint = 185,
+                subVelocityConstraint = 100,
                 subMinAccelConstraint = -80,
-                subMaxAccelConstraint = 175,
-                intakeSubVelocityConstraint = 50,
-                intakeSubMinAccelConstraint = -60,
-                intakeSubMaxAccelConstraint = 40,
+                subMaxAccelConstraint = 90,
+                intakeSubVelocityConstraint = 75,
+                intakeSubMinAccelConstraint = -65,
+                intakeSubMaxAccelConstraint = 65,
                 setupIntake2ndExtendoAngle = 70,
                 setupIntake3rdExtendoAngle = 80,
                 setupIntake4thExtendoAngle = 90,
@@ -270,8 +267,7 @@ public class Sample0plus8 extends AbstractAuto {
                 // Retract while moving to Sub from Scoring
                 .afterTime(0.5, RobotActions.autoRetractAfterScoreBasket())
                 .setTangent(Math.toRadians(HEAD.basketAngle))
-                .splineTo(new Vector2d(POS.midSubX, POS.midSubY), Math.toRadians(65), ((pose2dDual, posePath, v) -> MISC.subVelocityConstraint), new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
-                .splineToLinearHeading(new Pose2d(POS.subX, POS.subY + offsetY, Math.toRadians(0)), Math.toRadians(0), (pose2dDual, posePath, v) -> MISC.intakeSubVelocityConstraint, new ProfileAccelConstraint(MISC.intakeSubMinAccelConstraint, MISC.intakeSubMaxAccelConstraint))
+                .strafeToLinearHeading(new Vector2d(POS.subX, POS.subY + offsetY), Math.toRadians(0), ((pose2dDual, posePath, v) -> MISC.subVelocityConstraint), new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
                 // Sweeping + Intaking Sub Sample TODO vision + remove hardcoded waits
                 .stopAndAdd(new SequentialAction(
                         autoAlignToSample.detectTarget(TIME.secondsToExpire, false),
@@ -289,13 +285,14 @@ public class Sample0plus8 extends AbstractAuto {
                 .setTangent(Math.toRadians(180))
                 // Score Sub Sample
                 .afterTime(0, RobotActions.retractTransferAndSetupBasket())
-                .strafeTo(new Vector2d(POS.midBasketX, POS.midBasketY))
-                .splineToSplineHeading(new Pose2d(POS.xBasketSub, POS.yBasketSub - offsetY, Math.toRadians(HEAD.basketAngle)), Math.toRadians(255), (pose2dDual, posePath, v) -> MISC.subVelocityConstraint, new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
+                .splineTo(new Vector2d(POS.midSubX, POS.midSubY), Math.toRadians(247))
+                .lineToY(POS.yBasketSub, ((pose2dDual, posePath, v) -> MISC.subVelocityConstraint), new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
                 // Transfer & Setup after Intaking Sub Sample while Moving to Basket
                 .stopAndAdd(new SequentialAction(
-                        new SleepAction(TIME.waitAfterUnclampSub),
+                        new SleepAction(TIME.waitBeforeUnclampSubBasket),
                         RobotActions.scoreBasket()
-                ));
+                ))
+                .waitSeconds(TIME.sleepUntilLiftRetracted);
         return builder;
     }
 
