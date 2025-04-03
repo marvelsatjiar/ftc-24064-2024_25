@@ -10,6 +10,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.LEFT_TRIGGER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Trigger.RIGHT_TRIGGER;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -20,6 +21,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
+import org.firstinspires.ftc.teamcode.util.LoopUtil;
 
 @Config
 @TeleOp(name = "Intake Prototype",  group = "Prototype")
@@ -59,6 +62,9 @@ public final class IntakePrototype extends LinearOpMode {
 
             extendo.printTelemetry();
             intake.printTelemetry();
+
+            mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
+
             mTelemetry.update();
         }
     }

@@ -8,6 +8,7 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -17,6 +18,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
+import org.firstinspires.ftc.teamcode.util.LoopUtil;
 
 @TeleOp(name = "Armstendo Prototype", group = "Prototype")
 public class ArmstendoPrototype extends LinearOpMode {
@@ -88,8 +90,12 @@ public class ArmstendoPrototype extends LinearOpMode {
             arm.setArmstendoAngle(targetPosition);
 
             arm.printTelemetry();
+
+            mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
+
             mTelemetry.update();
 
+            lift.run();
             arm.run();
         }
     }

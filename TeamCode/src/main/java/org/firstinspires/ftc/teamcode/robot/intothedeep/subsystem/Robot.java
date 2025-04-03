@@ -101,7 +101,7 @@ public final class Robot {
         mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
 //        intake.printTelemetry();
 //        extendo.printTelemetry();
-//        lift.printTelemetry();
+        lift.printTelemetry();
 //        arm.printTelemetry();
 //        intake.printTelemetry();
 //        autoAligner.printTelemetry();

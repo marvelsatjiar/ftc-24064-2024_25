@@ -1,12 +1,17 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.opmode.prototype;
 
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
+
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
 import org.firstinspires.ftc.teamcode.util.BulkReader;
+import org.firstinspires.ftc.teamcode.util.LoopUtil;
 import org.firstinspires.ftc.teamcode.util.SimpleServoPivot;
 
 @Config
@@ -30,6 +35,9 @@ public final class ClawPrototype extends LinearOpMode {
             if (gamepadEx1.wasJustPressed(GamepadKeys.Button.A)) claw.toggle();
 
             claw.updateAngles(DEPOSIT_ANGLE, CLAMP_ANGLE);
+
+            mTelemetry.addData("Loop time (hertz)", LoopUtil.getLoopTimeInHertz());
+
             claw.run();
         }
     }

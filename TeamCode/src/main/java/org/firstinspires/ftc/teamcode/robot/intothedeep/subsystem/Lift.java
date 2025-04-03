@@ -16,6 +16,7 @@ import org.firstinspires.ftc.teamcode.control.gainmatrices.FeedforwardGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.LowPassGains;
 import org.firstinspires.ftc.teamcode.control.gainmatrices.PIDGains;
 import org.firstinspires.ftc.teamcode.control.motion.State;
+import org.firstinspires.ftc.teamcode.util.CachedMotor;
 
 @Config
 public final class Lift {
@@ -121,19 +122,20 @@ public final class Lift {
      * @param hardwareMap; A constant map that holds all the parts for config in code
      */
     public Lift(HardwareMap hardwareMap) {
-        MotorEx leader = new MotorEx(hardwareMap, "leader", RPM_435);
-        MotorEx follower = new MotorEx(hardwareMap, "follower", RPM_435);
-        MotorEx follower2 = new MotorEx(hardwareMap, "follower2", RPM_435);
+        CachedMotor leader = new CachedMotor(hardwareMap, "leader", RPM_435);
+        CachedMotor follower = new CachedMotor(hardwareMap, "follower", RPM_435);
 
-        encoder = follower2.encoder;
+        MotorEx dummy = new MotorEx(hardwareMap, "follower2", RPM_435);
+
+        encoder = dummy.encoder;
         encoder.reset();
 
         follower.setInverted(true);
-        follower2.setInverted(true);
+        dummy.setInverted(true);
 
         encoder.setDirection(Motor.Direction.REVERSE);
 
-        motors = new MotorEx[] {leader, follower, follower2};
+        motors = new MotorEx[] {leader, follower};
 
         batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
     }
