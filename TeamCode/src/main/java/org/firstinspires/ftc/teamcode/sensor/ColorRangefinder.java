@@ -3,10 +3,6 @@ package org.firstinspires.ftc.teamcode.sensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchSimple;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.Arrays;
-
 /**
  * Helper class for configuring the Brushland Labs Color Rangefinder.
  * Online documentation: <a href="https://docs.brushlandlabs.com">...</a>
@@ -94,8 +90,8 @@ public class ColorRangefinder {
     }
 
     public float[] getCalibration() {
-        ByteBuffer bytes =
-                ByteBuffer.wrap(i2c.read(CALIB_A_VAL_0, 16)).order(ByteOrder.LITTLE_ENDIAN);
+        java.nio.ByteBuffer bytes =
+                java.nio.ByteBuffer.wrap(i2c.read(CALIB_A_VAL_0, 16)).order(java.nio.ByteOrder.LITTLE_ENDIAN);
         return new float[]{bytes.getFloat(), bytes.getFloat(), bytes.getFloat(), bytes.getFloat()};
     }
 
@@ -105,7 +101,6 @@ public class ColorRangefinder {
      * @param value brightness between 0-255
      */
     public void setLedBrightness(int value) {
-
         i2c.write8(LED_BRIGHTNESS, value);
     }
 
@@ -124,8 +119,8 @@ public class ColorRangefinder {
      * @return distance in millimeters
      */
     public double readDistance() {
-        ByteBuffer bytes =
-                ByteBuffer.wrap(i2c.read(PS_DISTANCE_0, 4)).order(ByteOrder.LITTLE_ENDIAN);
+        java.nio.ByteBuffer bytes =
+                java.nio.ByteBuffer.wrap(i2c.read(PS_DISTANCE_0, 4)).order(java.nio.ByteOrder.LITTLE_ENDIAN);
         return bytes.getFloat();
     }
 
@@ -144,7 +139,6 @@ public class ColorRangefinder {
             hi = (int) Math.round(higherBound / 255.0 * 65535);
         } else { // distance in mm
             float[] calib = getCalibration();
-            System.out.println(Arrays.toString(calib));
             if (lowerBound < .5) hi = 2048;
             else hi = rawFromDistance(calib[0], calib[1], calib[2], calib[3], lowerBound);
             lo = rawFromDistance(calib[0], calib[1], calib[2], calib[3], higherBound);
@@ -155,6 +149,11 @@ public class ColorRangefinder {
         byte hi0 = (byte) (hi & 0xFF);
         byte hi1 = (byte) ((hi & 0xFF00) >> 8);
         i2c.write(pinNum.modeAddress, new byte[]{digitalMode.value, lo0, lo1, hi0, hi1});
+        try {
+            Thread.sleep(25);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private double root(double n, double v) {
