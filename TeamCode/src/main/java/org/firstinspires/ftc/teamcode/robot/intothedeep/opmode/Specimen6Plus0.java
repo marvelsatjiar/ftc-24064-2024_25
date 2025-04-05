@@ -65,13 +65,13 @@ public class Specimen6Plus0 extends AbstractAuto {
                 tangentForIntermediaryPosition = 0,
 
                 intakeFirstSampleHeading = 91,
-                intakeSecondSampleHeading = 53.5,
-                intakeThirdSampleHeading = 36,
+                intakeSecondSampleHeading = 65,
+                intakeThirdSampleHeading = 46,
                 outtakeFirstSampleHeading = -70,
                 outtakeSecondSampleHeading = -70,
                 outtakeThirdSampleHeading = -70,
                 intakeFirstExtendoAngle = 80,
-                intakeSecondExtendoAngle = 71.5,
+                intakeSecondExtendoAngle = 72,
                 intakeThirdExtendoAngle = 130,
                 outtakeExtendoAngleFirst = 20,
                 outtakeExtendoAngleSecond = 50,
@@ -132,7 +132,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 timeBeforeMoving = 0.1,
                 lastFourSleepBeforeGrab = 0,
                 secondSleepBeforeSetup = 0.1,
-                sleepSecondsBeforeUnclampFirst = 1.2,
+                sleepSecondsBeforeUnclampFirst = 1.4,
                 sleepSecondsBeforeUnclampSecond = 2,
                 sleepSecondsBeforeUnclampThird = 1.5,
                 sleepSecondsBeforeUnclampFourth = 1.5,
@@ -145,6 +145,9 @@ public class Specimen6Plus0 extends AbstractAuto {
 
 
                 //Constraints
+                scoreFirstSpecimenVelocityConstraint = 160,
+                maxFirstProfileAccel = -150,
+                minFirstProfileAccel = 150,
                 wallPickUpVelocityConstraint = 60,
                 scoreSpecimenVelocityConstraint = 160,
                 minScoreProfileAccel = -140,
@@ -378,7 +381,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .afterTime(0, RobotActions.setupSpecimen())
                 .afterTime(0, new InstantAction(() -> autoAlignToSample.activateLimelight(IS_RED ? LIMELIGHT_RED_DETECTION_PIPELINE : LIMELIGHT_BLUE_DETECTION_PIPELINE, IS_RED ? ColorRangefinderEx.SampleColor.RED : ColorRangefinderEx.SampleColor.BLUE)))
                 .afterTime(S_S.sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())
-                .strafeToConstantHeading(new Vector2d(S_S.subSampleX, S_S.scoreSpecimenY)); //, (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
+                .strafeToConstantHeading(new Vector2d(S_S.subSampleX, S_S.scoreSpecimenY), (pose2dDual, posePath, v) -> S_S.scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(S_S.minFirstProfileAccel, S_S.maxFirstProfileAccel));
 
         if (isSevenPlusZero) {
             builder = builder

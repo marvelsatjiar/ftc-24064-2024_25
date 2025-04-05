@@ -7,27 +7,28 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 @Config
 public final class Hang {
-    private final CRServo[] hangGroup;
 
-    private double input;
+    private CRServo hangMaster, hangFollower;
+
+    private double input1, input2;
 
     public Hang(HardwareMap hardwareMap) {
-        CRServo hangMaster = hardwareMap.get(CRServo.class, "hang master");
-        CRServo hangFollower = hardwareMap.get(CRServo.class, "hang follower");
+        hangMaster = hardwareMap.get(CRServo.class, "hang master");
+        hangFollower = hardwareMap.get(CRServo.class, "hang follower");
 
+        hangMaster.setDirection(DcMotorSimple.Direction.REVERSE);
         hangFollower.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        hangGroup = new CRServo[] {hangMaster, hangFollower};
     }
 
-    public void setPower(double power) {
-        input = power;
+    public void setPower(double power1, double power2) {
+        input1 = power1;
+        input2 = power2;
     }
 
     public void run() {
-        for (CRServo servo : hangGroup) {
-            servo.setPower(input);
-        }
+        hangMaster.setPower(input1);
+        hangFollower.setPower(input2);
     }
 
 }

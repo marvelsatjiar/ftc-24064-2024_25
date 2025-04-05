@@ -533,10 +533,6 @@ public class RobotActions {
                 new SleepAction(sleepSeconds)
         );
     }
-
-    public static Action setHangServos(double power) {
-        return new InstantAction(() -> robot.hang.setPower(power));
-    }
 }
 
 

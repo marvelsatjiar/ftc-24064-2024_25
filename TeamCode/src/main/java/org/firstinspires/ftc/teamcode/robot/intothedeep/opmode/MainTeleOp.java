@@ -197,10 +197,11 @@ public void runOpMode() {
         case SETUP_HANG:
             robot.sweeper.setAngle(Sweeper.SweeperAngles.RETRACTED);
 
-            double trigger = gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+            double trigger1 = gamepadEx2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
+            double trigger2 = gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
-            if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.1)
-                robot.actionScheduler.addAction(RobotActions.setHangServos(trigger));
+            if (trigger1 >= 0.1 || trigger2 >= 0.1)
+                robot.hang.setPower(trigger1, trigger2);
             if (keyPressed(2, LEFT_BUMPER))
                 robot.actionScheduler.addAction(RobotActions.doHang());
             if (keyPressed(2, X))

@@ -19,6 +19,11 @@ public class ColorRangefinderEx {
         NOTHING;
     }
 
+    public enum Modes {
+        ANALOG,
+        DIGITAL
+    }
+
     private SampleColor rawReading = SampleColor.NOTHING;
 
     public ColorRangefinderEx(HardwareMap hardwareMap) {
