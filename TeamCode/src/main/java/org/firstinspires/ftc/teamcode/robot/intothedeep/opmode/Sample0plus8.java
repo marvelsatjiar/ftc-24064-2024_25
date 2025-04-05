@@ -45,31 +45,31 @@ public class Sample0plus8 extends AbstractAuto {
                 yBasket3 = -54.5,
                 xIntakeSample3 = -48,
                 yIntakeSample3 = -43,
-                subX = -22.5,
-                subY = -12,
+                subX = -14,
+                subY = -10,
                 midSubX = -40,
-                midSubY = -12,
-                yBasketSub = -53,
-                sample5thOffset = 20,
-                sample6thOffset = 20,
-                sample7thOffset = 20,
-                sample8thOffset = 20;
+                midSubY = -14,
+                yBasketSub = -60.5,
+                sample5thOffset = 0,
+                sample6thOffset = 5,
+                sample7thOffset = 10,
+                sample8thOffset = 15;
     }
 
     public static class Headings {
         public double
+                lineToSubTangent = 70,
+                lineToBasketTangent = 247,
                 intake1stSampleAngle = 78,
                 intake2ndSampleAngle = 90,
                 intake3rdSampleAngle = 145,
-                dropOff4thSample = 65,
-                basketAngle = 35;
+                dropOff4thSample = 65;
     }
 
     public static class Timings {
         public double
-                sleepUntilLiftRetracted = 0.4,
-                waitBeforeUnclampSubBasket = 0.9,
-                sleepBeforeStartVision = 0.3,
+                sleepUntilLiftRetracted = 0.2,
+                waitBeforeUnclampSubBasket = 0.2,
                 secondsToExpire = 0.5,
                 waitBefore2ndTransfer = 0.9,
                 waitBefore3rdTransfer = 1,
@@ -90,12 +90,10 @@ public class Sample0plus8 extends AbstractAuto {
 
     public static class Miscellaneous {
         public double
-                subVelocityConstraint = 100,
-                subMinAccelConstraint = -80,
-                subMaxAccelConstraint = 90,
+                subVelocityConstraint = 115,
+                subMinAccelConstraint = -110,
+                subMaxAccelConstraint = 105,
                 intakeSubVelocityConstraint = 75,
-                intakeSubMinAccelConstraint = -65,
-                intakeSubMaxAccelConstraint = 65,
                 setupIntake2ndExtendoAngle = 70,
                 setupIntake3rdExtendoAngle = 80,
                 setupIntake4thExtendoAngle = 90,
@@ -266,8 +264,9 @@ public class Sample0plus8 extends AbstractAuto {
         builder = builder
                 // Retract while moving to Sub from Scoring
                 .afterTime(0.5, RobotActions.autoRetractAfterScoreBasket())
-                .setTangent(Math.toRadians(HEAD.basketAngle))
-                .strafeToLinearHeading(new Vector2d(POS.subX, POS.subY + offsetY), Math.toRadians(0), ((pose2dDual, posePath, v) -> MISC.subVelocityConstraint), new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
+                .setTangent(Math.toRadians(HEAD.lineToSubTangent))
+                .lineToY(POS.midSubY, ((pose2dDual, posePath, v) -> MISC.subVelocityConstraint), new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
+                .splineToSplineHeading(new Pose2d(POS.subX, POS.subY + offsetY, Math.toRadians(0)), Math.toRadians(0), (pose2dDual, posePath, v) -> MISC.intakeSubVelocityConstraint)
                 // Sweeping + Intaking Sub Sample TODO vision + remove hardcoded waits
                 .stopAndAdd(new SequentialAction(
                         autoAlignToSample.detectTarget(TIME.secondsToExpire, false),
@@ -285,7 +284,7 @@ public class Sample0plus8 extends AbstractAuto {
                 .setTangent(Math.toRadians(180))
                 // Score Sub Sample
                 .afterTime(0, RobotActions.retractTransferAndSetupBasket())
-                .splineTo(new Vector2d(POS.midSubX, POS.midSubY), Math.toRadians(247))
+                .splineTo(new Vector2d(POS.midSubX, POS.midSubY), Math.toRadians(HEAD.lineToBasketTangent))
                 .lineToY(POS.yBasketSub, ((pose2dDual, posePath, v) -> MISC.subVelocityConstraint), new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
                 // Transfer & Setup after Intaking Sub Sample while Moving to Basket
                 .stopAndAdd(new SequentialAction(

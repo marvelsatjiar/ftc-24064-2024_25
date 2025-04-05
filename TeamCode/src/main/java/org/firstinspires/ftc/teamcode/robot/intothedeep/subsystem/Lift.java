@@ -50,7 +50,7 @@ public final class Lift {
             HIGH_BASKET_TICKS = 1600,
             WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
-            SPECIMEN_SETUP_TICKS = 1228,
+            SPECIMEN_SETUP_TICKS = 1378,
             LEVEL_TWO_CLIMB_SETUP_TICKS = 2550,
             LEVEL_TWO_CLIMB_TICKS = 1716,
             LEVEL_THREE_CLIMB_SETUP_TICKS = 2550,
@@ -84,7 +84,7 @@ public final class Lift {
         SETUP_SPECIMEN,
         LEVEL_TWO_CLIMB_SETUP,
         LEVEL_TWO_CLIMB,
-        LEVEL_THREE_CLIMB_SETUP,
+        HANG_SETUP,
         LEVEL_THREE_CLIMB,
         CHAMBER_HANG_OVERRIDE,
         EXTENDED;
@@ -98,7 +98,7 @@ public final class Lift {
                 case SETUP_SPECIMEN:            return SPECIMEN_SETUP_TICKS;
                 case LEVEL_TWO_CLIMB_SETUP:     return LEVEL_TWO_CLIMB_SETUP_TICKS;
                 case LEVEL_TWO_CLIMB:           return LEVEL_TWO_CLIMB_TICKS;
-                case LEVEL_THREE_CLIMB_SETUP:   return LEVEL_THREE_CLIMB_SETUP_TICKS;
+                case HANG_SETUP:   return LEVEL_THREE_CLIMB_SETUP_TICKS;
                 case LEVEL_THREE_CLIMB:         return LEVEL_THREE_CLIMB_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;
                 case CHAMBER_HANG_OVERRIDE:     return CHAMBER_HANG_OVERRIDE_TICKS;

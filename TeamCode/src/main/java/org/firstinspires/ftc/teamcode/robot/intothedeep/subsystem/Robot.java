@@ -26,6 +26,7 @@ public final class Robot {
     public final Arm arm;
     public final ActionScheduler actionScheduler;
     public final Sweeper sweeper;
+    public final Hang hang;
 //    public final AutoAligner autoAligner;
     public final LimelightEx limelightEx;
     public final AutoWallPickUp autoWallPickUp;
@@ -37,8 +38,8 @@ public final class Robot {
         TO_BE_TRANSFERRED,
         TRANSFERRED,
         SETUP_SCORE_BASKET,
-        SETUP_LEVEL_TWO_HANG,
-        CLIMB_LEVEL_TWO_HANG,
+        SETUP_HANG,
+        DO_HANG,
         SCORED_BASKET,
         SETUP_DROP_SAMPLE,
         WALL_PICKUP
@@ -70,6 +71,7 @@ public final class Robot {
         lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
         sweeper = new Sweeper(hardwareMap);
+        hang = new Hang(hardwareMap);
 //        autoAligner = new AutoAligner(hardwareMap);
         limelightEx = new LimelightEx(limelight3A, hardwareMap);
         autoWallPickUp = new AutoWallPickUp(limelightEx);
@@ -92,6 +94,7 @@ public final class Robot {
         intake.run(extendo.getTargetAngle());
         lift.run();
         claw.run();
+        hang.run();
         arm.run();
     }
 

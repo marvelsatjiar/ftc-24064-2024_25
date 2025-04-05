@@ -18,22 +18,25 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 194, //215,
+            NEUTRAL_ARM_ANGLE = 214, //215,
             TRANSFERRED_WRIST_ANGLE = 145,
-            COLLECTING_ARM_ANGLE = 208, //240,
+            COLLECTING_ARM_ANGLE = 228, //240,
             COLLECTING_WRIST_ANGLE = 95, //140,
-            BASKET_ARM_ANGLE = 55,
+            BASKET_ARM_ANGLE = 75,
             BASKET_WRIST_ANGLE = 0,
 
-            WALL_PICKUP_ARM_ANGLE = 325,
+            HANG_ARM_ANGLE = 75,
+
+            WALL_PICKUP_ARM_ANGLE = 345,
             WALL_PICKUP_WRIST_ANGLE = 85,
 
-            AUTON_TRANSFER_ARM_ANGLE = 145,
+            AUTON_TRANSFER_ARM_ANGLE = 165,
 
             GRAB_OFF_WALL_WRIST_ANGLE = 190,
 
-            SCORE_SPECIMEN_ARM_ANGLE = 145,
+            SCORE_SPECIMEN_ARM_ANGLE = 165,
             SCORE_SPECIMEN_WRIST_ANGLE = 110,
+            RETRACT_SCORE_SPECIMEN_WRIST_ANGLE = 60,
 
             WALL_PICKUP_ARMSTENDO_ANGLE = 105,
             EXTENDED_ARMSTENDO_ANGLE = 10,
@@ -44,6 +47,7 @@ public final class Arm {
         COLLECTING,
         WALL_PICKUP,
         GRAB_OFF_WALL,
+        RETRACT_SCORE_SPECIMEN,
         SCORE_SPECIMEN,
         TRANSFERRED,
         BASKET;
@@ -54,6 +58,7 @@ public final class Arm {
                 case WALL_PICKUP:                   return WALL_PICKUP_WRIST_ANGLE;
                 case GRAB_OFF_WALL:                 return GRAB_OFF_WALL_WRIST_ANGLE;
                 case SCORE_SPECIMEN:                return SCORE_SPECIMEN_WRIST_ANGLE;
+                case RETRACT_SCORE_SPECIMEN:        return RETRACT_SCORE_SPECIMEN_WRIST_ANGLE;
                 case TRANSFERRED:                   return TRANSFERRED_WRIST_ANGLE;
                 case COLLECTING: default:           return COLLECTING_WRIST_ANGLE;
             }
@@ -63,6 +68,7 @@ public final class Arm {
     public enum ArmAngle {
         NEUTRAL,
         WALL_PICKUP,
+        HANG,
         SCORE_SPECIMEN,
         COLLECTING,
         AUTON_TRANSFER,
@@ -72,6 +78,7 @@ public final class Arm {
             switch (this) {
                 case BASKET:                    return BASKET_ARM_ANGLE;
                 case AUTON_TRANSFER:            return AUTON_TRANSFER_ARM_ANGLE;
+                case HANG:                      return HANG_ARM_ANGLE;
                 case WALL_PICKUP:               return WALL_PICKUP_ARM_ANGLE;
                 case SCORE_SPECIMEN:            return SCORE_SPECIMEN_ARM_ANGLE;
                 case COLLECTING:                return COLLECTING_ARM_ANGLE;

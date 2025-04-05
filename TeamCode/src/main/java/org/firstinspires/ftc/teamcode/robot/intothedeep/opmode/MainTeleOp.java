@@ -7,11 +7,11 @@ import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_LEFT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_RIGHT;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.DPAD_UP;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_BUMPER;
+import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.LEFT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_BUMPER;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.RIGHT_STICK_BUTTON;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.X;
 import static com.arcrobotics.ftclib.gamepad.GamepadKeys.Button.Y;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.IS_RED;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
@@ -29,12 +29,13 @@ import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.R;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
-import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Sweeper;
 
 @TeleOp(group = "24064 Main")
 public final class MainTeleOp extends LinearOpMode {
@@ -48,6 +49,8 @@ public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
 
 @Override
 public void runOpMode() {
+    boolean isSpecimenMode = false;
+
     mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     gamepadEx1 = new GamepadEx(gamepad1);
@@ -111,14 +114,20 @@ public void runOpMode() {
             doExtendoControls();
             doIntakeControls();
 
-            if (keyPressed(2, Y) || keyPressed(1, RIGHT_BUMPER))
+            if (keyPressed(1, RIGHT_STICK_BUTTON) && keyPressed(1, LEFT_STICK_BUTTON))
+                isSpecimenMode = !isSpecimenMode;
+
+            if (keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode)
+                robot.actionScheduler.addAction(RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0));
+
+            if (keyPressed(2, Y) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.setupWallPickup());
             if (keyPressed(2, X))
                 robot.actionScheduler.addAction(RobotActions.transfer());
             if (keyPressed(2, A))
                 robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
             if (keyPressed(2, LEFT_BUMPER))
-                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                robot.actionScheduler.addAction(RobotActions.setupHang());
             break;
         case EXTENDO_OUT:
             doExtendoControls();
@@ -128,7 +137,7 @@ public void runOpMode() {
                 robot.actionScheduler.addAction(RobotActions.transfer());
             if (keyPressed(2, Y))
                 robot.actionScheduler.addAction(RobotActions.retractExtendo());
-            if (keyPressed(2, A))
+            if (keyPressed(2, A) || (keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
             break;
         case TRANSFERRED:
@@ -143,19 +152,21 @@ public void runOpMode() {
             break;
         // BASKET ==========================================================================
         case SETUP_SCORE_BASKET:
-            if (keyPressed(2, X))
+            robot.sweeper.setAngle(Sweeper.SweeperAngles.RETRACTED);
+
+            if (keyPressed(2, X) || (keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.scoreBasket());
 
             if (keyPressed(2, LEFT_BUMPER))
-                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                robot.actionScheduler.addAction(RobotActions.setupHang());
 
             break;
         case SCORED_BASKET:
-            if (keyPressed(2, X))
+            if (keyPressed(2, X) || (keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.retractAfterScoreBasket());
 
             if (keyPressed(2, LEFT_BUMPER))
-                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                robot.actionScheduler.addAction(RobotActions.setupHang());
 
             doExtendoControls();
             doIntakeControls();
@@ -163,31 +174,35 @@ public void runOpMode() {
             break;
         // CHAMBER =========================================================================
         case SETUP_SPECIMEN:
-            if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER))
+            if (keyPressed(2, X) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.scoreSpecimen());
 
             doExtendoControls();
             doIntakeControls();
 
             if (keyPressed(2, LEFT_BUMPER))
-                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                robot.actionScheduler.addAction(RobotActions.setupHang());
             break;
         // WALL PICKUP =====================================================================
         case WALL_PICKUP:
-            if (keyPressed(2, X) || keyPressed(1, RIGHT_BUMPER))
+            robot.sweeper.setAngle(Sweeper.SweeperAngles.RETRACTED);
+
+            if (keyPressed(2, X) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.setupSpecimen());
             if (keyPressed(2, LEFT_BUMPER))
-                robot.actionScheduler.addAction(RobotActions.setupLevelTwoHang());
+                robot.actionScheduler.addAction(RobotActions.setupHang());
             break;
 
         // HANG ============================================================================
-        case SETUP_LEVEL_TWO_HANG:
+        case SETUP_HANG:
+            robot.sweeper.setAngle(Sweeper.SweeperAngles.RETRACTED);
+
+            double trigger = gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
+
+            if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.1)
+                robot.actionScheduler.addAction(RobotActions.setHangServos(trigger));
             if (keyPressed(2, LEFT_BUMPER))
-                robot.actionScheduler.addAction(RobotActions.climbLevelTwoHang());
-            if (keyPressed(2, X))
-                robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
-            break;
-        case CLIMB_LEVEL_TWO_HANG:
+                robot.actionScheduler.addAction(RobotActions.doHang());
             if (keyPressed(2, X))
                 robot.actionScheduler.addAction(RobotActions.retractToNeutral(0.2));
             break;

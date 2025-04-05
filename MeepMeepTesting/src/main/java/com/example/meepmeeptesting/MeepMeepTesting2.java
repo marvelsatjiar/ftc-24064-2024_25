@@ -17,7 +17,7 @@ public class MeepMeepTesting2 {
             xIntakeSample3 = -51,
             yIntakeSample3 = -46,
             midSubX = -40,
-            midSubY = -12,
+            midSubY = -20,
             midBasketX = -27,
             midBasketY = -12,
             subX = -22.5,
@@ -29,10 +29,10 @@ public class MeepMeepTesting2 {
             subMinAccelConstraint = -70,
             subMaxAccelConstraint = 150,
 
-            sample5thOffset = 20,
-            sample6thOffset = 20,
-            sample7thOffset = 20,
-            sample8thOffset = 20,
+            sample5thOffset = 0,
+            sample6thOffset = 3,
+            sample7thOffset = 6,
+            sample8thOffset = 9,
 
 
             intake1stSampleAngle = 68,
@@ -81,8 +81,9 @@ public class MeepMeepTesting2 {
 
     private static TrajectoryActionBuilder scoreSubSamples(TrajectoryActionBuilder builder, double offsetY) {
         builder = builder
-                .setTangent(Math.toRadians(basketAngle))
-                .strafeToLinearHeading(new Vector2d(subX, subY + offsetY), Math.toRadians(0), (pose2dDual, posePath, v) -> subVelocityConstraint, new ProfileAccelConstraint(subMinAccelConstraint, subMaxAccelConstraint))
+                .setTangent(Math.toRadians(68))
+                .lineToY(midSubY, (pose2dDual, posePath, v) -> subVelocityConstraint, new ProfileAccelConstraint(subMinAccelConstraint, subMaxAccelConstraint))
+                .splineToSplineHeading(new Pose2d(subX, subY + offsetY, Math.toRadians(0)), Math.toRadians(0))
                 .setTangent(Math.toRadians(180))
                 .splineTo(new Vector2d(midSubX, midSubY), Math.toRadians(247))
                 .lineToY(yBasketSub);
@@ -99,6 +100,5 @@ public class MeepMeepTesting2 {
         return builder;
 
     }
-
 }
 

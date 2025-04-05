@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.robot;
 
-import android.graphics.RenderNode;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.InstantAction;
@@ -13,7 +11,6 @@ import com.acmerobotics.roadrunner.SleepAction;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
-import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.AutoAlignToSample;
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
@@ -40,6 +37,7 @@ public class RobotActions {
 
     public static class SetupBasket {
         public double
+                setArmstendoExtendedWait = 0.4125,
                 setArmstendoRetractedWait = 0.15,
                 extendLiftToSetupWait = 0.3,
                 setArmWait = 0.2,
@@ -83,7 +81,7 @@ public class RobotActions {
         public double
                 extendLiftForClimbWait = 1,
                 setArmNeutralWait = 1,
-                retractLiftToClimbWait = 3;
+                retractLiftWait = 3;
     }
 
     public static class SetupWallPickup {
@@ -202,10 +200,8 @@ public class RobotActions {
                         setArmstendo(Arm.Extension.RETRACTED, SETUP_BASKET.setArmstendoRetractedWait),
                         setArm(Arm.ArmAngle.BASKET, SETUP_BASKET.setArmWait),
                         setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
-                        new ParallelAction(
-                            setWrist(Arm.WristAngle.BASKET, 0),
-                            setArmstendo(Arm.Extension.EXTENDED,0)
-                        ),
+                        setArmstendo(Arm.Extension.EXTENDED,SETUP_BASKET.setArmstendoExtendedWait),
+                        setWrist(Arm.WristAngle.BASKET, 0),
                         setV4B(Intake.V4BAngle.UP, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
                 )
@@ -219,10 +215,8 @@ public class RobotActions {
                         setArm(Arm.ArmAngle.BASKET, SETUP_BASKET.setArmWait),
                         setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, SETUP_BASKET.setClawWait),
                         setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
-                        new ParallelAction(
-                                setWrist(Arm.WristAngle.BASKET, 0),
-                                setArmstendo(Arm.Extension.EXTENDED,0)
-                        ),
+                        setArmstendo(Arm.Extension.EXTENDED,SETUP_BASKET.setArmstendoExtendedWait),
+                        setWrist(Arm.WristAngle.BASKET, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
                 )
         );
@@ -310,7 +304,10 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.NEUTRAL,
                 new SequentialAction(
-                        setClaw(Claw.ClawAngles.DEPOSIT, SCORE_SPECIMEN.unclampClawWait),
+                        new ParallelAction(
+                                setClaw(Claw.ClawAngles.DEPOSIT, SCORE_SPECIMEN.unclampClawWait),
+                                setWrist(Arm.WristAngle.RETRACT_SCORE_SPECIMEN, 0)
+                        ),
                         retractAfterScore()
                 )
         );
@@ -343,26 +340,27 @@ public class RobotActions {
     }
 
     // DONE
-    public static Action setupLevelTwoHang() {
+    public static Action setupHang() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.SETUP_LEVEL_TWO_HANG,
+                () -> robot.currentState != Robot.State.SETUP_HANG,
                 new SequentialAction(
                         new ParallelAction(
-                                setLift(Lift.Ticks.LEVEL_TWO_CLIMB_SETUP, LEVEL_TWO_HANG.extendLiftForClimbWait),
-                                setArm(Arm.ArmAngle.NEUTRAL, LEVEL_TWO_HANG.setArmNeutralWait)
+                                setLift(Lift.Ticks.HANG_SETUP, LEVEL_TWO_HANG.extendLiftForClimbWait),
+                                setArm(Arm.ArmAngle.HANG, LEVEL_TWO_HANG.setArmNeutralWait)
                         ),
-                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_LEVEL_TWO_HANG)
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_HANG)
                 )
         );
     }
 
     // DONE
-    public static Action climbLevelTwoHang() {
+    public static Action doHang() {
         return new Actions.SingleCheckAction(
-                () -> robot.currentState != Robot.State.CLIMB_LEVEL_TWO_HANG,
+                () -> robot.currentState != Robot.State.DO_HANG,
                 new SequentialAction(
-                        setLift(Lift.Ticks.LEVEL_TWO_CLIMB, LEVEL_TWO_HANG.retractLiftToClimbWait),
-                        new InstantAction(() -> robot.currentState = Robot.State.CLIMB_LEVEL_TWO_HANG)
+                        setLift(Lift.Ticks.RETRACTED, LEVEL_TWO_HANG.retractLiftWait),
+                        setArmstendo(Arm.Extension.RETRACTED, 0),
+                        new InstantAction(() -> robot.currentState = Robot.State.DO_HANG)
                 )
         );
     }
@@ -534,6 +532,10 @@ public class RobotActions {
                 new InstantAction(() -> robot.intake.setRollerPower(power, true)),
                 new SleepAction(sleepSeconds)
         );
+    }
+
+    public static Action setHangServos(double power) {
+        return new InstantAction(() -> robot.hang.setPower(power));
     }
 }
 
