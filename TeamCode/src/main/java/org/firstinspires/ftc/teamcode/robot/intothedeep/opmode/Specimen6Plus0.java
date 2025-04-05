@@ -46,36 +46,26 @@ public class Specimen6Plus0 extends AbstractAuto {
     public static class GiveSamples {
         public double
                 // Position
-                intermediaryX = 22,
-                intermediaryY = -39,
+                intermediaryX = 34,
+                intermediaryY = -33,
 
                 intakeSampleX = 52,
                 intakeSampleY = -41.5,
 
                 outtakeSampleX = 52,
                 outtakeSampleY = -41.5,
+                sample1X = 47,
+                sample1Y = -16,
+                sample2X = 55,
+                sample2Y = -14,
+                sample3X = 63,
+                sample3Y = -14,
+                giveSampleY = -46,
 
                 // Constraints
-                outtakeSampleVelocityConstraint = 120,
-                outtakeSampleMinAccelConstraint = -95,
-                outtakeSampleMaxAccelConstraint = 110,
-
-                // Headings
-                tangentBeforeFirstSample = 0,
-                tangentForIntermediaryPosition = 0,
-
-                intakeFirstSampleHeading = 91,
-                intakeSecondSampleHeading = 65,
-                intakeThirdSampleHeading = 46,
-                outtakeFirstSampleHeading = -70,
-                outtakeSecondSampleHeading = -70,
-                outtakeThirdSampleHeading = -70,
-                intakeFirstExtendoAngle = 80,
-                intakeSecondExtendoAngle = 72,
-                intakeThirdExtendoAngle = 130,
-                outtakeExtendoAngleFirst = 20,
-                outtakeExtendoAngleSecond = 50,
-                outtakeExtendoAngleThird = 50,
+                giveSampleVelocityConstraint = 160,
+                giveSampleMinAccelConstraint = -152.5,
+                giveSampleMaxAccelConstraint = 150,
 
                 // Timings
                 sleepBeforeInterleaveSample = 0.5,
@@ -290,7 +280,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         return builder;
     }
 
-    private TrajectoryActionBuilder scoreAllSpecimens(TrajectoryActionBuilder builder) {
+    private TrajectoryActionBuilder     scoreAllSpecimens(TrajectoryActionBuilder builder) {
 
         builder = builder
                 .setTangent(Math.toRadians(270))
@@ -312,66 +302,18 @@ public class Specimen6Plus0 extends AbstractAuto {
 
     private TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
-                .setTangent(Math.toRadians(-45))
-                .splineToSplineHeading(new Pose2d(G_S.intermediaryX, G_S.intermediaryY, Math.toRadians(90)), Math.toRadians(G_S.tangentForIntermediaryPosition))
-
-                // Intaking 1st
-                .afterTime(G_S.firstIntakeDelay, new ParallelAction(
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                        RobotActions.setExtendo(G_S.intakeFirstExtendoAngle, 0),
-                        RobotActions.setRollers(G_S.intakeRollerPower, 0)
-                ))
-                .setTangent(Math.toRadians(G_S.tangentBeforeFirstSample))
-                .splineToSplineHeading(new Pose2d(G_S.intakeSampleX, G_S.intakeSampleY, Math.toRadians(G_S.intakeFirstSampleHeading)), Math.toRadians(0))
-                .waitSeconds(G_S.firstSleepBeforeTurning)
-
-                // Outtaking 1st
-                .afterTime(0, RobotActions.setExtendo(G_S.outtakeExtendoAngleFirst, 0))
-                .afterTime(G_S.outtakeFirstSampleDelay, new SequentialAction(
-                        RobotActions.setRollers(G_S.outtakeRollerPower, G_S.sleepBeforeV4B),
-                        RobotActions.setV4B(Intake.V4BAngle.UP, 0)
-                ))
-                .strafeToLinearHeading(new Vector2d(G_S.outtakeSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeFirstSampleHeading), (pose2dDual, posePath, v) -> G_S.outtakeSampleVelocityConstraint, new ProfileAccelConstraint(G_S.outtakeSampleMinAccelConstraint, G_S.outtakeSampleMaxAccelConstraint))
-
-               // Intaking 2nd
-                .afterTime(G_S.secondIntakeDelay, new ParallelAction(
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                        RobotActions.setExtendo(G_S.intakeSecondExtendoAngle, 0),
-                        RobotActions.setRollers(G_S.intakeRollerPower, 0)
-                ))
-                .strafeToLinearHeading(new Vector2d(G_S.intakeSampleX, G_S.intakeSampleY), Math.toRadians(G_S.intakeSecondSampleHeading))
-                .waitSeconds(G_S.secondSleepBeforeTurning)
-
-                // Outtaking 2nd
-                .afterTime(0, RobotActions.setExtendo(G_S.outtakeExtendoAngleSecond, 0))
-                .afterTime(G_S.outtakeSecondSampleDelay, new SequentialAction(
-                        RobotActions.setRollers(G_S.outtakeRollerPower, G_S.sleepBeforeV4B),
-                        RobotActions.setV4B(Intake.V4BAngle.UP, 0)
-                ))
-
-                .strafeToLinearHeading(new Vector2d(G_S.outtakeSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeSecondSampleHeading), (pose2dDual, posePath, v) -> G_S.outtakeSampleVelocityConstraint, new ProfileAccelConstraint(G_S.outtakeSampleMinAccelConstraint, G_S.outtakeSampleMaxAccelConstraint))
-
-                //Intaking 3rd
-                .afterTime(G_S.thirdIntakeDelay, new ParallelAction(
-                        RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
-                        RobotActions.setExtendo(G_S.intakeThirdExtendoAngle, 0),
-                        RobotActions.setRollers(G_S.intakeRollerPower, 0)
-                ))
-                .strafeToLinearHeading(new Vector2d(G_S.intakeSampleX, G_S.intakeSampleY), Math.toRadians(G_S.intakeThirdSampleHeading))
-                .waitSeconds(G_S.thirdSleepBeforeTurning)
-                //Outtaking 3rd
-                .afterTime(0, RobotActions.setExtendo(G_S.outtakeExtendoAngleThird, 0))
-                .afterTime(G_S.outtakeThirdSampleDelay, new SequentialAction(
-                        RobotActions.setRollers(G_S.outtakeRollerPower, G_S.thirdSleepBeforeV4B),
-                        RobotActions.setV4B(Intake.V4BAngle.UP, 0)
-                ))
-                .strafeToLinearHeading(new Vector2d(G_S.outtakeSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeThirdSampleHeading), (pose2dDual, posePath, v) -> G_S.outtakeSampleVelocityConstraint, new ProfileAccelConstraint(G_S.outtakeSampleMinAccelConstraint, G_S.outtakeSampleMaxAccelConstraint))
-                .afterTime(0, new ParallelAction(
-                        RobotActions.setExtendo(Extendo.Extension.RETRACTED, 0),
-                        RobotActions.setupWallPickup(),
-                        new SleepAction(G_S.stopRollerDelay),
-                        RobotActions.setRollers(0,0)
-                ));
+                .setTangent(Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(90), (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .splineToConstantHeading(new Vector2d(G_S.sample1X, G_S.sample1Y), Math.toRadians(270), (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(G_S.sample2X, G_S.sample2Y, Math.toRadians(90)), Math.toRadians(45),(pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .setTangent(Math.toRadians(270))
+                .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(G_S.sample3X, G_S.sample3Y, Math.toRadians(90)), Math.toRadians(45), (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .setTangent(Math.toRadians(270))
+                .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint));
 
         return builder;
     }

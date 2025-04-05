@@ -1,6 +1,8 @@
 package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.noahbres.meepmeep.MeepMeep;
@@ -15,76 +17,126 @@ public class MeepMeepTesting {
 
 
 
+    public static class GiveSamples {
+        public double
+                // Position
+                intermediaryX = 22,
+                intermediaryY = -39,
+
+                intakeSampleX = 52,
+                intakeSampleY = -41.5,
+
+                outtakeSampleX = 52,
+                outtakeSampleY = -41.5,
+
+                // Constraints
+                outtakeSampleVelocityConstraint = 120,
+                outtakeSampleMinAccelConstraint = -95,
+                outtakeSampleMaxAccelConstraint = 110,
+
+                // Headings
+                tangentBeforeFirstSample = 0,
+                tangentForIntermediaryPosition = 0,
+
+                intakeFirstSampleHeading = 91,
+                intakeSecondSampleHeading = 65,
+                intakeThirdSampleHeading = 46,
+                outtakeFirstSampleHeading = -70,
+                outtakeSecondSampleHeading = -70,
+                outtakeThirdSampleHeading = -70,
+                intakeFirstExtendoAngle = 80,
+                intakeSecondExtendoAngle = 72,
+                intakeThirdExtendoAngle = 130,
+                outtakeExtendoAngleFirst = 20,
+                outtakeExtendoAngleSecond = 50,
+                outtakeExtendoAngleThird = 50,
+
+                // Timings
+                sleepBeforeInterleaveSample = 0.5,
+                firstIntakeDelay = 0.7,
+                secondIntakeDelay = 0.7,
+                thirdIntakeDelay = 0.5,
+                firstSleepBeforeTurning = 0,
+                secondSleepBeforeTurning = 0.5,
+                thirdSleepBeforeTurning = 0.5,
+                outtakeFirstSampleDelay = 0.7,
+                outtakeSecondSampleDelay = 0.5,
+                outtakeThirdSampleDelay = 0.4,
+                sleepBeforeV4B = 0.3,
+                thirdSleepBeforeV4B = 1,
+                stopRollerDelay = 0.7,
+
+                 // Roller Power
+                intakeRollerPower = 1,
+                outtakeRollerPower = -1;
+    }
+    public static class ScoreSpecimens {
+        public double
+                // Positions
+                subSampleX = 5,
+                scoreSpecimenY = -27.5,
+
+            wallPickupX = 33.5,
+                secondWallPickupX = 63,
+                intakeSpecimenY = -56.5,
+                intakeSecondSpecimenY = -47,
+                intakeSecondBumpSpecimenY = -64.5,
+                specimen2ndOffsetX = -20,
+                specimen3rdOffsetX = -18,
+                specimen4thOffsetX = -16,
+                specimen5thOffsetX = -14,
+                specimen6thOffsetX = -13,
+                specimen7thOffsetX = -11,
+                secondSpecimenOffsetY = 7,
+                thirdSpecimenOffsetY = 7,
+                fourthSpecimenOffsetY = 7,
+                fifthSpecimenOffsetY = 7,
+                sixthSpecimenOffsetY = 7,
+                seventhSpecimenOffsetY = 7,
+
+                // Headings
+                scoringAngle = 105,
+
+                // Timings
+                waitUntilExtendoRetracted = 0.4,
+                retractAfterIntakeSub = 0,
+                secondsToExpire = 1.5,
+                timeBeforeWallPickup = 1,
+                timeBeforeWrist = 0.2,
+                timeBeforeMoving = 0.1,
+                lastFourSleepBeforeGrab = 0,
+                secondSleepBeforeSetup = 0.1,
+                sleepSecondsBeforeUnclampFirst = 1.4,
+                sleepSecondsBeforeUnclampSecond = 2,
+                sleepSecondsBeforeUnclampThird = 1.5,
+                sleepSecondsBeforeUnclampFourth = 1.5,
+                sleepSecondsBeforeUnclampFifth = 1.5,
+                sleepSecondsBeforeUnclampSixth = 1.3,
+                sleepSecondsBeforeUnclampSeventh = 1.5,
+                timeBeforeInterleave = 0.3,
+                v4bWait = 0.5,
+                sleepBeforeTransfer = 1,
+
+
+                //Constraints
+                giveSampleVelocityConstraint = 120,
+                scoreFirstSpecimenVelocityConstraint = 160,
+                maxFirstProfileAccel = -150,
+                minFirstProfileAccel = 150,
+                wallPickUpVelocityConstraint = 60,
+                scoreSpecimenVelocityConstraint = 160,
+                minScoreProfileAccel = -140,
+                maxScoreProfileAccel = 150;
+    }
+    public static GiveSamples G_S = new GiveSamples();
+    public static ScoreSpecimens S_S = new ScoreSpecimens();
     public static double
-            parkVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -60,
-            scoreSpecimenY = -37.5,
-            intermediaryX = 22,
-            intermediaryY = -39,
-            waitBeforeOuttakeSample = 0.4,
-            waitToExtendTo2ndSample = 0.4,
-            setBackWallPickupWait = 0.8,
-            outtakeSampleDelay = 0.3,
-            intakeSampleDelay = 0.5,
-            getSampleX = 37.5,
-            firstSampleX = 46,
-            secondSampleX = 45,
-            thirdSampleX = 45,
-            giveFirstSampleX = 41,
-            giveSecondSampleX = 44,
-            giveThirdSampleX = 46,
-            intakeSampleY = -40,
-            outtakeSampleY = -44,
-            outtakeSampleHeading = 330,
-            intakeSampleHeading = 45,
             parkX = 23,
             parkY = -44.6,
-            extendSleep = 0.2,
-            secondSpecimenOffsetY = 11,
-            thirdSpecimenOffsetY = 11,
-            fourthSpecimenOffsetY = 1,
-            fifthSpecimenOffsetY = 11,
-            sixthSpecimenOffsetY = 11,
-            seventhSpecimenOffsetY = 11,
-            secondSpecimenOffsetX = -11,
-            thirdSpecimenOffsetX = -9,
-            fourthSpecimenOffsetX = -16,
-            fifthSpecimenOffsetX = -1,
-            sixthSpecimenOffsetX = -6,
-            seventhSpecimenOffsetX = -8,
-            sleepSecondsBeforeSetupSecond = 0.8,
-            sleepSecondsBeforeSetupThird = 0.6,
-            sleepSecondsBeforeSetupFourth = 0.7,
-            sleepSecondsBeforeSetupFifth = 0.8,
-            sleepSecondsBeforeSetupSixth = 0.9,
-            sleepSecondsBeforeSetupSeventh = 0.95,
-            bumpSpecimen = -62.5,
-            bumpSecondSpecimen = -62,
-            pickupSecondSpecimenX = 40,
-            intakeSpecimenY = -62.5,
-            wallPickupX = 45.5,
-            startBumpToClampTime = 0.4,
-            intakeSpecimenVelocityConstraint = 90,
-            scoreSpecimenVelocityConstraint = 140,
-            scoreFirstSpecimenVelocityConstraint = 140,
-            maxProfileAccel = 60,
-            minScoreProfileAccel = -50,
-            maxScoreProfileAccel = 60,
-            minFirstProfileAccel = -45,
-            subSampleX = 5,
-            scoreToRetractWait = 0.3,
-            sleepSecondsBeforeLimelightActivation = 0.5,
-            sleepSecondsBeforeSubDetection = 0.8,
-            sleepSecondsBeforeUnclampFirst = 1.2,
-            sleepSecondsBeforeUnclampSecond = 2,
-            sleepSecondsBeforeUnclampThird = 2,
-            sleepSecondsBeforeUnclampFourth = 2,
-            sleepSecondsBeforeUnclampFifth = 2,
-            sleepSecondsBeforeUnclampSixth = 2,
-            sleepSecondsBeforeUnclampSeventh = 2,
-            secondSpecimenSleepBeforeSetup = 0.5,
-            bumpSpecimenVelConstraint = 20;
+            extendSleep = 0.2;
+
 //
 
 //    private static final VelConstraint giveSampleVelConstraint = (robotPose, path, disp) -> {
@@ -106,11 +158,11 @@ public class MeepMeepTesting {
                 .build();
 
         Pose2d startPose;
-        startPose = new Pose2d(startingPositionX,startingPositionY, Math.toRadians(90));
+        startPose = new Pose2d(startingPositionX, startingPositionY, Math.toRadians(90));
 
         TrajectoryActionBuilder builder = drive.getDrive().actionBuilder(startPose);
         builder = scoreFirstSpecimen(builder);
-        builder = scoreSixthAndSeventhSpecimen(builder);
+//        builder = scoreSixthAndSeventhSpecimen(builder);
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
 //        builder = park(builder);
@@ -137,21 +189,13 @@ public class MeepMeepTesting {
 //        return builder;
 //    }
 
-    private static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark, double sleepSecondsBeforeSetup, double sleepSecondsBeforeUnclamp) {
+    private static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark, double sleepSecondsBeforeUnclamp) {
         // Scoring
         builder = builder
                 .setTangent(90)
-                .strafeToLinearHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(100))//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
+                .strafeToLinearHeading(new Vector2d(10 + offsetX, S_S.scoreSpecimenY + offsetY), Math.toRadians(100), (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))
                 .setTangent(Math.toRadians(315))
-                .splineToLinearHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270));
-
-
-        // Setting up for the next cycle
-        if (!doPark) {
-            builder = builder
-//                    .afterTime(startBumpToClampTime, RobotActions.setupSpecimen())
-                    .lineToY(bumpSpecimen); // ((pose2dDual, posePath, v) -> bumpSpecimenVelConstraint)
-        }
+                .splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150));
 
         return builder;
     }
@@ -160,54 +204,59 @@ public class MeepMeepTesting {
 
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .strafeToLinearHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(S_S.secondWallPickupX, S_S.intakeSecondSpecimenY), Math.toRadians(90))
+                .setTangent(Math.toRadians(270))
+                .lineToY(S_S.intakeSecondBumpSpecimenY);
 
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond);
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, thirdSpecimenOffsetY, false, sleepSecondsBeforeSetupThird, sleepSecondsBeforeUnclampThird);
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, false, sleepSecondsBeforeSetupFourth, sleepSecondsBeforeUnclampFourth);
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fifthSpecimenOffsetY, !isSixPlusZero, sleepSecondsBeforeSetupFifth, sleepSecondsBeforeUnclampFifth);
+        builder = scoreSpecimen(builder, S_S.specimen2ndOffsetX, S_S.secondSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampSecond);
+        builder = scoreSpecimen(builder, S_S.specimen3rdOffsetX, S_S.thirdSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampThird);
+        builder = scoreSpecimen(builder, S_S.specimen4thOffsetX, S_S.fourthSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampFourth);
+        builder = scoreSpecimen(builder, S_S.specimen5thOffsetX, S_S.fifthSpecimenOffsetY, true, S_S.sleepSecondsBeforeUnclampFifth);
 
-        if (isSixPlusZero) builder = scoreSpecimen(builder, fourthSpecimenOffsetX, sixthSpecimenOffsetY, true, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
+        if (isSixPlusZero) builder = scoreSpecimen(builder, S_S.specimen4thOffsetX, S_S.sixthSpecimenOffsetY, true, S_S.sleepSecondsBeforeUnclampFifth);
 
         return builder;
     }
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
+        boolean do3rdSample = is5plus0 || !usePartnerSpec;
         builder = builder
-
-                .splineToSplineHeading(new Pose2d(intermediaryX, intermediaryY, Math.toRadians(90)), Math.toRadians(0))
-
-                .splineToSplineHeading(new Pose2d(firstSampleX, intakeSampleY, Math.toRadians(intakeSampleHeading)), Math.toRadians(0))
-
-                .strafeToLinearHeading(new Vector2d(41, intakeSampleY), Math.toRadians(outtakeSampleHeading))
-                .strafeToLinearHeading(new Vector2d(42, intakeSampleY), Math.toRadians(intakeSampleHeading))
-
-                .strafeToLinearHeading(new Vector2d(43, intakeSampleY), Math.toRadians(outtakeSampleHeading))
-
-                .strafeToLinearHeading(new Vector2d(44, intakeSampleY), Math.toRadians(intakeSampleHeading))
-
-                .strafeToLinearHeading(new Vector2d(giveThirdSampleX, intakeSampleY), Math.toRadians(outtakeSampleHeading));
+                .setTangent(Math.toRadians(270))
+                .splineToConstantHeading(new Vector2d(34,-33), Math.toRadians(90), (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))
+                .splineToConstantHeading(new Vector2d(47, -16), Math.toRadians(270), (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))
+                .lineToY(-46, (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(55, -14, Math.toRadians(90)), Math.toRadians(45),(pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))
+                .setTangent(Math.toRadians(270))
+                .lineToY(-46, (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(63, -14, Math.toRadians(90)), Math.toRadians(45), (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))
+                .setTangent(Math.toRadians(270))
+                .lineToY(-46, (pose2dDual, posePath, v) -> 160, new ProfileAccelConstraint(-150, 150))         ;
 
         return builder;
     }
+
+
+
 
     private static TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .strafeToConstantHeading(new Vector2d(subSampleX, scoreSpecimenY));//, (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
+                .strafeToConstantHeading(new Vector2d(S_S.subSampleX, S_S.scoreSpecimenY));//, (pose2dDual, posePath, v) -> scoreFirstSpecimenVelocityConstraint, new ProfileAccelConstraint(minFirstProfileAccel, maxProfileAccel));
 
         return builder;
     }
 
-    private static TrajectoryActionBuilder scoreSixthAndSeventhSpecimen(TrajectoryActionBuilder builder) {
-        builder = builder
-                .strafeToLinearHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(90))
-                .lineToY(intakeSpecimenY);
-
-        builder = scoreSpecimen(builder, sixthSpecimenOffsetX, sixthSpecimenOffsetY, false, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
-
-        builder = builder
-                .setTangent(90)
-                .strafeToLinearHeading(new Vector2d(10 + seventhSpecimenOffsetX, scoreSpecimenY + seventhSpecimenOffsetY), Math.toRadians(100)); //, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
-        return builder;
-    }
+//    private static TrajectoryActionBuilder scoreSixthAndSeventhSpecimen(TrajectoryActionBuilder builder) {
+//        builder = builder
+//                .strafeToLinearHeading(new Vector2d(wallPickupX, intakeSpecimenY), Math.toRadians(90))
+//                .lineToY(intakeSpecimenY);
+//
+//        builder = scoreSpecimen(builder, sixthSpecimenOffsetX, sixthSpecimenOffsetY, false, sleepSecondsBeforeSetupSixth, sleepSecondsBeforeUnclampSixth);
+//
+//        builder = builder
+//                .setTangent(90)
+//                .strafeToLinearHeading(new Vector2d(10 + seventhSpecimenOffsetX, scoreSpecimenY + seventhSpecimenOffsetY), Math.toRadians(100)); //, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
+//        return builder;
+//    }
 
 }
