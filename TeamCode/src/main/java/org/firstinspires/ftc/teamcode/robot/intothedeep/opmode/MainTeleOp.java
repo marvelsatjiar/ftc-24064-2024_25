@@ -50,6 +50,7 @@ public static boolean keyPressed(int gamepad, GamepadKeys.Button button) {
 @Override
 public void runOpMode() {
     boolean isSpecimenMode = false;
+    boolean isHangControlInversed = false;
 
     mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
@@ -81,9 +82,9 @@ public void runOpMode() {
             x = 0;
         }
 
-        double slowMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
+        double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
 
-        double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) || gamepadEx2.isDown(RIGHT_BUMPER) ? 0.3 : 1;
+        double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
 
         if (robot.extendo.getTargetExtension() != Extendo.Extension.RETRACTED) {
             slowMult = 0.3;
@@ -103,7 +104,7 @@ public void runOpMode() {
 
     if (keyPressed(1, B)) robot.drivetrain.setCurrentHeading(Math.PI);
 
-    if (gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) >= 0.5) {
+    if (keyPressed(2, RIGHT_BUMPER)) {
         robot.lift.runManual(gamepadEx2.getLeftY() * 0.2);
         robot.lift.reset();
     } else robot.lift.runManual((0));
@@ -195,13 +196,19 @@ public void runOpMode() {
 
         // HANG ============================================================================
         case SETUP_HANG:
+
             robot.sweeper.setAngle(Sweeper.SweeperAngles.RETRACTED);
+
+            if (keyPressed(2, A)) isHangControlInversed = !isHangControlInversed;
 
             double trigger1 = gamepadEx2.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER);
             double trigger2 = gamepadEx2.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
             if (trigger1 >= 0.1 || trigger2 >= 0.1)
-                robot.hang.setPower(trigger1, trigger2);
+                robot.hang.setPower(isHangControlInversed ? -trigger2 : trigger2, isHangControlInversed ? -trigger1 : trigger1);
+            else
+                robot.hang.setPower(0, 0);
+
             if (keyPressed(2, LEFT_BUMPER))
                 robot.actionScheduler.addAction(RobotActions.doHang());
             if (keyPressed(2, X))

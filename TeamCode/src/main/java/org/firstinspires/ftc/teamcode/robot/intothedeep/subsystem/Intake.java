@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
 public final class Intake {
+    public static ColorRangefinderEx.Modes selectedMode = ColorRangefinderEx.Modes.DIGITAL;
+
     private final ServoEx[] intakeLinkGroup;
 
     private final MotorEx intake;
@@ -30,9 +32,10 @@ public final class Intake {
     public final ElapsedTime targetSampleTimer = new ElapsedTime();
 
     public static double
-            V4B_MIN_DOWN_ANGLE = 36,
-            V4B_MAX_DOWN_ANGLE = 40,
+            V4B_MIN_DOWN_ANGLE = 44,
+            V4B_MAX_DOWN_ANGLE = 54,
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
+            V4B_VERTICAL_ANGLE = 158,
             V4B_CLEARING_ANGLE = 85,
             V4B_UP_ANGLE = 85,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
@@ -46,6 +49,7 @@ public final class Intake {
     public enum V4BAngle {
         DOWN,
         CLEARING,
+        VERTICAL,
         UP,
         UNSAFE,
         TRANSFER,
@@ -54,6 +58,7 @@ public final class Intake {
         private double getAngle() {
             switch (this) {
                 case DOWN: return V4B_DOWN_ANGLE;
+                case VERTICAL: return V4B_VERTICAL_ANGLE;
                 case CLEARING: return V4B_CLEARING_ANGLE;
                 case UNSAFE: return V4B_UNSAFE_THRESHOLD_ANGLE;
                 case TRANSFER: return V4B_TRANSFER_ANGLE;
@@ -80,7 +85,7 @@ public final class Intake {
 
         intakeGearMaster.setInverted(true);
 
-        rangefinder = new ColorRangefinderEx(hardwareMap);
+        rangefinder = new ColorRangefinderEx(hardwareMap, ColorRangefinderEx.Modes.DIGITAL);
 
         intakeLinkGroup = new ServoEx[] {intakeGearFollower, intakeGearMaster};
     }
@@ -162,6 +167,7 @@ public final class Intake {
     public void printTelemetry() {
         mTelemetry.addData("Sample Color", getCurrentSample());
         mTelemetry.addData("V4B State", targetAngle.name());
+        if (selectedMode == ColorRangefinderEx.Modes.ANALOG) mTelemetry.addData("raw reading", rangefinder.getAnalogHue());
 //        mTelemetry.addData("Raw Color", getRawColor());
     }
 

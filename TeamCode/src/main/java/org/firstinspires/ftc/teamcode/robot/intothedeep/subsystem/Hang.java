@@ -16,9 +16,7 @@ public final class Hang {
         hangMaster = hardwareMap.get(CRServo.class, "hang master");
         hangFollower = hardwareMap.get(CRServo.class, "hang follower");
 
-        hangMaster.setDirection(DcMotorSimple.Direction.REVERSE);
         hangFollower.setDirection(DcMotorSimple.Direction.REVERSE);
-
     }
 
     public void setPower(double power1, double power2) {

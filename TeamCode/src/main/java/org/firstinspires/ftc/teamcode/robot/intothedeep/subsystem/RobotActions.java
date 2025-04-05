@@ -346,7 +346,10 @@ public class RobotActions {
                 new SequentialAction(
                         new ParallelAction(
                                 setLift(Lift.Ticks.HANG_SETUP, LEVEL_TWO_HANG.extendLiftForClimbWait),
-                                setArm(Arm.ArmAngle.HANG, LEVEL_TWO_HANG.setArmNeutralWait)
+                                setWrist(Arm.WristAngle.RETRACT_SCORE_SPECIMEN, 0),
+                                setArmstendo(Arm.Extension.RETRACTED, 0),
+                                setV4B(Intake.V4BAngle.VERTICAL, 0),
+                                setArm(Arm.ArmAngle.HANG, 0)
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_HANG)
                 )
@@ -358,8 +361,7 @@ public class RobotActions {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.DO_HANG,
                 new SequentialAction(
-                        setLift(Lift.Ticks.RETRACTED, LEVEL_TWO_HANG.retractLiftWait),
-                        setArmstendo(Arm.Extension.RETRACTED, 0),
+                        setLift(Lift.Ticks.HANG, LEVEL_TWO_HANG.retractLiftWait),
                         new InstantAction(() -> robot.currentState = Robot.State.DO_HANG)
                 )
         );

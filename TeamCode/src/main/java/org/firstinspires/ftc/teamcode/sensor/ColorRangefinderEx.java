@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sensor;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -8,9 +9,11 @@ import java.util.ArrayList;
 
 @Config
 public class ColorRangefinderEx {
-    public final DigitalChannel
+    public DigitalChannel
             pin0,
             pin1;
+
+    public AnalogInput analogPin0;
 
     public enum SampleColor {
         YELLOW,
@@ -22,12 +25,20 @@ public class ColorRangefinderEx {
     public enum Modes {
         ANALOG,
         DIGITAL
+
     }
 
     private SampleColor rawReading = SampleColor.NOTHING;
+    private Modes currentMode;
 
-    public ColorRangefinderEx(HardwareMap hardwareMap) {
-        pin0 = hardwareMap.digitalChannel.get("digital0");
+    public ColorRangefinderEx(HardwareMap hardwareMap, Modes mode) {
+        currentMode = mode;
+
+        if (currentMode == Modes.DIGITAL) {
+            pin0 = hardwareMap.digitalChannel.get("digital0");
+        } else {
+            analogPin0 = hardwareMap.analogInput.get("digital0");
+        }
         pin1 = hardwareMap.digitalChannel.get("digital1");
 
     }
@@ -44,11 +55,16 @@ public class ColorRangefinderEx {
         return SampleColor.NOTHING;
     }
 
+    public double getAnalogHue() {
+        return analogPin0.getVoltage() / 3.3 * 360;
+    }
+
     public SampleColor getRawReading() {
         return rawReading;
     }
     public SampleColor run() {
-        rawReading = convertToEnum();
+        if (currentMode == Modes.DIGITAL) rawReading = convertToEnum();
+        else rawReading = SampleColor.NOTHING;
         return rawReading;
     }
 }
