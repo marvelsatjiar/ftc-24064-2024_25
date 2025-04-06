@@ -115,7 +115,7 @@ public void runOpMode() {
             doExtendoControls();
             doIntakeControls();
 
-            if (keyPressed(1, RIGHT_STICK_BUTTON) && keyPressed(1, LEFT_STICK_BUTTON))
+            if (keyPressed(1, X))
                 isSpecimenMode = !isSpecimenMode;
 
             if (keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode)

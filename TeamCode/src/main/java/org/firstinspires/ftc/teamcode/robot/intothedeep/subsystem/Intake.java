@@ -37,7 +37,7 @@ public final class Intake {
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
             V4B_VERTICAL_ANGLE = 158,
             V4B_CLEARING_ANGLE = 85,
-            V4B_UP_ANGLE = 85,
+            V4B_UP_ANGLE = 100,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
             V4B_TRANSFER_ANGLE = 55,
             V4B_HOVERING_ANGLE = 45;
