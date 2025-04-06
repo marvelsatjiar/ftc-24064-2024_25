@@ -32,12 +32,12 @@ public final class Intake {
     public final ElapsedTime targetSampleTimer = new ElapsedTime();
 
     public static double
-            V4B_MIN_DOWN_ANGLE = 44,
-            V4B_MAX_DOWN_ANGLE = 54,
+            V4B_MIN_DOWN_ANGLE = 38,
+            V4B_MAX_DOWN_ANGLE = 47,
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
-            V4B_VERTICAL_ANGLE = 158,
+            V4B_VERTICAL_ANGLE = 130,
             V4B_CLEARING_ANGLE = 85,
-            V4B_UP_ANGLE = 100,
+            V4B_UP_ANGLE = 85,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
             V4B_TRANSFER_ANGLE = 55,
             V4B_HOVERING_ANGLE = 45;

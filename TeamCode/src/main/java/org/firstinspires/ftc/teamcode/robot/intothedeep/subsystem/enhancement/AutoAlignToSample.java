@@ -33,9 +33,9 @@ public class AutoAlignToSample {
     public ColorRangefinderEx.SampleColor targetColor;
 
     public static double
-            xOffset = 4,
+            xOffset = 5,
             yOffset = 2,
-            sampleOffset = 2.5,
+            sampleOffset = 8.5,
             limelightTilt = 35,
             limelightHeight = 11;
 
@@ -48,7 +48,10 @@ public class AutoAlignToSample {
     public static class AutoAlign {
         public double
                 sleepSecondsBeforeV4bUp = 0.4,
-                sleepSecondsBeforeV4bDown = 0.125,
+                sleepSecondsBeforeV4bDown = 0.2,
+                sleepSecondsUntilDesiredExtension = 0.3,
+                sleepSecondsBeforeMoving = 0.5,
+                extensionOffset = 35,
                 sleepSecondsBeforeRollersDeactivate = 0.2;
     }
 
@@ -146,6 +149,7 @@ public class AutoAlignToSample {
             @Override
             public boolean run(TelemetryPacket telemetryPacket) {
                 if (isFirstTime) {
+                    isSampleDetected = false;
                     isFirstTime = false;
                     limelightEx.getLimelight().captureSnapshot("detection");
                     expirationTimer.reset();
@@ -189,26 +193,23 @@ public class AutoAlignToSample {
                                         RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
                                 )
                         ))
-                        .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
 
                         .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
-
+                        .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
+                        .waitSeconds(A_A.sleepSecondsBeforeMoving)
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
 
-                        .stopAndAdd(this::setFullExtensionIfNotCollectedSampleSide)
-                        .stopAndAdd(new InstantAction(() -> isSampleDetected = false))
+                        .stopAndAdd(RobotActions.setExtendo(targetedExtendoAngle + A_A.extensionOffset, A_A.sleepSecondsUntilDesiredExtension))
                         .build();
             } else {
                 targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
                         .afterTime(0, RobotActions.setExtendo(targetedExtendoAngle, 0))
-                        .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
-
                         .turn(-targetedPoseOffset.heading.toDouble())
-
+                        .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
+                        .waitSeconds(A_A.sleepSecondsBeforeMoving)
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
-
-                        .stopAndAdd(this::setFullExtensionIfNotCollectedSpecimenSide)
-                        .stopAndAdd(new InstantAction(() -> isSampleDetected = false))
+//                        .stopAndAdd(this::setFullExtensionIfNotCollectedSpecimenSide)
+                        .stopAndAdd(RobotActions.setExtendo(targetedExtendoAngle + A_A.extensionOffset, A_A.sleepSecondsUntilDesiredExtension))
                         .build();
             }
         } else {

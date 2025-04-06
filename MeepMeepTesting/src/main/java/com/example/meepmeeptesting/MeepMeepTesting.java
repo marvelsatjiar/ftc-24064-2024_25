@@ -21,7 +21,7 @@ public class MeepMeepTesting {
         public double
                 // Position
                 intermediaryX = 34,
-                intermediaryY = -33,
+                intermediaryY = -45,
 
         intakeSampleX = 52,
                 intakeSampleY = -41.5,
@@ -29,11 +29,11 @@ public class MeepMeepTesting {
         outtakeSampleX = 52,
                 outtakeSampleY = -41.5,
                 sample1X = 47,
-                sample1Y = -16,
+                sample1Y = -12,
                 sample2X = 55,
-                sample2Y = -14,
+                sample2Y = -12,
                 sample3X = 63,
-                sample3Y = -14,
+                sample3Y = -12,
                 giveSampleY = -46,
 
         // Constraints
@@ -309,7 +309,7 @@ public class MeepMeepTesting {
 
     private static TrajectoryActionBuilder scoreSixthAndSeventhSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
-                .setTangent(Math.toRadians(315))
+                .setTangent(Math.toRadians(270))
 //                .afterTime(G_S.sleepBeforeInterleaveSample, new SequentialAction(
 //                        RobotActions.transfer(),
 //                        RobotActions.interleaveDropSample())

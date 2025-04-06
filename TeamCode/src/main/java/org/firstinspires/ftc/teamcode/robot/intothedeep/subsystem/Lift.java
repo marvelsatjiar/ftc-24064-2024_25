@@ -50,7 +50,7 @@ public final class Lift {
             HIGH_BASKET_TICKS = 1600,
             WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
-            SPECIMEN_SETUP_TICKS = 1378,
+            SPECIMEN_SETUP_TICKS = 1458,
             HANG_SETUP_TICKS = 2200,
             HANG_TICKS = 1400,
             UNSAFE_THRESHOLD_TICKS = 829,
