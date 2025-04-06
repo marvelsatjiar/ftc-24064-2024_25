@@ -58,22 +58,26 @@ public class Specimen6Plus0 extends AbstractAuto {
                 sample1X = 50,
                 sample1Y = -5,
                 sample2X = 56,
-                sample2Y = -5,
-                sample3X = 65,
-                sample3Y = -5,
+                sample2Y = -14,
+                sample3X = 63.5,
+                sample3Y = -14,
                 giveSampleY = -52,
 
+                //Headings
+                goingToSampleTangent = 135,
+
                 // Constraints
-                giveSampleVelocityConstraint = 80,
+                giveSampleVelocityConstraint = 50,
                 giveSampleMinAccelConstraint = -60,
                 giveSampleMaxAccelConstraint = 60,
-                goingToSampleVelocityConstraint = 80,
+                goingToSampleVelocityConstraint = 50,
                 goingToSampleMaxAccelConstraint = 60,
                 goingToSampleMinAccelConstraint = -60,
 
 
                 // Timings
                 sleepBeforeInterleaveSample = 0.5,
+                delayBeforeV4B = 0.1,
                 firstIntakeDelay = 0.7,
                 secondIntakeDelay = 0.7,
                 thirdIntakeDelay = 0.5,
@@ -99,25 +103,26 @@ public class Specimen6Plus0 extends AbstractAuto {
                 waitBefore6thSampleIntake = 0.7,
                 wallPickupX = 33.5,
                 secondWallPickupX = 52,
-                intakeSpecimenY = -64.5,
+                intakeSpecimenY = -65.5,
                 intakeSixthSpecimenY = -61.5,
                 intakeSecondSpecimenY = -47,
                 intakeSecondBumpSpecimenY = -63.5,
-                specimen2ndOffsetX = -20,
-                specimen3rdOffsetX = -18,
-                specimen4thOffsetX = -16,
-                specimen5thOffsetX = -14,
-                specimen6thOffsetX = -13,
-                specimen7thOffsetX = -11,
-                secondSpecimenOffsetY = 2,
-                thirdSpecimenOffsetY = 2,
-                fourthSpecimenOffsetY = 2,
-                fifthSpecimenOffsetY = 2,
-                sixthSpecimenOffsetY = 2,
-                seventhSpecimenOffsetY = 2,
+                specimen2ndOffsetX = -22,
+                specimen3rdOffsetX = -20,
+                specimen4thOffsetX = -18,
+                specimen5thOffsetX = -16,
+                specimen6thOffsetX = -15,
+                specimen7thOffsetX = -13,
+                secondSpecimenOffsetY = 4,
+                thirdSpecimenOffsetY = 4,
+                fourthSpecimenOffsetY = 4,
+                fifthSpecimenOffsetY = 4,
+                sixthSpecimenOffsetY = 4,
+                seventhSpecimenOffsetY = 4,
 
                 // Headings
                 scoringAngle = 105,
+                wallPickupTangent = 270,
 
                 // Timings
                 waitBeforeDetection = 0.15,
@@ -246,7 +251,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         if (!doPark) builder = builder.afterTime(S_S.timeBeforeWallPickup, RobotActions.setupWallPickup());
 
         builder = builder
-                .setTangent(Math.toRadians(315))
+                .setTangent(Math.toRadians(S_S.wallPickupTangent))
                 .splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> S_S.wallPickUpVelocityConstraint);
 
         // Setting up for the next cycle
@@ -282,15 +287,16 @@ public class Specimen6Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(90) ,(pose2dDual, posePath, v) -> G_S.goingToSampleVelocityConstraint, new ProfileAccelConstraint(G_S.goingToSampleMinAccelConstraint, G_S.goingToSampleMaxAccelConstraint))
+                .afterTime(G_S.delayBeforeV4B, RobotActions.setV4B(Intake.V4BAngle.VERTICAL, 0))
+                .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(90)) //,(pose2dDual, posePath, v) -> G_S.intermediaryVelocityConstraint, new ProfileAccelConstraint(G_S.intermediarySampleMinAccelConstraint, G_S.intermediarySampleMaxAccelConstraint))
                 .splineToConstantHeading(new Vector2d(G_S.sample1X, G_S.sample1Y), Math.toRadians(270), (pose2dDual, posePath, v) -> G_S.goingToSampleVelocityConstraint, new ProfileAccelConstraint(G_S.goingToSampleMinAccelConstraint, G_S.goingToSampleMaxAccelConstraint))
                 .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
                 .afterTime(0, RobotActions.setupWallPickup())
-                .setTangent(Math.toRadians(90))
+                .setTangent(Math.toRadians(G_S.goingToSampleTangent))
                 .splineToLinearHeading(new Pose2d(G_S.sample2X, G_S.sample2Y, Math.toRadians(90)), Math.toRadians(270),(pose2dDual, posePath, v) -> G_S.goingToSampleVelocityConstraint, new ProfileAccelConstraint(G_S.goingToSampleMinAccelConstraint, G_S.goingToSampleMaxAccelConstraint))
                 .setTangent(Math.toRadians(270))
                 .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
-                .setTangent(Math.toRadians(90))
+                .setTangent(Math.toRadians(G_S.goingToSampleTangent))
                 .splineToLinearHeading(new Pose2d(G_S.sample3X, G_S.sample3Y, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> G_S.goingToSampleVelocityConstraint, new ProfileAccelConstraint(G_S.goingToSampleMinAccelConstraint, G_S.goingToSampleMaxAccelConstraint))
                 .setTangent(Math.toRadians(270))
                 .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint));
