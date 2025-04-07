@@ -268,6 +268,7 @@ public class RobotActions {
                         new ParallelAction(
                                 setClaw(Claw.ClawAngles.WALL_PICKUP, 0),
                                 setWrist(Arm.WristAngle.WALL_PICKUP, 0),
+                                setV4B(Intake.V4BAngle.UP, 0),
                                 setArmstendo(Arm.Extension.WALL_PICKUP, SETUP_WALL_PICKUP.setArmstendoWait)
                         ),
                         new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
@@ -381,7 +382,7 @@ public class RobotActions {
         );
     }
 
-    public static Action interleaveDropSample() {
+    public static Action interleaveDropSample(double sleepSecondsBeforeDrop) {
         return new Actions.SingleCheckAction(
                 () -> robot.currentState != Robot.State.WALL_PICKUP,
                 new SequentialAction(
@@ -394,6 +395,7 @@ public class RobotActions {
                                 setWrist(Arm.WristAngle.WALL_PICKUP, 0),
                                 setArmstendo(Arm.Extension.WALL_PICKUP, INTERLEAVE_DROP.setArmstendoWait )
                         ),
+                        new SleepAction(sleepSecondsBeforeDrop),
                         setClaw(Claw.ClawAngles.WALL_PICKUP, INTERLEAVE_DROP.setClawWait),
                         new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
                 )

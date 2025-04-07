@@ -149,7 +149,7 @@ public void runOpMode() {
             if (keyPressed(2, X))
                 robot.actionScheduler.addAction(RobotActions.setupDropSample());
             if (keyPressed(2, B))
-                robot.actionScheduler.addAction(RobotActions.interleaveDropSample());
+                robot.actionScheduler.addAction(RobotActions.interleaveDropSample(0));
             break;
         // BASKET ==========================================================================
         case SETUP_SCORE_BASKET:

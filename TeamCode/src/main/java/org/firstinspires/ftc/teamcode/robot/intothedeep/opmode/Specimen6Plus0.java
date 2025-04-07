@@ -47,8 +47,11 @@ public class Specimen6Plus0 extends AbstractAuto {
     public static class GiveSamples {
         public double
                 // Position
-                intermediaryX = 34,
-                intermediaryY = -40,
+                intermediaryX = 42,
+                intermediaryY = -47,
+
+                secondIntermediaryX = 35,
+                secondIntermediaryY = -30,
 
                 intakeSampleX = 52,
                 intakeSampleY = -41.5,
@@ -59,12 +62,13 @@ public class Specimen6Plus0 extends AbstractAuto {
                 sample1Y = -5,
                 sample2X = 56,
                 sample2Y = -14,
-                sample3X = 63.5,
+                sample3X = 63,
                 sample3Y = -14,
                 giveSampleY = -52,
 
                 //Headings
                 goingToSampleTangent = 135,
+                intermediaryTangent = 165,
 
                 // Constraints
                 giveSampleVelocityConstraint = 50,
@@ -76,7 +80,9 @@ public class Specimen6Plus0 extends AbstractAuto {
 
 
                 // Timings
-                sleepBeforeInterleaveSample = 0.5,
+                waitBeforeMoving = 0.3,
+                sleepSecondsBeforeDrop = 0.2,
+                sleepBeforeInterleaveSample = 0.85,
                 delayBeforeV4B = 0.1,
                 firstIntakeDelay = 0.7,
                 secondIntakeDelay = 0.7,
@@ -107,7 +113,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 intakeSixthSpecimenY = -61.5,
                 intakeSecondSpecimenY = -47,
                 intakeSecondBumpSpecimenY = -63.5,
-                specimen2ndOffsetX = -22,
+                specimen2ndOffsetX = -19,
                 specimen3rdOffsetX = -20,
                 specimen4thOffsetX = -18,
                 specimen5thOffsetX = -16,
@@ -216,12 +222,6 @@ public class Specimen6Plus0 extends AbstractAuto {
         TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
 
         builder = scoreFirstSpecimen(builder);
-        if (isSevenPlusZero) builder = builder.stopAndAdd(
-                new Actions.SingleCheckAction(
-                        () -> autoAlignToSample.wasSampleDetected(),
-                        scoreSixthAndSeventhSpecimen(builder)
-                )
-        );
         builder = giveSamples(builder);
         builder = scoreAllSpecimens(builder);
 //        builder = park(builder);
@@ -241,7 +241,7 @@ public class Specimen6Plus0 extends AbstractAuto {
         return builder;
     }
 
-    private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark, double sleepSecondsBeforeUnclamp, boolean doVision) {
+    private TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark, double sleepSecondsBeforeUnclamp) {
         // Scoring
         builder = builder
                 .afterTime(sleepSecondsBeforeUnclamp, RobotActions.scoreSpecimen());
@@ -276,10 +276,11 @@ public class Specimen6Plus0 extends AbstractAuto {
                 ))
                 .afterTime(S_S.secondSleepBeforeSetup, RobotActions.setupSpecimen());
 
-        builder = scoreSpecimen(builder, S_S.specimen2ndOffsetX, S_S.secondSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampSecond, false);
-        builder = scoreSpecimen(builder, S_S.specimen3rdOffsetX, S_S.thirdSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampThird, false);
-        builder = scoreSpecimen(builder, S_S.specimen4thOffsetX, S_S.fourthSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampFourth, false);
-        builder = scoreSpecimen(builder, S_S.specimen5thOffsetX, S_S.fifthSpecimenOffsetY, true, S_S.sleepSecondsBeforeUnclampFifth, false);
+        builder = scoreSpecimen(builder, S_S.specimen2ndOffsetX, S_S.secondSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampSecond);
+        builder = scoreSpecimen(builder, S_S.specimen3rdOffsetX, S_S.thirdSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampThird);
+        builder = scoreSpecimen(builder, S_S.specimen4thOffsetX, S_S.fourthSpecimenOffsetY, false, S_S.sleepSecondsBeforeUnclampFourth);
+        builder = scoreSpecimen(builder, S_S.specimen5thOffsetX, S_S.fifthSpecimenOffsetY, !isSevenPlusZero, S_S.sleepSecondsBeforeUnclampFifth);
+        if (isSevenPlusZero) builder = scoreSpecimen(builder, S_S.specimen6thOffsetX, S_S.sixthSpecimenOffsetY, true, S_S.sleepSecondsBeforeUnclampSixth);
 
         return builder;
     }
@@ -287,8 +288,11 @@ public class Specimen6Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .afterTime(G_S.delayBeforeV4B, RobotActions.setV4B(Intake.V4BAngle.VERTICAL, 0))
-                .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(90)) //,(pose2dDual, posePath, v) -> G_S.intermediaryVelocityConstraint, new ProfileAccelConstraint(G_S.intermediarySampleMinAccelConstraint, G_S.intermediarySampleMaxAccelConstraint))
+                .afterTime(0, RobotActions.transfer())
+                .waitSeconds(G_S.waitBeforeMoving)
+                .afterTime(0, RobotActions.interleaveDropSample(G_S.sleepSecondsBeforeDrop))
+                .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(G_S.intermediaryTangent)) //,(pose2dDual, posePath, v) -> G_S.intermediaryVelocityConstraint, new ProfileAccelConstraint(G_S.intermediarySampleMinAccelConstraint, G_S.intermediarySampleMaxAccelConstraint))
+                .splineToConstantHeading(new Vector2d(G_S.secondIntermediaryX, G_S.secondIntermediaryY), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(G_S.sample1X, G_S.sample1Y), Math.toRadians(270), (pose2dDual, posePath, v) -> G_S.goingToSampleVelocityConstraint, new ProfileAccelConstraint(G_S.goingToSampleMinAccelConstraint, G_S.goingToSampleMaxAccelConstraint))
                 .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
                 .afterTime(0, RobotActions.setupWallPickup())
@@ -336,7 +340,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .setTangent(Math.toRadians(315))
                 .afterTime(G_S.sleepBeforeInterleaveSample, new SequentialAction(
                         RobotActions.transfer(),
-                        RobotActions.interleaveDropSample())
+                        RobotActions.interleaveDropSample(0))
                 )
                 .waitSeconds(S_S.waitBefore6thSampleIntake)
                 .splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSixthSpecimenY, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> S_S.wallPickUpVelocityConstraint)

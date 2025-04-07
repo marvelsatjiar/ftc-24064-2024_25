@@ -20,8 +20,11 @@ public class MeepMeepTesting {
     public static class GiveSamples {
         public double
                 // Position
-                intermediaryX = 34,
+                intermediaryX = 42,
                 intermediaryY = -45,
+
+                secondIntermediaryX = 35,
+                secondIntermediaryY = -30,
 
         intakeSampleX = 52,
                 intakeSampleY = -41.5,
@@ -256,7 +259,8 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(90), (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(165), (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
+                .splineToConstantHeading(new Vector2d(G_S.secondIntermediaryX, G_S.secondIntermediaryY), Math.toRadians(90), (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
                 .splineToConstantHeading(new Vector2d(G_S.sample1X, G_S.sample1Y), Math.toRadians(270), (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
                 .lineToY(G_S.giveSampleY, (pose2dDual, posePath, v) -> G_S.giveSampleVelocityConstraint, new ProfileAccelConstraint(G_S.giveSampleMinAccelConstraint, G_S.giveSampleMaxAccelConstraint))
                 .setTangent(Math.toRadians(90))
