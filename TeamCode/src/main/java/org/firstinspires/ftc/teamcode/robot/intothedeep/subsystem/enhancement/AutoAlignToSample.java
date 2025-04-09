@@ -35,7 +35,7 @@ public class AutoAlignToSample {
     public static double
             xOffset = 5,
             yOffset = 2,
-            sampleOffset = 8.5,
+            sampleOffset = 6.5,
             limelightTilt = 35,
             limelightHeight = 11;
 
@@ -49,9 +49,9 @@ public class AutoAlignToSample {
         public double
                 sleepSecondsBeforeV4bUp = 0.4,
                 sleepSecondsBeforeV4bDown = 0.2,
-                sleepSecondsUntilDesiredExtension = 0.3,
+                sleepSecondsUntilDesiredExtension = 1,
                 sleepSecondsBeforeMoving = 0.5,
-                extensionOffset = 35,
+                extensionOffset = 45,
                 sleepSecondsBeforeRollersDeactivate = 0.2;
     }
 

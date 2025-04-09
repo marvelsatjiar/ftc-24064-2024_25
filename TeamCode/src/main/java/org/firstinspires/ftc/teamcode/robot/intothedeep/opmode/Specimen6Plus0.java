@@ -80,9 +80,9 @@ public class Specimen6Plus0 extends AbstractAuto {
 
 
                 // Timings
-                waitBeforeMoving = 0.3,
+                waitBeforeMoving = 1,
                 sleepSecondsBeforeDrop = 0.2,
-                sleepBeforeInterleaveSample = 0.85,
+                sleepBeforeInterleaveSample = 1,
                 delayBeforeV4B = 0.1,
                 firstIntakeDelay = 0.7,
                 secondIntakeDelay = 0.7,
@@ -290,7 +290,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 .setTangent(Math.toRadians(270))
                 .afterTime(0, RobotActions.transfer())
                 .waitSeconds(G_S.waitBeforeMoving)
-                .afterTime(0, RobotActions.interleaveDropSample(G_S.sleepSecondsBeforeDrop))
+                .afterTime(G_S.sleepBeforeInterleaveSample, RobotActions.interleaveDropSample(G_S.sleepSecondsBeforeDrop))
                 .splineToConstantHeading(new Vector2d(G_S.intermediaryX,G_S.intermediaryY), Math.toRadians(G_S.intermediaryTangent)) //,(pose2dDual, posePath, v) -> G_S.intermediaryVelocityConstraint, new ProfileAccelConstraint(G_S.intermediarySampleMinAccelConstraint, G_S.intermediarySampleMaxAccelConstraint))
                 .splineToConstantHeading(new Vector2d(G_S.secondIntermediaryX, G_S.secondIntermediaryY), Math.toRadians(90))
                 .splineToConstantHeading(new Vector2d(G_S.sample1X, G_S.sample1Y), Math.toRadians(270), (pose2dDual, posePath, v) -> G_S.goingToSampleVelocityConstraint, new ProfileAccelConstraint(G_S.goingToSampleMinAccelConstraint, G_S.goingToSampleMaxAccelConstraint))

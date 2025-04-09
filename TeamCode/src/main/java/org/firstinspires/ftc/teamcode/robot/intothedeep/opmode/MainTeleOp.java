@@ -86,12 +86,6 @@ public void runOpMode() {
 
         double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
 
-        if (robot.extendo.getTargetExtension() != Extendo.Extension.RETRACTED) {
-            slowMult = 0.3;
-            slowTurningMult = 0.3;
-//                if (gamepadEx2.isDown(RIGHT_BUMPER))
-//                    slowMult = 1;
-        }
         robot.drivetrain.setFieldCentricPowers(
                 new PoseVelocity2d(
                         new Vector2d(
@@ -133,6 +127,9 @@ public void runOpMode() {
         case EXTENDO_OUT:
             doExtendoControls();
             doIntakeControls();
+
+            if (keyPressed(1, X))
+                isSpecimenMode = !isSpecimenMode;
 
             if (keyPressed(2, X))
                 robot.actionScheduler.addAction(RobotActions.transfer());
