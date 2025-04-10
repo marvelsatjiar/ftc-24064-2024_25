@@ -6,12 +6,10 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
-import com.acmerobotics.roadrunner.InstantAction;
 import com.acmerobotics.roadrunner.NullAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -48,7 +46,7 @@ public class AutoAlignToSample {
     public static class AutoAlign {
         public double
                 sleepSecondsBeforeV4bUp = 0.4,
-                sleepSecondsBeforeV4bDown = 0.2,
+                sleepSecondsBeforeV4bDown = 0.125,
                 sleepSecondsUntilDesiredExtension = 1,
                 sleepSecondsBeforeMoving = 0.5,
                 extensionOffset = 45,
@@ -107,7 +105,7 @@ public class AutoAlignToSample {
         if (desiredSample != null) {
             double finalDistance;
             
-            if (isTurningOnly) finalDistance = Math.sqrt((yDistance-sampleOffset)*(yDistance-sampleOffset) + xDistance*xDistance);
+            if (isTurningOnly) finalDistance = Math.sqrt(yDistance*yDistance + xDistance*xDistance) - sampleOffset;
             else finalDistance = (yDistance-sampleOffset);
 
             return robot.extendo.convertTargetInchesToExtensionAngle(finalDistance);
@@ -196,10 +194,9 @@ public class AutoAlignToSample {
 
                         .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
-                        .waitSeconds(A_A.sleepSecondsBeforeMoving)
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
 
-                            .stopAndAdd(this::setFullExtensionIfNotCollectedSampleSide)
+                            .stopAndAdd(this::setFullExtensionIfNotCollected)
 
                         .build();
             } else {
@@ -207,9 +204,8 @@ public class AutoAlignToSample {
                         .afterTime(0, RobotActions.setExtendo(targetedExtendoAngle, 0))
                         .turn(-targetedPoseOffset.heading.toDouble())
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
-                        .waitSeconds(A_A.sleepSecondsBeforeMoving)
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
-                        .stopAndAdd(this::setFullExtensionIfNotCollectedSpecimenSide)
+                        .stopAndAdd(this::setFullExtensionIfNotCollected)
                         .build();
             }
         } else {
@@ -217,7 +213,7 @@ public class AutoAlignToSample {
         }
     }
 
-    public Action setFullExtensionIfNotCollectedSampleSide() {
+    public Action setFullExtensionIfNotCollected() {
         if (!robot.intake.isCorrectSample()) {
             return new SequentialAction(
                     RobotActions.setExtendo(Extendo.Extension.EXTENDED, A_A.sleepSecondsBeforeV4bUp),
@@ -226,18 +222,6 @@ public class AutoAlignToSample {
             );
         } else {
             return RobotActions.retractForTransfer();
-        }
-    }
-
-    public Action setFullExtensionIfNotCollectedSpecimenSide() {
-        if (!robot.intake.isCorrectSample()) {
-            return new SequentialAction(
-                    RobotActions.setExtendo(Extendo.Extension.EXTENDED, A_A.sleepSecondsBeforeV4bUp),
-                    RobotActions.setV4B(Intake.V4BAngle.UP, A_A.sleepSecondsBeforeRollersDeactivate),
-                    RobotActions.retractExtendo()
-            );
-        } else {
-            return RobotActions.retractExtendo();
         }
     }
 

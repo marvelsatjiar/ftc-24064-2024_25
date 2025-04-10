@@ -112,9 +112,8 @@ public void runOpMode() {
             if (keyPressed(1, X))
                 isSpecimenMode = !isSpecimenMode;
 
-            if (keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode)
-                robot.actionScheduler.addAction(RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0));
-
+            if ((keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode) || (keyPressed(1, DPAD_UP) && isSpecimenMode))
+                robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.EXTENDED));
             if (keyPressed(2, Y) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.setupWallPickup());
             if (keyPressed(2, X))
