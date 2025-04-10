@@ -35,7 +35,7 @@ public class AutoAlignToSample {
     public static double
             xOffset = 5,
             yOffset = 2,
-            sampleOffset = 6.5,
+            sampleOffset = 8.5,
             limelightTilt = 35,
             limelightHeight = 11;
 
@@ -199,7 +199,8 @@ public class AutoAlignToSample {
                         .waitSeconds(A_A.sleepSecondsBeforeMoving)
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
 
-                        .stopAndAdd(RobotActions.setExtendo(targetedExtendoAngle + A_A.extensionOffset, A_A.sleepSecondsUntilDesiredExtension))
+                            .stopAndAdd(this::setFullExtensionIfNotCollectedSampleSide)
+
                         .build();
             } else {
                 targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
@@ -208,8 +209,7 @@ public class AutoAlignToSample {
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
                         .waitSeconds(A_A.sleepSecondsBeforeMoving)
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
-//                        .stopAndAdd(this::setFullExtensionIfNotCollectedSpecimenSide)
-                        .stopAndAdd(RobotActions.setExtendo(targetedExtendoAngle + A_A.extensionOffset, A_A.sleepSecondsUntilDesiredExtension))
+                        .stopAndAdd(this::setFullExtensionIfNotCollectedSpecimenSide)
                         .build();
             }
         } else {

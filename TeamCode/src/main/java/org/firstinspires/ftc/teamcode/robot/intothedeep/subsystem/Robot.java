@@ -77,6 +77,7 @@ public final class Robot {
         autoWallPickUp = new AutoWallPickUp(limelightEx);
         actionScheduler = new ActionScheduler();
 
+        limelight3A.stop();
         limelight3A.start();
     }
 

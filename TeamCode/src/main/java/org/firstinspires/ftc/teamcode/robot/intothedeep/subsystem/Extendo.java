@@ -109,7 +109,7 @@ public final class Extendo {
     }
 
     public double convertTargetInchesToExtensionAngle(double targetInches) {
-        targetInches = Range.clip(targetInches, 0, 20);
+        targetInches = Range.clip(targetInches, 3, 20);
 
         double c = (LINKAGE_LENGTH_B * LINKAGE_LENGTH_B - LINKAGE_LENGTH_A * LINKAGE_LENGTH_A - PIVOT_HEIGHT * PIVOT_HEIGHT - targetInches * targetInches);
         double baseSquared = (-2 * LINKAGE_LENGTH_A) * Math.sqrt(PIVOT_HEIGHT * PIVOT_HEIGHT + targetInches * targetInches);
