@@ -36,8 +36,9 @@ public final class Intake {
             V4B_MAX_DOWN_ANGLE = 47,
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
             V4B_VERTICAL_ANGLE = 130,
+            BEFORE_TRANSFER_ANGLE = 85,
             V4B_CLEARING_ANGLE = 85,
-            V4B_UP_ANGLE = 85,
+            V4B_UP_ANGLE = 102,
             V4B_UNSAFE_THRESHOLD_ANGLE = 0,
             V4B_TRANSFER_ANGLE = 55,
             V4B_HOVERING_ANGLE = 45;
@@ -48,6 +49,7 @@ public final class Intake {
 
     public enum V4BAngle {
         DOWN,
+        BEFORE_TRANSFER,
         CLEARING,
         VERTICAL,
         UP,
@@ -58,6 +60,7 @@ public final class Intake {
         private double getAngle() {
             switch (this) {
                 case DOWN: return V4B_DOWN_ANGLE;
+                case BEFORE_TRANSFER: return BEFORE_TRANSFER_ANGLE;
                 case VERTICAL: return V4B_VERTICAL_ANGLE;
                 case CLEARING: return V4B_CLEARING_ANGLE;
                 case UNSAFE: return V4B_UNSAFE_THRESHOLD_ANGLE;

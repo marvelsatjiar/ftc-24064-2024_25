@@ -30,16 +30,26 @@ public class AutoAlignToSample {
 
     public ColorRangefinderEx.SampleColor targetColor;
 
+    private double
+        txAfterCalc = 0,
+        tYAfterCalc = 0,
+        xDistanceAfterCalc = 0,
+        yDistanceAfterCalc = 0;
+
+    private boolean isDebugVariablesSet = false;
+
     public static double
-            xOffset = 5,
-            yOffset = 2,
-            sampleOffset = 8.5,
+            xOffset = 5.25,
+            yOffset = 4,
+            sampleOffset = 6,
             limelightTilt = 35,
             limelightHeight = 11;
 
     public static double secondsUntilCollected = 0.6;
 
-    private LLResultTypes.DetectorResult desiredSample;
+    private double 
+            desiredSampleX = 0,
+            desiredSampleY = 0;
 
     private Action targetSampleTrajectory;
     
@@ -48,7 +58,7 @@ public class AutoAlignToSample {
                 sleepSecondsBeforeV4bUp = 0.4,
                 sleepSecondsBeforeV4bDown = 0.125,
                 sleepSecondsUntilDesiredExtension = 1,
-                sleepSecondsBeforeMoving = 0.5,
+                sleepSecondsBeforeMoving = 1,
                 extensionOffset = 45,
                 sleepSecondsBeforeRollersDeactivate = 0.2;
     }
@@ -60,7 +70,9 @@ public class AutoAlignToSample {
     private double
             xDistance = 0,
             yDistance = 0,
-            headingDistance = 0;
+            xDistanceFromCenter = 0,
+            yDistanceFromCenter = 0,
+            headingAngle = 0;
 
     private double targetedExtendoAngle = 0;
 
@@ -88,40 +100,33 @@ public class AutoAlignToSample {
         List<LLResultTypes.DetectorResult> targets = limelightEx.getDetectorResult();
 
         // checks and returns detection
-        if (targets != null && !targets.isEmpty()) {
-            for (LLResultTypes.DetectorResult result : targets) {
-                if (desiredSample == null || result.getTargetYDegrees() - result.getTargetArea() > desiredSample.getTargetYDegrees() - desiredSample.getTargetArea()) {
-                    desiredSample = result;
-                }
-            }
-
+        if (targets != null && !targets.isEmpty() && targets.get(0) != null) {
+            desiredSampleX = targets.get(0).getTargetXDegrees() + 0.0;
+            desiredSampleY = targets.get(0).getTargetYDegrees() + 0.0;
             return true;
         }
 
         return false;
-    }
+ }
 
     private double calculateExtendoTarget() {
-        if (desiredSample != null) {
             double finalDistance;
             
-            if (isTurningOnly) finalDistance = Math.sqrt(yDistance*yDistance + xDistance*xDistance) - sampleOffset;
-            else finalDistance = (yDistance-sampleOffset);
+            if (isTurningOnly) finalDistance = Math.sqrt(yDistanceFromCenter*yDistanceFromCenter + xDistanceFromCenter*xDistanceFromCenter) - sampleOffset;
+            else finalDistance = (yDistanceFromCenter-sampleOffset);
 
             return robot.extendo.convertTargetInchesToExtensionAngle(finalDistance);
-        }
-
-        return robot.extendo.getTargetAngle();
     }
 
     private Pose2d calculateTargetPosition(boolean isTurning) {
-        yDistance += yOffset;
-        xDistance += xOffset;
+
+        headingAngle = Math.atan2(xDistanceFromCenter, yDistanceFromCenter);
+
         if (isTurning) {
             isTurningOnly = true;
-            return new Pose2d(0, 0, headingDistance);
+            return new Pose2d(0, 0, headingAngle);
         } else {
-            return new Pose2d(0, xDistance, 0); // should be xDistance TODO
+            return new Pose2d(0, xDistanceFromCenter, 0); // should be xDistance TODO
         }
     }
 
@@ -149,21 +154,33 @@ public class AutoAlignToSample {
                 if (isFirstTime) {
                     isSampleDetected = false;
                     isFirstTime = false;
-                    limelightEx.getLimelight().captureSnapshot("detection");
+//                    limelightEx.getLimelight().captureSnapshot("detection");
                     expirationTimer.reset();
                 }
 
                 if (!isSampleDetected) {
                     isSampleDetected = targetSample();
+                    if (isSampleDetected) limelightEx.getLimelight().captureSnapshot("detected");
+
                 }
 
                 if (isSampleDetected) {
 
-                    yDistance = Math.tan(Math.toRadians(limelightTilt + desiredSample.getTargetYDegrees())) * limelightHeight;
-                    xDistance = Math.tan(Math.toRadians(desiredSample.getTargetXDegrees())) * yDistance;
+                    yDistance = (limelightHeight / Math.tan(Math.toRadians(limelightTilt + desiredSampleY)));
+                    xDistance = Math.tan(Math.toRadians(desiredSampleX)) * yDistance;
 
-                    headingDistance = Math.atan2(xDistance + xOffset, yDistance + yOffset);
+                    if (!isDebugVariablesSet) {
+                        isDebugVariablesSet = true;
 
+                        txAfterCalc = desiredSampleX;
+                        tYAfterCalc = desiredSampleY;
+                        xDistanceAfterCalc = xDistance;
+                        yDistanceAfterCalc = yDistance;
+                    }
+
+                    yDistanceFromCenter = yDistance + yOffset;
+                    xDistanceFromCenter = xDistance + xOffset;
+                    
                     // send out output to motors/servos
                     targetedPoseOffset = calculateTargetPosition(isTurning);
                     targetedExtendoAngle = calculateExtendoTarget();
@@ -195,8 +212,7 @@ public class AutoAlignToSample {
                         .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
-
-                            .stopAndAdd(this::setFullExtensionIfNotCollected)
+                        .stopAndAdd(this::setFullExtensionIfNotCollected)
 
                         .build();
             } else {
@@ -205,7 +221,6 @@ public class AutoAlignToSample {
                         .turn(-targetedPoseOffset.heading.toDouble())
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
-                        .stopAndAdd(this::setFullExtensionIfNotCollected)
                         .build();
             }
         } else {
@@ -228,11 +243,18 @@ public class AutoAlignToSample {
     public Action updateTelemetry(boolean isOpModeActive) {
         return new Actions.RunnableAction(
                 () -> {
+                    mTelemetry.addData("tx after calc : ", txAfterCalc);
+                    mTelemetry.addData("ty after calc : ", tYAfterCalc);
+
+                    mTelemetry.addData("heading (in radians) : ", headingAngle);
+
+                    mTelemetry.addData("y distance after calc: ", yDistanceAfterCalc);
+                    mTelemetry.addData("x distance after calc : ", xDistanceAfterCalc);
+
                     mTelemetry.addData("y distance : ", yDistance);
                     mTelemetry.addData("x distance : ", xDistance);
-                    mTelemetry.addData("heading distance : ", headingDistance);
-                    mTelemetry.addData("extendo distance : ", targetedExtendoAngle);
-                    return isOpModeActive;
+                    mTelemetry.addData("extendo angle : ", targetedExtendoAngle);
+                    return !isOpModeActive;
                 }
         );
     }

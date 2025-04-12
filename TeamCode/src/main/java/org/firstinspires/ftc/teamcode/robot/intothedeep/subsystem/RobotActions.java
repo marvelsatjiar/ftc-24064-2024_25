@@ -179,7 +179,7 @@ public class RobotActions {
                         new ParallelAction(
                                 retractForTransfer(),
                                 setWrist(Arm.WristAngle.COLLECTING, 0),
-                                setV4B(Intake.V4BAngle.UP, 0),
+                                setV4B(Intake.V4BAngle.BEFORE_TRANSFER, 0),
                                 setRollers(0.5, 0)
                         ),
                         setArmstendo(Arm.Extension.TRANSFER, TRANSFER.setArmstendoTransferWait),
@@ -289,6 +289,27 @@ public class RobotActions {
 
                         new ParallelAction(
                                 setLift(Lift.Ticks.SETUP_SPECIMEN, 0),
+                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait)
+                        ),
+                        new ParallelAction(
+                                setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0),
+                                setArmstendo(Arm.Extension.EXTENDED, SETUP_SPECIMEN.extendArmstendoWait)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.SETUP_SPECIMEN)
+                )
+        );
+    }
+
+    public static Action setupFirstAutoSpecimen() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.SETUP_SPECIMEN,
+                new SequentialAction(
+                        setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, SETUP_SPECIMEN.clampClawWait),
+                        setWrist(Arm.WristAngle.GRAB_OFF_WALL, SETUP_SPECIMEN.setWristWait),
+                        setArmstendo(Arm.Extension.RETRACTED, SETUP_SPECIMEN.setArmstendoWait),
+
+                        new ParallelAction(
+                                setLift(Lift.Ticks.AUTON_SETUP_FIRST_SPECIMEN, 0),
                                 setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait)
                         ),
                         new ParallelAction(

@@ -82,7 +82,7 @@ public void runOpMode() {
             x = 0;
         }
 
-        double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
+        double slowMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.5 : 1;
 
         double slowTurningMult = gamepadEx1.isDown(LEFT_BUMPER) ? 0.3 : 1;
 
@@ -112,8 +112,10 @@ public void runOpMode() {
             if (keyPressed(1, X))
                 isSpecimenMode = !isSpecimenMode;
 
-            if ((keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode) || (keyPressed(1, DPAD_UP) && isSpecimenMode))
+            if ((keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode) || (keyPressed(1, LEFT_STICK_BUTTON) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.EXTENDED));
+            if (keyPressed(1, DPAD_DOWN) && isSpecimenMode)
+                robot.actionScheduler.addAction(RobotActions.transfer());
             if (keyPressed(2, Y) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.setupWallPickup());
             if (keyPressed(2, X))
@@ -130,6 +132,9 @@ public void runOpMode() {
             if (keyPressed(1, X))
                 isSpecimenMode = !isSpecimenMode;
 
+            if (keyPressed(1, LEFT_STICK_BUTTON) && isSpecimenMode)
+                robot.actionScheduler.addAction(RobotActions.retractExtendo());
+
             if (keyPressed(2, X))
                 robot.actionScheduler.addAction(RobotActions.transfer());
             if (keyPressed(2, Y))
@@ -138,6 +143,9 @@ public void runOpMode() {
                 robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
             break;
         case TRANSFERRED:
+            if (keyPressed(1, RIGHT_STICK_BUTTON) && isSpecimenMode)
+                robot.actionScheduler.addAction(RobotActions.interleaveDropSample(0));
+
             if (keyPressed(2, A))
                 robot.actionScheduler.addAction(RobotActions.setupBasket(true));
             if (keyPressed(2, Y))
