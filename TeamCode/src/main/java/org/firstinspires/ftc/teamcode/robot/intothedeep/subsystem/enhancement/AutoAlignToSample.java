@@ -49,7 +49,8 @@ public class AutoAlignToSample {
             yOffset = 2,
             sampleOffset = 2.5,
             limelightTilt = 61,
-            limelightHeight = 11;
+            limelightHeight = 11,
+            extendoOffset = 3;
 
     public static double secondsUntilCollected = 0.2;
 
@@ -63,7 +64,7 @@ public class AutoAlignToSample {
     public static class AutoAlign {
         public double
                 delayBeforeRollers = 0.3,
-                fullExtensionSleep = 0.6,
+                delayBeforeFullExtension = 0.6,
                 sleepSecondsBeforeV4bUp = 0.4,
                 sleepSecondsBeforeV4bDown = 0.1,
                 sleepSecondsBeforeRollersDeactivate = 0.2;
@@ -74,13 +75,13 @@ public class AutoAlignToSample {
             isTurningOnly = false;
 
     private double
+            offsetExtendoAngle = 0,
             xDistance = 0,
             yDistance = 0,
             xDistanceFromCenter = 0,
             yDistanceFromCenter = 0,
-            headingAngle = 0;
-
-    private double targetedExtendoAngle = 0;
+            headingAngle = 0,
+            targetedExtendoAngle = 0;
 
     public static AutoAlign A_A = new AutoAlign();
 
@@ -137,11 +138,11 @@ public class AutoAlignToSample {
         return false;
  }
 
-    private double calculateExtendoTarget() {
-            
+    private double calculateExtendoTarget(double offsetDistance) {
+                finalDistance = 0;
             if (isTurningOnly) finalDistance = Math.sqrt(yDistanceFromCenter*yDistanceFromCenter + xDistanceFromCenter*xDistanceFromCenter) - sampleOffset - 0.625;
             else finalDistance = (yDistanceFromCenter-sampleOffset);
-
+            finalDistance += offsetDistance;
             finalDistance = Range.clip(finalDistance, extendoLUT.firstKey(), extendoLUT.lastKey());
 
             if (extendoLUT.containsKey(finalDistance)) return extendoLUT.get(finalDistance);
@@ -224,7 +225,8 @@ public class AutoAlignToSample {
                     
                     // send out output to motors/servos
                     targetedPoseOffset = calculateTargetPosition(isTurning);
-                    targetedExtendoAngle = calculateExtendoTarget();
+                    targetedExtendoAngle = calculateExtendoTarget(0);
+                    offsetExtendoAngle = calculateExtendoTarget(extendoOffset) ;
 //                  setEdgeCases();
                 }
 
@@ -252,7 +254,7 @@ public class AutoAlignToSample {
 
                         .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
-                        .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
+                        .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected, offsetExtendoAngle))
                         .stopAndAdd(this::setFullExtensionIfNotCollected)
 
                         .build();
@@ -260,7 +262,8 @@ public class AutoAlignToSample {
                 targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
                         .afterTime(0, RobotActions.setExtendo(targetedExtendoAngle, 0))
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
-                        .afterTime(A_A.delayBeforeRollers, RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
+                        .afterTime(A_A.delayBeforeRollers, RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected, offsetExtendoAngle))
+                        .afterTime(A_A.delayBeforeFullExtension, RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0))
                         .turn(-targetedPoseOffset.heading.toDouble(), new TurnConstraints(4.5, -Math.PI, Math.PI))
                         .waitSeconds(secondsUntilCollected)
                         .build();

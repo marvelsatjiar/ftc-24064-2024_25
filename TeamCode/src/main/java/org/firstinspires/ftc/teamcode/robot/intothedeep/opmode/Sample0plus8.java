@@ -180,7 +180,7 @@ public class Sample0plus8 extends AbstractAuto {
 
                 // Score 1st Sample + Intakes 2nd Objectively TODO waitBefore2ndTransfer
                 .stopAndAdd(new SequentialAction(
-                        RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, TIME.timeFor2ndIntaking),
+                        RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, TIME.timeFor2ndIntaking, Extendo.LINKAGE_MAX_ANGLE),
 //                        new SleepAction(TIME.timeFor2ndIntaking),
                         new ParallelAction(
                                 RobotActions.setV4B(Intake.V4BAngle.UP, 0),
@@ -212,7 +212,7 @@ public class Sample0plus8 extends AbstractAuto {
                         RobotActions.setExtendo(MISC.intake3rdExtendoAngle, 0),
                         RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
 //                        RobotActions.setRollers(0.8, TIME.waitBefore3rdTransfer),
-                        RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, TIME.waitBefore3rdTransfer)
+                        RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, TIME.waitBefore3rdTransfer, Extendo.LINKAGE_MAX_ANGLE)
                 ))
                 // Transfer, Setup, & Scores 3rd Objectively + Extend for 4th Objectively TODO sleep4thBeforeExtending
                 .stopAndAdd(new ParallelAction(
@@ -238,7 +238,7 @@ public class Sample0plus8 extends AbstractAuto {
 //
                 .strafeToLinearHeading(new Vector2d(POS.xIntakeSample3, POS.yIntakeSample3), Math.toRadians(HEAD.intake3rdSampleAngle))
 //                .waitSeconds(TIME.waitBefore4thTransfer)
-                .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, TIME.waitBefore4thTransfer))
+                .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, ColorRangefinderEx.SampleColor.YELLOW, TIME.waitBefore4thTransfer, Extendo.LINKAGE_MAX_ANGLE))
                 //Transfer while moving to Score 4th Sample Objectively
                 .afterTime(0, RobotActions.retractTransferAndSetupBasket())
                 .strafeToLinearHeading(new Vector2d(POS.xBasket3, POS.yBasket3), Math.toRadians(HEAD.dropOff4thSample))

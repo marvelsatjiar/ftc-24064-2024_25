@@ -452,14 +452,13 @@ public class RobotActions {
         );
     }
 
-    public static Action runRollersUntilCollected(double rollerPower, ColorRangefinderEx.SampleColor targetColor, double expireTime) {
+    public static Action runRollersUntilCollected(double rollerPower, ColorRangefinderEx.SampleColor targetColor, double expireTime, double extendoAngle) {
         ElapsedTime outtakeSampleTimer = new ElapsedTime();
 
         return new SequentialAction(
                 new InstantAction(() -> robot.intake.targetSampleTimer.reset()),
                 new InstantAction(() -> robot.intake.setEdgeCases(targetColor)),
                 setRollers(rollerPower, 0),
-
                 telemetryPacket -> {
                     if (robot.intake.isOppositeSample()) {
                         robot.intake.setRollerPower(-1);
@@ -468,8 +467,7 @@ public class RobotActions {
                         robot.intake.setRollerPower(rollerPower);
                     }
                     return robot.intake.getCurrentSample() != targetColor && robot.intake.targetSampleTimer.seconds() <= expireTime;
-                },
-                setExtendo(Extendo.Extension.EXTENDED, 0)
+                }
         );
     }
 
