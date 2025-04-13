@@ -30,6 +30,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.R;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.RobotActions;
@@ -52,6 +54,8 @@ public void runOpMode() {
     boolean isSpecimenMode = false;
     boolean isHangControlInversed = false;
 
+    boolean isNeutralStartPosition = true;
+
     mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
     gamepadEx1 = new GamepadEx(gamepad1);
@@ -62,6 +66,27 @@ public void runOpMode() {
     Pose2d endPose = Common.AUTO_END_POSE;
     if (endPose != null) {
         robot.drivetrain.setCurrentHeading(endPose.heading.toDouble() - Common.FORWARD);
+    }
+
+
+    while (opModeInInit()) {
+        gamepadEx1.readButtons();
+
+        if (gamepadEx1.wasJustPressed(A)) isNeutralStartPosition = !isNeutralStartPosition;
+
+        mTelemetry.addLine("| A | Toggle start position");
+
+        mTelemetry.addLine("Selected start position : " + (isNeutralStartPosition ? "Neutral" : "Wall Pickup"));
+    }
+
+    if (!isNeutralStartPosition) {
+        robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
+        robot.arm.setWristAngle(Arm.WristAngle.WALL_PICKUP);
+        robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
+        robot.claw.setAngle(Claw.ClawAngles.WALL_PICKUP);
+        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
+
+        robot.setCurrentState(Robot.State.WALL_PICKUP);
     }
 
     waitForStart();
@@ -96,7 +121,9 @@ public void runOpMode() {
                 )
         );
 
-    if (keyPressed(1, B)) robot.drivetrain.setCurrentHeading(Math.PI);
+    if (keyPressed(1, B)) robot.drivetrain.setCurrentHeading(0);
+
+    if (keyPressed(1, X)) isSpecimenMode = !isSpecimenMode;
 
     if (keyPressed(2, RIGHT_BUMPER)) {
         robot.lift.runManual(gamepadEx2.getLeftY() * 0.2);
@@ -109,13 +136,8 @@ public void runOpMode() {
             doExtendoControls();
             doIntakeControls();
 
-            if (keyPressed(1, X))
-                isSpecimenMode = !isSpecimenMode;
-
             if ((keyPressed(1, RIGHT_BUMPER) && !isSpecimenMode) || (keyPressed(1, LEFT_STICK_BUTTON) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.extendIntake(Extendo.Extension.EXTENDED));
-            if (keyPressed(1, DPAD_DOWN) && isSpecimenMode)
-                robot.actionScheduler.addAction(RobotActions.transfer());
             if (keyPressed(2, Y) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.setupWallPickup());
             if (keyPressed(2, X))
@@ -129,8 +151,8 @@ public void runOpMode() {
             doExtendoControls();
             doIntakeControls();
 
-            if (keyPressed(1, X))
-                isSpecimenMode = !isSpecimenMode;
+            if (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode)
+                robot.actionScheduler.addAction(RobotActions.scoreSpecimen());
 
             if (keyPressed(1, LEFT_STICK_BUTTON) && isSpecimenMode)
                 robot.actionScheduler.addAction(RobotActions.retractExtendo());
@@ -143,9 +165,6 @@ public void runOpMode() {
                 robot.actionScheduler.addAction(RobotActions.retractTransferAndSetupBasket());
             break;
         case TRANSFERRED:
-            if (keyPressed(1, RIGHT_STICK_BUTTON) && isSpecimenMode)
-                robot.actionScheduler.addAction(RobotActions.interleaveDropSample(0));
-
             if (keyPressed(2, A))
                 robot.actionScheduler.addAction(RobotActions.setupBasket(true));
             if (keyPressed(2, Y))
@@ -153,7 +172,7 @@ public void runOpMode() {
             if (keyPressed(2, X))
                 robot.actionScheduler.addAction(RobotActions.setupDropSample());
             if (keyPressed(2, B))
-                robot.actionScheduler.addAction(RobotActions.interleaveDropSample(0));
+                robot.actionScheduler.addAction(RobotActions.interleaveDropSample(RobotActions.INTERLEAVE_DROP.unclampClawForDropOffWait));
             break;
         // BASKET ==========================================================================
         case SETUP_SCORE_BASKET:
@@ -191,6 +210,8 @@ public void runOpMode() {
         // WALL PICKUP =====================================================================
         case WALL_PICKUP:
             robot.sweeper.setAngle(Sweeper.SweeperAngles.RETRACTED);
+
+            doIntakeControls();
 
             if (keyPressed(2, X) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                 robot.actionScheduler.addAction(RobotActions.setupSpecimen());

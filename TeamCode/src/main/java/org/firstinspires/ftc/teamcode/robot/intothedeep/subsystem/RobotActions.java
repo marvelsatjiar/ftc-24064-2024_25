@@ -70,6 +70,7 @@ public class RobotActions {
     }
     public static class InterleaveDrop {
         public double
+                unclampClawForDropOffWait = 0.1,
                 setClawWait = 0.1,
                 setArmstendoWait = 0,
                 retractArmstendoWait = 0,
@@ -95,6 +96,7 @@ public class RobotActions {
 
     public static class SetupSpecimen {
         public double
+                setArmForFirstSpecWait = 0.5,
                 clampClawWait = 0.2,
                 setWristWait = 0.2,
                 setArmWait = 0.3,
@@ -310,7 +312,7 @@ public class RobotActions {
 
                         new ParallelAction(
                                 setLift(Lift.Ticks.AUTON_SETUP_FIRST_SPECIMEN, 0),
-                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait)
+                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmForFirstSpecWait)
                         ),
                         new ParallelAction(
                                 setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0),

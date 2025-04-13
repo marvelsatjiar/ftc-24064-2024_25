@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX_1;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX_2;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
@@ -56,8 +57,8 @@ public final class Extendo {
      * @param hardwareMap A constant map that holds all the parts for config in code
      */
     public Extendo(HardwareMap hardwareMap) {
-        SimpleServo masterLinkage = new SimpleServo(hardwareMap, "extendoLinkageMain", SERVO_AXON_MIN, SERVO_AXON_MAX);
-        SimpleServo followerLinkage = new SimpleServo(hardwareMap, "extendoLinkageFollower", SERVO_AXON_MIN, SERVO_AXON_MAX);
+        SimpleServo masterLinkage = new SimpleServo(hardwareMap, "extendoLinkageMain", SERVO_AXON_MIN, SERVO_AXON_MAX_2);
+        SimpleServo followerLinkage = new SimpleServo(hardwareMap, "extendoLinkageFollower", SERVO_AXON_MIN, SERVO_AXON_MAX_2);
 
         masterLinkage.setInverted(true);
 
@@ -114,7 +115,7 @@ public final class Extendo {
         double c = (LINKAGE_LENGTH_B * LINKAGE_LENGTH_B - LINKAGE_LENGTH_A * LINKAGE_LENGTH_A - PIVOT_HEIGHT * PIVOT_HEIGHT - targetInches * targetInches);
         double baseSquared = (-2 * LINKAGE_LENGTH_A) * Math.sqrt(PIVOT_HEIGHT * PIVOT_HEIGHT + targetInches * targetInches);
 
-        return Range.clip(Math.toDegrees(Math.asin(c / baseSquared) + Math.atan2(targetInches, PIVOT_HEIGHT)), LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE);
+        return Range.clip(Math.toDegrees(Math.asin(c / baseSquared) + Math.atan2(targetInches, PIVOT_HEIGHT)) - 77, LINKAGE_MIN_ANGLE, LINKAGE_MAX_ANGLE);
     }
 
     // Prints data on the driver hub for debugging and other uses

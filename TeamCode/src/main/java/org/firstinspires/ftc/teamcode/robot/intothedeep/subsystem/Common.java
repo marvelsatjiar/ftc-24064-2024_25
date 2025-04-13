@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 
-import org.firstinspires.ftc.teamcode.control.controller.PIDController;
-import org.firstinspires.ftc.teamcode.control.motion.State;
-
+@Config
 public final class Common {
     public static Pose2d AUTO_END_POSE = null;
     public static boolean IS_RED = true, IS_SPECIMEN_SIDE = false;
@@ -19,8 +18,9 @@ public final class Common {
             SERVO_25_KG_MAX = 270,
             SERVO_45_KG_MIN = 0,
             SERVO_45_KG_MAX = 270,
+            SERVO_AXON_MAX_1 = 270,
             SERVO_AXON_MIN = 0,
-            SERVO_AXON_MAX = 355;
+            SERVO_AXON_MAX_2 = 355;
 
     public static final int
             LIMELIGHT_RED_DETECTION_PIPELINE = 7,

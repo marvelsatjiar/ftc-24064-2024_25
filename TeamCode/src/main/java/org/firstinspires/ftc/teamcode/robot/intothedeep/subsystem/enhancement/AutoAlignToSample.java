@@ -13,6 +13,7 @@ import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.auto.Actions;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
@@ -23,12 +24,15 @@ import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 import org.firstinspires.ftc.teamcode.sensor.vision.LimelightEx;
 
 import java.util.List;
+import java.util.TreeMap;
 
 @Config
 public class AutoAlignToSample {
     private final LimelightEx limelightEx;
 
     public ColorRangefinderEx.SampleColor targetColor;
+
+    private final TreeMap<Double, Double> extendoLUT = new TreeMap<>();
 
     private double
         txAfterCalc = 0,
@@ -40,14 +44,15 @@ public class AutoAlignToSample {
 
     public static double
             xOffset = 5.25,
-            yOffset = 4,
-            sampleOffset = 6,
-            limelightTilt = 35,
+            yOffset = 2.5,
+            sampleOffset = 1.5,
+            limelightTilt = 61,
             limelightHeight = 11;
 
     public static double secondsUntilCollected = 0.6;
 
-    private double 
+    private double
+            finalDistance = 0,
             desiredSampleX = 0,
             desiredSampleY = 0;
 
@@ -55,11 +60,9 @@ public class AutoAlignToSample {
     
     public static class AutoAlign {
         public double
+                fullExtensionSleep = 1.3,
                 sleepSecondsBeforeV4bUp = 0.4,
                 sleepSecondsBeforeV4bDown = 0.125,
-                sleepSecondsUntilDesiredExtension = 1,
-                sleepSecondsBeforeMoving = 1,
-                extensionOffset = 45,
                 sleepSecondsBeforeRollersDeactivate = 0.2;
     }
 
@@ -81,6 +84,28 @@ public class AutoAlignToSample {
     private Pose2d targetedPoseOffset = new Pose2d(0, 0, 0);
 
     public AutoAlignToSample(LimelightEx limelightEx) {
+        // x = distance, y = extendo angle
+        extendoLUT.put(9.0, 13.0);
+        extendoLUT.put(10.0, 43.0);
+        extendoLUT.put(11.0, 53.0);
+        extendoLUT.put(12.0, 58.0);
+        extendoLUT.put(13.0, 63.0);
+        extendoLUT.put(14.0, 68.0);
+        extendoLUT.put(15.0, 70.0);
+        extendoLUT.put(16.0, 76.0);
+        extendoLUT.put(17.0, 81.0);
+        extendoLUT.put(18.0, 84.0);
+        extendoLUT.put(19.0, 87.0);
+        extendoLUT.put(20.0, 93.0);
+        extendoLUT.put(21.0, 97.0);
+        extendoLUT.put(22.0, 105.0);
+        extendoLUT.put(23.0, 109.0);
+        extendoLUT.put(24.0, 115.0);
+        extendoLUT.put(25.0, 127.0);
+        extendoLUT.put(25.5, 142.0);
+
+
+
         this.limelightEx = limelightEx;
     }
 
@@ -110,12 +135,25 @@ public class AutoAlignToSample {
  }
 
     private double calculateExtendoTarget() {
-            double finalDistance;
             
-            if (isTurningOnly) finalDistance = Math.sqrt(yDistanceFromCenter*yDistanceFromCenter + xDistanceFromCenter*xDistanceFromCenter) - sampleOffset;
+            if (isTurningOnly) finalDistance = Math.sqrt(yDistanceFromCenter*yDistanceFromCenter + xDistanceFromCenter*xDistanceFromCenter) - sampleOffset - 0.625;
             else finalDistance = (yDistanceFromCenter-sampleOffset);
 
-            return robot.extendo.convertTargetInchesToExtensionAngle(finalDistance);
+            finalDistance = Range.clip(finalDistance, extendoLUT.firstKey(), extendoLUT.lastKey());
+
+            if (extendoLUT.containsKey(finalDistance)) return extendoLUT.get(finalDistance);
+
+            if (finalDistance >= extendoLUT.firstKey() && finalDistance <= extendoLUT.lastKey()) {
+                double x2 = extendoLUT.ceilingKey(finalDistance); // x2
+                double x1 = extendoLUT.floorKey(finalDistance); // x1
+
+                double y2 = extendoLUT.get(x2); // y2
+                double y1 = extendoLUT.get(x1); // y1
+
+                return y1 + ((finalDistance - x1) * (y2 - y1)) / (x2 - x1);
+            }
+
+            return robot.extendo.getTargetAngle();
     }
 
     private Pose2d calculateTargetPosition(boolean isTurning) {
@@ -166,7 +204,7 @@ public class AutoAlignToSample {
 
                 if (isSampleDetected) {
 
-                    yDistance = (limelightHeight / Math.tan(Math.toRadians(limelightTilt + desiredSampleY)));
+                    yDistance = Math.tan(Math.toRadians(limelightTilt + desiredSampleY)) * limelightHeight;
                     xDistance = Math.tan(Math.toRadians(desiredSampleX)) * yDistance;
 
                     if (!isDebugVariablesSet) {
@@ -221,6 +259,7 @@ public class AutoAlignToSample {
                         .turn(-targetedPoseOffset.heading.toDouble())
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
                         .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
+                        .stopAndAdd(RobotActions.setExtendo(Extendo.Extension.EXTENDED, A_A.fullExtensionSleep))
                         .build();
             }
         } else {
@@ -253,8 +292,10 @@ public class AutoAlignToSample {
 
                     mTelemetry.addData("y distance : ", yDistance);
                     mTelemetry.addData("x distance : ", xDistance);
+
+                    mTelemetry.addData("extendo distance : ", finalDistance);
                     mTelemetry.addData("extendo angle : ", targetedExtendoAngle);
-                    return !isOpModeActive;
+                    return isOpModeActive;
                 }
         );
     }

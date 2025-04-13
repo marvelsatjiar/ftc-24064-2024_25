@@ -51,7 +51,7 @@ public final class Lift {
             WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
             SPECIMEN_SETUP_TICKS = 1458,
-            AUTON_FIRST_SPECIMEN_TICKS = 1478,
+            AUTON_FIRST_SPECIMEN_TICKS = 1470,
             HANG_SETUP_TICKS = 2200,
             HANG_TICKS = 1400,
             UNSAFE_THRESHOLD_TICKS = 829,

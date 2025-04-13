@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem;
 
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MAX;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_25_KG_MIN;
-import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX;
+import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MAX_2;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.SERVO_AXON_MIN;
 import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.mTelemetry;
 
@@ -18,23 +18,23 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 181, //215,
-            TRANSFERRED_WRIST_ANGLE = 145,
-            COLLECTING_ARM_ANGLE = 191, //240,
-            COLLECTING_WRIST_ANGLE = 77, //140,
-            BASKET_ARM_ANGLE = 40,
+            NEUTRAL_ARM_ANGLE = 191, //215,
+            TRANSFERRED_WRIST_ANGLE = 134,
+            COLLECTING_ARM_ANGLE = 201, //240,
+            COLLECTING_WRIST_ANGLE = 74, //140,
+            BASKET_ARM_ANGLE = 50,
             BASKET_WRIST_ANGLE = 0,
 
-            HANG_ARM_ANGLE = 70,
+            HANG_ARM_ANGLE = 80,
 
-            WALL_PICKUP_ARM_ANGLE = 318,
-            WALL_PICKUP_WRIST_ANGLE = 67,
+            WALL_PICKUP_ARM_ANGLE = 328,
+            WALL_PICKUP_WRIST_ANGLE = 50,
 
-            AUTON_TRANSFER_ARM_ANGLE = 160,
+            AUTON_TRANSFER_ARM_ANGLE = 170,
 
-            GRAB_OFF_WALL_WRIST_ANGLE = 190,
+            GRAB_OFF_WALL_WRIST_ANGLE = 140,
 
-            SCORE_SPECIMEN_ARM_ANGLE = 140,
+            SCORE_SPECIMEN_ARM_ANGLE = 150,
             SCORE_SPECIMEN_WRIST_ANGLE = 90,
             RETRACT_SCORE_SPECIMEN_WRIST_ANGLE = 50,
 
@@ -113,10 +113,10 @@ public final class Arm {
 
     public Arm(HardwareMap hardwareMap) {
         wrist = new SimpleServo(hardwareMap, "wrist", SERVO_25_KG_MIN, SERVO_25_KG_MAX);
-        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_AXON_MIN, SERVO_AXON_MAX);
+        armstendo = new SimpleServo(hardwareMap, "armstendo", SERVO_AXON_MIN, SERVO_AXON_MAX_2);
         armServos = new ServoEx[] {
-                new SimpleServo(hardwareMap, "arm master", SERVO_AXON_MIN, SERVO_AXON_MAX),
-                new SimpleServo(hardwareMap, "arm follower", SERVO_AXON_MIN, SERVO_AXON_MAX)
+                new SimpleServo(hardwareMap, "arm master", SERVO_AXON_MIN, SERVO_AXON_MAX_2),
+                new SimpleServo(hardwareMap, "arm follower", SERVO_AXON_MIN, SERVO_AXON_MAX_2)
         };
 
         armServos[1].setInverted(true);
