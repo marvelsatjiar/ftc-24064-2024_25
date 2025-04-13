@@ -96,7 +96,7 @@ public class RobotActions {
 
     public static class SetupSpecimen {
         public double
-                setArmForFirstSpecWait = 0.5,
+                setArmForFirstSpecWait = 0.7,
                 clampClawWait = 0.2,
                 setWristWait = 0.2,
                 setArmWait = 0.3,
@@ -277,7 +277,21 @@ public class RobotActions {
                 )
         );
     }
-
+    public static Action wallPickupToNeutral() {
+        return new Actions.SingleCheckAction(
+                () -> robot.currentState != Robot.State.NEUTRAL,
+                new SequentialAction(
+                        setArmstendo(Arm.Extension.RETRACTED, SETUP_WALL_PICKUP.retractArmstendoWait),
+                        setWrist(Arm.WristAngle.GRAB_OFF_WALL, SETUP_WALL_PICKUP.setWristWait),
+                        setArm(Arm.ArmAngle.NEUTRAL, SETUP_WALL_PICKUP.setArmWait),
+                        new ParallelAction(
+                                setClaw(Claw.ClawAngles.DEPOSIT, 0),
+                                setWrist(Arm.WristAngle.COLLECTING, 0)
+                        ),
+                        new InstantAction(() -> robot.currentState = Robot.State.NEUTRAL)
+                )
+        );
+    }
 
 
     // TODO
@@ -444,6 +458,8 @@ public class RobotActions {
         return new SequentialAction(
                 new InstantAction(() -> robot.intake.targetSampleTimer.reset()),
                 new InstantAction(() -> robot.intake.setEdgeCases(targetColor)),
+                setRollers(rollerPower, 0),
+
                 telemetryPacket -> {
                     if (robot.intake.isOppositeSample()) {
                         robot.intake.setRollerPower(-1);
@@ -451,9 +467,9 @@ public class RobotActions {
                     } else {
                         robot.intake.setRollerPower(rollerPower);
                     }
-
                     return robot.intake.getCurrentSample() != targetColor && robot.intake.targetSampleTimer.seconds() <= expireTime;
-                }
+                },
+                setExtendo(Extendo.Extension.EXTENDED, 0)
         );
     }
 

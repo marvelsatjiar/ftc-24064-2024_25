@@ -6,10 +6,12 @@ import static org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common.
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.AngularVelConstraint;
 import com.acmerobotics.roadrunner.NullAction;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.TurnConstraints;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -44,12 +46,12 @@ public class AutoAlignToSample {
 
     public static double
             xOffset = 5.25,
-            yOffset = 2.5,
-            sampleOffset = 1.5,
+            yOffset = 2,
+            sampleOffset = 2.5,
             limelightTilt = 61,
             limelightHeight = 11;
 
-    public static double secondsUntilCollected = 0.6;
+    public static double secondsUntilCollected = 0.2;
 
     private double
             finalDistance = 0,
@@ -60,9 +62,10 @@ public class AutoAlignToSample {
     
     public static class AutoAlign {
         public double
-                fullExtensionSleep = 1.3,
+                delayBeforeRollers = 0.3,
+                fullExtensionSleep = 0.6,
                 sleepSecondsBeforeV4bUp = 0.4,
-                sleepSecondsBeforeV4bDown = 0.125,
+                sleepSecondsBeforeV4bDown = 0.1,
                 sleepSecondsBeforeRollersDeactivate = 0.2;
     }
 
@@ -256,10 +259,10 @@ public class AutoAlignToSample {
             } else {
                 targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
                         .afterTime(0, RobotActions.setExtendo(targetedExtendoAngle, 0))
-                        .turn(-targetedPoseOffset.heading.toDouble())
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
-                        .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
-                        .stopAndAdd(RobotActions.setExtendo(Extendo.Extension.EXTENDED, A_A.fullExtensionSleep))
+                        .afterTime(A_A.delayBeforeRollers, RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected))
+                        .turn(-targetedPoseOffset.heading.toDouble(), new TurnConstraints(4.5, -Math.PI, Math.PI))
+                        .waitSeconds(secondsUntilCollected)
                         .build();
             }
         } else {

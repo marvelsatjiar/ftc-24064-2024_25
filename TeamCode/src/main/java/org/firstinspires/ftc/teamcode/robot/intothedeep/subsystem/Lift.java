@@ -51,7 +51,7 @@ public final class Lift {
             WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
             SPECIMEN_SETUP_TICKS = 1458,
-            AUTON_FIRST_SPECIMEN_TICKS = 1470,
+            AUTON_FIRST_SPECIMEN_TICKS = 1400,
             HANG_SETUP_TICKS = 2200,
             HANG_TICKS = 1400,
             UNSAFE_THRESHOLD_TICKS = 829,
@@ -113,6 +113,7 @@ public final class Lift {
     public boolean isLocked = false;
 
     private double manualPower;
+    private double finalOutput;
 
     /**
      * Constructor of Lift class; Sets variables with hw (hardwareMap)
@@ -193,7 +194,9 @@ public final class Lift {
 
         }
 
+
         for (MotorEx motor : motors) motor.set(output);
+        finalOutput = output;
     }
 
     public void printTelemetry() {
@@ -201,5 +204,6 @@ public final class Lift {
         mTelemetry.addData("Current position (ticks)", position);
         mTelemetry.addData("Current state (name)", getTargetTicks().name());
         mTelemetry.addData("Manual power (%)", manualPower * 100);
+        mTelemetry.addData("Motor power (%)", finalOutput * 100);
     }
 }

@@ -15,16 +15,69 @@ public class MeepMeepTesting {
             is5plus0 = true,
             usePartnerSpec = false,
             isSixPlusZero = true;
+    public static class GiveSamples {
+        public double
+                // Position
+                outtakeVelocityConstraint = 60,
+                intermediaryX = 32.5,
+                intermediaryY = -51,
+
+        intakeSampleX = 52,
+                intakeSampleY = -41.5,
+
+        outtakeSampleX = 52,
+                outtakeSampleY = -41.5,
+
+
+        // Headings
+        tangentBeforeFirstSample = 0,
+                tangentForIntermediaryPosition = 0,
+
+        intakeFirstSampleHeading = 90,
+                intakeSecondSampleHeading = 54,
+                intakeThirdSampleHeading = 39,
+                outtakeFirstSampleHeading = -70,
+                outtakeSecondSampleHeading = -70,
+                outtakeThirdSampleHeading = -70,
+                intakeFirstExtendoAngle = 80,
+                intermediarySecondExtendoAngle = 52,
+                intakeSecondExtendoAngle = 90,
+                intakeThirdExtendoAngle = 120,
+                outtakeExtendoAngleFirst = 70,
+                outtakeExtendoAngleSecond = 80,
+                outtakeExtendoAngleThird = 80,
+
+        // Timings
+        sleepBeforeInterleaveSample = 0.5,
+                firstIntakeDelay = 0.7,
+                secondIntakeDelay = 0,
+                secondIntermediaryDelay = 0.2,
+                thirdIntakeDelay = 0.5,
+                firstSleepBeforeTurning = 0.3,
+                secondSleepBeforeTurning = 0.5,
+                thirdSleepBeforeTurning = 0.5,
+                outtakeFirstSampleDelay = 0.6,
+                outtakeSecondSampleDelay = 0.5,
+                outtakeThirdSampleDelay = 0.4,
+                sleepBeforeV4B = 0,
+                thirdSleepBeforeV4B = 1,
+                stopRollerDelay = 0.7,
+
+        // Roller Power
+        intakeRollerPower = 1,
+                outtakeRollerPower = -1;
+    }
 
 
 
     public static double
+            outtakeVelocityConstraint = 60,
             parkVelocityConstraint = 160,
             startingPositionX = 7.375,
             startingPositionY = -60,
             scoreSpecimenY = -37.5,
             intermediaryX = 32.5,
-            intermediaryY = -50,
+            intermediaryY = -51,
             waitBeforeOuttakeSample = 0.4,
             waitToExtendTo2ndSample = 0.4,
             setBackWallPickupWait = 0.8,
@@ -96,6 +149,8 @@ public class MeepMeepTesting {
 //            return 60.0;
 //        }
 //    };
+    public static GiveSamples G_S = new GiveSamples();
+
 
     public static void main(String[] args) {
         MeepMeep meepMeep = new MeepMeep(600);
@@ -183,34 +238,36 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder giveSamples(TrajectoryActionBuilder builder) {
         builder = builder
                 .setTangent(Math.toRadians(325))
-
-                .splineToSplineHeading(new Pose2d(intermediaryX, intermediaryY, Math.toRadians(90)), Math.toRadians(0))
+                .splineToSplineHeading(new Pose2d(G_S.intermediaryX, G_S.intermediaryY, Math.toRadians(90)), Math.toRadians(G_S.tangentForIntermediaryPosition))
 
                 // Intaking 1st
 
-                .setTangent(Math.toRadians(0))
-                .splineToSplineHeading(new Pose2d(52, intakeSampleY, Math.toRadians(91)), Math.toRadians(0))
-                .waitSeconds(0)
+                .setTangent(Math.toRadians(G_S.tangentBeforeFirstSample))
+                .splineToSplineHeading(new Pose2d(G_S.intakeSampleX, G_S.intakeSampleY, Math.toRadians(G_S.intakeFirstSampleHeading)), Math.toRadians(35))
+                .waitSeconds(G_S.firstSleepBeforeTurning)
 
                 // Outtaking 1st
 
-                .strafeToLinearHeading(new Vector2d(52, outtakeSampleY), Math.toRadians(-70))
+                //.afterTime(G_S.setV4bDownWhenFirstSampleOuttakeDelay, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
+                .strafeToLinearHeading(new Vector2d(G_S.outtakeSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeFirstSampleHeading), (pose2dDual, posePath, v) -> G_S.outtakeVelocityConstraint)
 
                 // Intaking 2nd
 
-                .strafeToLinearHeading(new Vector2d(52, intakeSampleY), Math.toRadians(53.5))
-                .waitSeconds(0.5)
+                .strafeToLinearHeading(new Vector2d(G_S.intakeSampleX, G_S.intakeSampleY), Math.toRadians(G_S.intakeSecondSampleHeading))
+                .waitSeconds(G_S.secondSleepBeforeTurning)
 
                 // Outtaking 2nd
 
-                .strafeToLinearHeading(new Vector2d(52, outtakeSampleY), Math.toRadians(-70))
+
+                .strafeToLinearHeading(new Vector2d(G_S.outtakeSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeSecondSampleHeading), (pose2dDual, posePath, v) -> G_S.outtakeVelocityConstraint)
 
                 //Intaking 3rd
-                .strafeToLinearHeading(new Vector2d(52, intakeSampleY), Math.toRadians(36))
-                .waitSeconds(0.5)
+
+                .strafeToLinearHeading(new Vector2d(G_S.intakeSampleX, G_S.intakeSampleY), Math.toRadians(G_S.intakeThirdSampleHeading))
+                .waitSeconds(G_S.thirdSleepBeforeTurning)
                 //Outtaking 3rd
 
-                .strafeToLinearHeading(new Vector2d(52, outtakeSampleY), Math.toRadians(-70));
+                .strafeToLinearHeading(new Vector2d(G_S.outtakeSampleX, G_S.outtakeSampleY), Math.toRadians(G_S.outtakeThirdSampleHeading), (pose2dDual, posePath, v) -> G_S.outtakeVelocityConstraint);
 
         return builder;
     }
