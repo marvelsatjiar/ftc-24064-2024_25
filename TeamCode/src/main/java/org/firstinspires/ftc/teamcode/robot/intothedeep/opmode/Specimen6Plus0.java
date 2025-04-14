@@ -115,7 +115,7 @@ public class Specimen6Plus0 extends AbstractAuto {
                 intermediaryIntakeSecondSpecimenY = -47,
                 intakeSecondSpecimenY = -64.5,
                 dropOffX = 40,
-                dropOffY = -50,
+                dropOffY = -63.5,
                 specimen2ndOffsetX = -14,
                 specimen3rdOffsetX = -15,
                 specimen4thOffsetX = -13,
@@ -243,8 +243,9 @@ public class Specimen6Plus0 extends AbstractAuto {
         robot.arm.setWristAngle(Arm.WristAngle.GRAB_OFF_WALL);
         robot.arm.setArmstendoAngle(Arm.Extension.RETRACTED);
         robot.claw.setAngle(Claw.ClawAngles.SPECIMEN_CLAMPED);
-        robot.setCurrentState(Robot.State.WALL_PICKUP);
+        robot.intake.setTargetV4BAngle(Intake.V4BAngle.VERTICAL);
 
+        robot.setCurrentState(Robot.State.WALL_PICKUP);
 
         robot.arm.run();
         robot.claw.run();
@@ -279,8 +280,9 @@ public class Specimen6Plus0 extends AbstractAuto {
 
 
         builder = builder
-                .setTangent(Math.toRadians(270))
-                .splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270), (pose2dDual, posePath, v) -> S_S.wallPickUpVelocityConstraint, new ProfileAccelConstraint(S_S.minWallPickupProfileAccel, S_S.maxWallPickupProfileAccel));
+                .setTangent(Math.toRadians(315))
+                .splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.dropOffY, Math.toRadians(90)), Math.toRadians(290), (pose2dDual, posePath, v) -> S_S.wallPickUpVelocityConstraint, new ProfileAccelConstraint(S_S.minWallPickupProfileAccel, S_S.maxWallPickupProfileAccel))
+                .lineToY(S_S.intakeSpecimenY);
 
         // Setting up for the next cycle
         if (!doPark) builder = builder
@@ -393,6 +395,7 @@ public class Specimen6Plus0 extends AbstractAuto {
     private TrajectoryActionBuilder scoreFirstSpecimen(TrajectoryActionBuilder builder) {
         builder = builder
                 .afterTime(0, RobotActions.setupFirstAutoSpecimen())
+                .afterTime(0, RobotActions.setV4B(Intake.V4BAngle.UP, 0))
                 .afterTime(0, autoAlignToSample.updateTelemetry(!opModeIsActive()))
                 .waitSeconds(S_S.goofyLoopTimes)
                 .afterTime(S_S.sleepSecondsBeforeUnclampFirst, RobotActions.scoreSpecimen())

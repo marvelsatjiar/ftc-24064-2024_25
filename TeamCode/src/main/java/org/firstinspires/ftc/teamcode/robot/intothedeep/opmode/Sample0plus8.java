@@ -136,10 +136,11 @@ public class Sample0plus8 extends AbstractAuto {
         autoAlignToSample = new AutoAlignToSample(robot.limelightEx);
 
         robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
-        robot.arm.setArmAngle(Arm.ArmAngle.NEUTRAL);
+        robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
+        robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
         robot.arm.setWristAngle(Arm.WristAngle.BASKET);
         robot.setCurrentState(Robot.State.TRANSFERRED);
-        robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
+        robot.intake.setTargetV4BAngle(Intake.V4BAngle.VERTICAL);
 
         robot.intake.run(robot.extendo.getTargetAngle());
         robot.arm.run();
@@ -162,6 +163,7 @@ public class Sample0plus8 extends AbstractAuto {
                 // Setup Score 1st Sample Objectively + Extends for 2nd Objectively
                 .afterTime(0, new ParallelAction(
                         RobotActions.setExtendo(MISC.setupIntake2ndExtendoAngle, 0),
+                        RobotActions.setV4B(Intake.V4BAngle.UP, 0),
                         RobotActions.setupWithoutV4BBasket(true)
                 ))
                 .afterTime(TIME.extendWhile2ndTurningDelay, new ParallelAction(

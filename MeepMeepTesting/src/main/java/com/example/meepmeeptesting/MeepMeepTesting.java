@@ -2,6 +2,7 @@ package com.example.meepmeeptesting;
 
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.ProfileAccelConstraint;
 import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
@@ -117,7 +118,7 @@ public class MeepMeepTesting {
             pickupSecondSpecimenX = 40,
             intakeSpecimenY = -62.5,
             dropOffX = 40,
-            dropOffY = -50,
+            dropOffY = -60.5,
             dropOffHeading = 315,
             wallPickupX = 45.5,
             startBumpToClampTime = 0.4,
@@ -197,7 +198,7 @@ public class MeepMeepTesting {
         // Scoring
         builder = builder
                 .setTangent(90)
-                .strafeToLinearHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(105));//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
+                .strafeToLinearHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90));//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
 
         if (doVision)
             builder = builder
@@ -207,7 +208,8 @@ public class MeepMeepTesting {
         else
             builder = builder
                     .setTangent(Math.toRadians(315))
-                    .splineToLinearHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(300));
+                    .splineToSplineHeading(new Pose2d(wallPickupX, dropOffY, Math.toRadians(90)), Math.toRadians(290))
+                    .lineToY(intakeSpecimenY);
 
 
         // Setting up for the next cycle
@@ -226,7 +228,7 @@ public class MeepMeepTesting {
                 .setTangent(Math.toRadians(270))
                 .strafeToLinearHeading(new Vector2d(52, intakeSpecimenY), Math.toRadians(90));
 
-        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond, true);
+        builder = scoreSpecimen(builder, fourthSpecimenOffsetX, secondSpecimenOffsetY, false, sleepSecondsBeforeSetupSecond, sleepSecondsBeforeUnclampSecond, false);
         builder = scoreSpecimen(builder, fourthSpecimenOffsetX, thirdSpecimenOffsetY, false, sleepSecondsBeforeSetupThird, sleepSecondsBeforeUnclampThird, false);
         builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fourthSpecimenOffsetY, false, sleepSecondsBeforeSetupFourth, sleepSecondsBeforeUnclampFourth, false);
         builder = scoreSpecimen(builder, fourthSpecimenOffsetX, fifthSpecimenOffsetY, !isSixPlusZero, sleepSecondsBeforeSetupFifth, sleepSecondsBeforeUnclampFifth, false);
