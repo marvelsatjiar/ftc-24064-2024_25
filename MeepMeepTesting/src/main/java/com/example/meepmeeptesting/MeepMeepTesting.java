@@ -207,8 +207,8 @@ public class MeepMeepTesting {
                 .splineToSplineHeading(new Pose2d(wallPickupX, intakeSpecimenY, Math.toRadians(90)), Math.toRadians(270));
         else
             builder = builder
-                    .setTangent(Math.toRadians(315))
-                    .splineToSplineHeading(new Pose2d(wallPickupX, dropOffY, Math.toRadians(90)), Math.toRadians(290))
+                    .setTangent(Math.toRadians(270))
+                    .splineToSplineHeading(new Pose2d(wallPickupX, dropOffY, Math.toRadians(90)), Math.toRadians(315))
                     .lineToY(intakeSpecimenY);
 
 

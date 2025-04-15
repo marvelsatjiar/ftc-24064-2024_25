@@ -137,8 +137,8 @@ public class Sample0plus8 extends AbstractAuto {
 
         robot.claw.setAngle(Claw.ClawAngles.SAMPLE_CLAMPED);
         robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
-        robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
-        robot.arm.setWristAngle(Arm.WristAngle.BASKET);
+        robot.arm.setArmstendoAngle(Arm.Extension.RETRACTED);
+        robot.arm.setWristAngle(Arm.WristAngle.GRAB_OFF_WALL);
         robot.setCurrentState(Robot.State.TRANSFERRED);
         robot.intake.setTargetV4BAngle(Intake.V4BAngle.VERTICAL);
 

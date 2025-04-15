@@ -280,8 +280,8 @@ public class Specimen6Plus0 extends AbstractAuto {
 
 
         builder = builder
-                .setTangent(Math.toRadians(315))
-                .splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.dropOffY, Math.toRadians(90)), Math.toRadians(290), (pose2dDual, posePath, v) -> S_S.wallPickUpVelocityConstraint, new ProfileAccelConstraint(S_S.minWallPickupProfileAccel, S_S.maxWallPickupProfileAccel))
+                .setTangent(Math.toRadians(270))
+                .splineToLinearHeading(new Pose2d(S_S.wallPickupX, S_S.dropOffY, Math.toRadians(90)), Math.toRadians(315), (pose2dDual, posePath, v) -> S_S.wallPickUpVelocityConstraint, new ProfileAccelConstraint(S_S.minWallPickupProfileAccel, S_S.maxWallPickupProfileAccel))
                 .lineToY(S_S.intakeSpecimenY);
 
         // Setting up for the next cycle

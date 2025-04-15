@@ -37,6 +37,7 @@ public class RobotActions {
 
     public static class SetupBasket {
         public double
+                extendLiftFromWallPickupWait = 0.9,
                 setArmstendoExtendedWait = 0.4125,
                 setArmstendoRetractedWait = 0.15,
                 extendLiftToSetupWait = 0.3,
@@ -216,7 +217,7 @@ public class RobotActions {
                 new SequentialAction(
                         setArm(Arm.ArmAngle.BASKET, SETUP_BASKET.setArmWait),
                         setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, SETUP_BASKET.setClawWait),
-                        setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftToSetupWait),
+                        setLift(isHighBasket ? Lift.Ticks.HIGH_BASKET : Lift.Ticks.LOW_BASKET, SETUP_BASKET.extendLiftFromWallPickupWait),
                         setArmstendo(Arm.Extension.EXTENDED,SETUP_BASKET.setArmstendoExtendedWait),
                         setWrist(Arm.WristAngle.BASKET, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.SETUP_SCORE_BASKET)
