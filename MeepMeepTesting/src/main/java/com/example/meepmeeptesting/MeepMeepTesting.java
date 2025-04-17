@@ -118,7 +118,7 @@ public class MeepMeepTesting {
             pickupSecondSpecimenX = 40,
             intakeSpecimenY = -62.5,
             dropOffX = 40,
-            dropOffY = -60.5,
+            dropOffY = -58.5,
             dropOffHeading = 315,
             wallPickupX = 45.5,
             startBumpToClampTime = 0.4,
@@ -197,8 +197,8 @@ public class MeepMeepTesting {
     private static TrajectoryActionBuilder scoreSpecimen(TrajectoryActionBuilder builder, double offsetX, double offsetY, boolean doPark, double sleepSecondsBeforeSetup, double sleepSecondsBeforeUnclamp, boolean doVision) {
         // Scoring
         builder = builder
-                .setTangent(90)
-                .strafeToLinearHeading(new Vector2d(10 + offsetX, scoreSpecimenY + offsetY), Math.toRadians(90));//, (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel))
+                .setTangent(Math.toRadians(90))
+                .splineToLinearHeading(new Pose2d(10 + offsetX, scoreSpecimenY + offsetY, Math.toRadians(90)), Math.toRadians(90), (pose2dDual, posePath, v) -> scoreSpecimenVelocityConstraint, new ProfileAccelConstraint(minScoreProfileAccel, maxScoreProfileAccel));
 
         if (doVision)
             builder = builder
@@ -208,7 +208,7 @@ public class MeepMeepTesting {
         else
             builder = builder
                     .setTangent(Math.toRadians(270))
-                    .splineToSplineHeading(new Pose2d(wallPickupX, dropOffY, Math.toRadians(90)), Math.toRadians(315))
+                    .splineToLinearHeading(new Pose2d(wallPickupX, dropOffY, Math.toRadians(90)), Math.toRadians(270))
                     .lineToY(intakeSpecimenY);
 
 

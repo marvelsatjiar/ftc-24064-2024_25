@@ -19,24 +19,24 @@ public final class Arm {
 
     public static double
             NEUTRAL_ARM_ANGLE = 181, //215,
-            TRANSFERRED_WRIST_ANGLE = 149,
+            TRANSFERRED_WRIST_ANGLE = 98,
             COLLECTING_ARM_ANGLE = 191, //240,
-            COLLECTING_WRIST_ANGLE = 89, //140,
+            COLLECTING_WRIST_ANGLE = 53, //140,
             BASKET_ARM_ANGLE = 35,
             BASKET_WRIST_ANGLE = 0,
 
             HANG_ARM_ANGLE = 70,
 
             WALL_PICKUP_ARM_ANGLE = 318,
-            WALL_PICKUP_WRIST_ANGLE = 65,
+            WALL_PICKUP_WRIST_ANGLE = 39,
 
             AUTON_TRANSFER_ARM_ANGLE = 160,
 
-            GRAB_OFF_WALL_WRIST_ANGLE = 155,
+            GRAB_OFF_WALL_WRIST_ANGLE = 119,
 
             SCORE_SPECIMEN_ARM_ANGLE = 140,
-            SCORE_SPECIMEN_WRIST_ANGLE = 105,
-            RETRACT_SCORE_SPECIMEN_WRIST_ANGLE = 65,
+            SCORE_SPECIMEN_WRIST_ANGLE = 66,
+            RETRACT_SCORE_SPECIMEN_WRIST_ANGLE = 29,
 
             WALL_PICKUP_ARMSTENDO_ANGLE = 105,
             EXTENDED_ARMSTENDO_ANGLE = 10,

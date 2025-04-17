@@ -139,10 +139,12 @@ public class Sample0plus8 extends AbstractAuto {
         robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
         robot.arm.setArmstendoAngle(Arm.Extension.RETRACTED);
         robot.arm.setWristAngle(Arm.WristAngle.GRAB_OFF_WALL);
+        robot.extendo.setTargetExtension(Extendo.Extension.RETRACTED);
         robot.setCurrentState(Robot.State.TRANSFERRED);
         robot.intake.setTargetV4BAngle(Intake.V4BAngle.VERTICAL);
 
         robot.intake.run(robot.extendo.getTargetAngle());
+        robot.extendo.run(false);
         robot.arm.run();
         robot.claw.run();
     }

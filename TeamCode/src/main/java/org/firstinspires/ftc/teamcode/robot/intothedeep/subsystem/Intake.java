@@ -19,7 +19,6 @@ import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 @Config
 public final class Intake {
-    public static ColorRangefinderEx.Modes selectedMode = ColorRangefinderEx.Modes.DIGITAL;
 
     private final ServoEx[] intakeLinkGroup;
 
@@ -32,10 +31,10 @@ public final class Intake {
     public final ElapsedTime targetSampleTimer = new ElapsedTime();
 
     public static double
-            V4B_MIN_DOWN_ANGLE = 42,
-            V4B_MAX_DOWN_ANGLE = 37,
+            V4B_MIN_DOWN_ANGLE = 17,
+            V4B_MAX_DOWN_ANGLE = 33,
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
-            V4B_VERTICAL_ANGLE = 130,
+            V4B_VERTICAL_ANGLE = 125,
             BEFORE_TRANSFER_ANGLE = 75,
             V4B_CLEARING_ANGLE = 85,
             V4B_UP_ANGLE = 102,
@@ -170,7 +169,7 @@ public final class Intake {
     public void printTelemetry() {
         mTelemetry.addData("Sample Color", getCurrentSample());
         mTelemetry.addData("V4B State", targetAngle.name());
-        if (selectedMode == ColorRangefinderEx.Modes.ANALOG) mTelemetry.addData("raw reading", rangefinder.getAnalogHue());
+        if (rangefinder.getMode() == ColorRangefinderEx.Modes.ANALOG) mTelemetry.addData("raw reading", rangefinder.getAnalogHue());
 //        mTelemetry.addData("Raw Color", getRawColor());
     }
 

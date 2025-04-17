@@ -22,6 +22,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Robot;
+import org.firstinspires.ftc.teamcode.util.BulkReader;
 import org.firstinspires.ftc.teamcode.util.LoopUtil;
 
 @Config
@@ -30,6 +31,8 @@ public final class IntakePrototype extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         GamepadEx gamepadEx1 = new GamepadEx(gamepad1);
+
+        BulkReader bulkReader = new BulkReader(hardwareMap);
 
         mTelemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         Intake intake = new Intake(hardwareMap);
@@ -41,6 +44,7 @@ public final class IntakePrototype extends LinearOpMode {
 
         while (opModeIsActive()) {
             gamepadEx1.readButtons();
+            bulkReader.bulkRead();
 
             if (gamepadEx1.wasJustPressed(DPAD_UP)) intake.setTargetV4BAngle(Intake.V4BAngle.UP);
             if (gamepadEx1.wasJustPressed(DPAD_DOWN)) intake.setTargetV4BAngle(Intake.V4BAngle.DOWN);

@@ -29,17 +29,17 @@ public class ColorRangefinderEx {
     }
 
     private SampleColor rawReading = SampleColor.NOTHING;
-    private Modes currentMode;
+    private final Modes currentMode;
 
     public ColorRangefinderEx(HardwareMap hardwareMap, Modes mode) {
         currentMode = mode;
 
         if (currentMode == Modes.DIGITAL) {
             pin0 = hardwareMap.digitalChannel.get("digital0");
+            pin1 = hardwareMap.digitalChannel.get("digital1");
         } else {
-            analogPin0 = hardwareMap.analogInput.get("digital0");
+            analogPin0 = hardwareMap.analogInput.get("analog0");
         }
-        pin1 = hardwareMap.digitalChannel.get("digital1");
 
     }
 
@@ -62,6 +62,11 @@ public class ColorRangefinderEx {
     public SampleColor getRawReading() {
         return rawReading;
     }
+
+    public Modes getMode() {
+        return currentMode;
+    }
+
     public SampleColor run() {
         if (currentMode == Modes.DIGITAL) rawReading = convertToEnum();
         else rawReading = SampleColor.NOTHING;

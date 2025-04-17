@@ -37,8 +37,8 @@ public class RobotActions {
 
     public static class SetupBasket {
         public double
-                extendLiftFromWallPickupWait = 0.9,
-                setArmstendoExtendedWait = 0.4125,
+                extendLiftFromWallPickupWait = 0.4,
+                setArmstendoExtendedWait = 0.1,
                 setArmstendoRetractedWait = 0.15,
                 extendLiftToSetupWait = 0.3,
                 setArmWait = 0.2,
@@ -306,7 +306,8 @@ public class RobotActions {
 
                         new ParallelAction(
                                 setLift(Lift.Ticks.SETUP_SPECIMEN, 0),
-                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait)
+                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmWait),
+                                setV4B(Intake.V4BAngle.UP, 0)
                         ),
                         new ParallelAction(
                                 setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0),
@@ -327,7 +328,8 @@ public class RobotActions {
 
                         new ParallelAction(
                                 setLift(Lift.Ticks.AUTON_SETUP_FIRST_SPECIMEN, 0),
-                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmForFirstSpecWait)
+                                setArm(Arm.ArmAngle.SCORE_SPECIMEN, SETUP_SPECIMEN.setArmForFirstSpecWait),
+                                setV4B(Intake.V4BAngle.UP, 0)
                         ),
                         new ParallelAction(
                                 setWrist(Arm.WristAngle.SCORE_SPECIMEN, 0),
@@ -435,6 +437,7 @@ public class RobotActions {
                         ),
                         new SleepAction(sleepSecondsBeforeDrop),
                         setClaw(Claw.ClawAngles.WALL_PICKUP, INTERLEAVE_DROP.setClawWait),
+//                        setV4B(Intake.V4BAngle.UP, 0),
                         new InstantAction(() -> robot.currentState = Robot.State.WALL_PICKUP)
                 )
         );

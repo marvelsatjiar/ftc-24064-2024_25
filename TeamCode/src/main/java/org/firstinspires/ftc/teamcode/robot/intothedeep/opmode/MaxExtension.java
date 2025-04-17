@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
+import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Extendo;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Intake;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Lift;
@@ -17,6 +18,7 @@ public class MaxExtension extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Arm arm = new Arm(hardwareMap);
+        Claw claw = new Claw(hardwareMap);
         Lift lift = new Lift(hardwareMap);
         Extendo extendo = new Extendo(hardwareMap);
         Intake intake = new Intake(hardwareMap);
@@ -26,11 +28,14 @@ public class MaxExtension extends LinearOpMode {
 
         while (opModeIsActive()) {
             gamepadEx1.readButtons();
-            //arm.setArmAngle(Arm.ArmAngle.OVERHANG_SPECIMEN_SETUP);
-            arm.setWristAngle(Arm.WristAngle.SCORE_SPECIMEN);
+            arm.setArmAngle(Arm.ArmAngle.BASKET);
+            arm.setWristAngle(Arm.WristAngle.BASKET);
+            arm.setArmstendoAngle(Arm.Extension.EXTENDED);
             extendo.setTargetExtension(Extendo.Extension.EXTENDED);
             intake.setTargetV4BAngle(Intake.V4BAngle.UP);
-            //lift.setTargetTicks(Lift.Ticks.OVERHANG_SPECIMEN_SETUP);
+            claw.setAngle(Claw.ClawAngles.DEPOSIT);
+            lift.setTargetTicks(Lift.Ticks.HIGH_BASKET);
+
 
             double rightTrigger = gamepadEx1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER);
 
@@ -43,6 +48,7 @@ public class MaxExtension extends LinearOpMode {
             extendo.run(false);
             lift.run();
             intake.run(extendo.getTargetAngle());
+            claw.run();
         }
     }
 }
