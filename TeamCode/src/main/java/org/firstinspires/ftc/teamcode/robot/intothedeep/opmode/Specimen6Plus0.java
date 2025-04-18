@@ -115,14 +115,12 @@ public class Specimen6Plus0 extends AbstractAuto {
                 intakeSpecimenY = -68.5,
                 intermediaryIntakeSecondSpecimenY = -47,
                 intakeSecondSpecimenY = -64.5,
-                dropOffX = 40,
                 intermediaryIntakeSpecimenY = -58.5,
                 specimen2ndOffsetX = -12,
                 specimen3rdOffsetX = -13,
                 specimen4thOffsetX = -14,
                 specimen5thOffsetX = -7,
                 specimen6thOffsetX = -7,
-                specimen7thOffsetX = -10,
                 secondSpecimenOffsetY = 12,
                 thirdSpecimenOffsetY = 9,
                 fourthSpecimenOffsetY = 11,
@@ -134,11 +132,9 @@ public class Specimen6Plus0 extends AbstractAuto {
                 fourthWallOffsetY = 2,
                 fifthWallOffsetY = 2,
 
-                seventhSpecimenOffsetY = 3,
 
                 // Headings
                 scoringAngle = 90,
-                dropOffHeading = 315,
 
                 // Timings
                 waitBeforeVision = 0.1,
@@ -147,8 +143,6 @@ public class Specimen6Plus0 extends AbstractAuto {
                 waitBeforeDriveOffVison = 0.3,
                 waitBeforeMovingToIntermediary = 0.5,
                 delayBeforeRFT = 0.2,
-                retractAfterIntakeSub = 0,
-                timeBeforeOuttakeSample = 1.6,
                 secondsToExpire = 1.5,
                 timeBeforeWallPickup = 1,
                 timeBeforeWrist = 0.3,
@@ -161,7 +155,6 @@ public class Specimen6Plus0 extends AbstractAuto {
                 sleepSecondsBeforeUnclampFourth = 1.7,
                 sleepSecondsBeforeUnclampFifth = 1.8,
                 sleepSecondsBeforeUnclampSixth = 2,
-                sleepSecondsBeforeUnclampSeventh = 2,
                 goofyLoopTimes = 0.1,
 
                 //Constraints

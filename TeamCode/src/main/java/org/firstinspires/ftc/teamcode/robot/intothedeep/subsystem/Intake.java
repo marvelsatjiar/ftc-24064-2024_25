@@ -32,7 +32,7 @@ public final class Intake {
 
     public static double
             V4B_MIN_DOWN_ANGLE = 17,
-            V4B_MAX_DOWN_ANGLE = 33,
+            V4B_MAX_DOWN_ANGLE = 31,
             V4B_DOWN_ANGLE = V4B_MAX_DOWN_ANGLE,
             V4B_VERTICAL_ANGLE = 125,
             BEFORE_TRANSFER_ANGLE = 75,

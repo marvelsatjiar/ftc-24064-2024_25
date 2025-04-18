@@ -18,29 +18,29 @@ public final class Arm {
     private final ServoEx[] armServos;
 
     public static double
-            NEUTRAL_ARM_ANGLE = 181, //215,
-            TRANSFERRED_WRIST_ANGLE = 98,
-            COLLECTING_ARM_ANGLE = 191, //240,
-            COLLECTING_WRIST_ANGLE = 53, //140,
-            BASKET_ARM_ANGLE = 35,
-            BASKET_WRIST_ANGLE = 0,
+            NEUTRAL_ARM_ANGLE = 171, //215,
+            TRANSFERRED_WRIST_ANGLE = 83,
+            COLLECTING_ARM_ANGLE = 174, //240,
+            COLLECTING_WRIST_ANGLE = 75, //140,
+            BASKET_ARM_ANGLE = 10,
+            BASKET_WRIST_ANGLE = 15,
 
-            HANG_ARM_ANGLE = 70,
+            HANG_ARM_ANGLE = 60,
 
-            WALL_PICKUP_ARM_ANGLE = 318,
-            WALL_PICKUP_WRIST_ANGLE = 39,
+            WALL_PICKUP_ARM_ANGLE = 298,
+            WALL_PICKUP_WRIST_ANGLE = 55,
 
-            AUTON_TRANSFER_ARM_ANGLE = 160,
+            AUTON_TRANSFER_ARM_ANGLE = 100,
 
-            GRAB_OFF_WALL_WRIST_ANGLE = 119,
+            GRAB_OFF_WALL_WRIST_ANGLE = 134,
 
-            SCORE_SPECIMEN_ARM_ANGLE = 140,
-            SCORE_SPECIMEN_WRIST_ANGLE = 66,
-            RETRACT_SCORE_SPECIMEN_WRIST_ANGLE = 29,
+            SCORE_SPECIMEN_ARM_ANGLE = 119,
+            SCORE_SPECIMEN_WRIST_ANGLE = 81,
+            RETRACT_SCORE_SPECIMEN_WRIST_ANGLE = 44,
 
             WALL_PICKUP_ARMSTENDO_ANGLE = 105,
             EXTENDED_ARMSTENDO_ANGLE = 10,
-            TRANSFER_ARMSTENDO_ANGLE = 85, //50,
+            TRANSFER_ARMSTENDO_ANGLE = 90, //50,
             RETRACTED_ARMSTENDO_ANGLE = 122;
 
     public enum WristAngle {

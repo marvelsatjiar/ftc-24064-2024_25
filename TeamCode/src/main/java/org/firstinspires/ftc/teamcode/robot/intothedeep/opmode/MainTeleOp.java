@@ -21,6 +21,7 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -77,6 +78,7 @@ public final class MainTeleOp extends LinearOpMode {
         }
 
         if (!isNeutralStartPosition) {
+
             robot.arm.setArmAngle(Arm.ArmAngle.WALL_PICKUP);
             robot.arm.setWristAngle(Arm.WristAngle.WALL_PICKUP);
             robot.arm.setArmstendoAngle(Arm.Extension.WALL_PICKUP);
@@ -84,6 +86,13 @@ public final class MainTeleOp extends LinearOpMode {
             robot.intake.setTargetV4BAngle(Intake.V4BAngle.UP);
 
             robot.setCurrentState(Robot.State.WALL_PICKUP);
+        } else {
+
+            robot.actionScheduler.addAction(new SequentialAction(
+                    RobotActions.setV4B(Intake.V4BAngle.DOWN, 0),
+                    RobotActions.setArm(Arm.ArmAngle.BASKET, 1),
+                    RobotActions.setArm(Arm.ArmAngle.NEUTRAL, 0)
+            ));
         }
 
         waitForStart();
@@ -212,6 +221,7 @@ public final class MainTeleOp extends LinearOpMode {
                     robot.sweeper.setAngle(Sweeper.SweeperAngles.RETRACTED);
 
                     doIntakeControls();
+                    doExtendoControls();
 
                     if (keyPressed(2, X) || (keyPressed(1, RIGHT_BUMPER) && isSpecimenMode))
                         robot.actionScheduler.addAction(RobotActions.setupSpecimen());

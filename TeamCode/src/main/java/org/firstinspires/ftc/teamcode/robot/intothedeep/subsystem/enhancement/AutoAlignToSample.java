@@ -244,18 +244,12 @@ public class AutoAlignToSample {
         if (isSampleDetected) {
             if (!isTurningOnly) {
                 targetSampleTrajectory = robot.drivetrain.actionBuilder(robot.drivetrain.pose)
-                        .afterTime(0, new ParallelAction(
-                                RobotActions.setExtendo(targetedExtendoAngle, 0),
-                                new SequentialAction(
-                                        RobotActions.setSweeper(Sweeper.SweeperAngles.AUTON_ACTIVE, 1),
-                                        RobotActions.setSweeper(Sweeper.SweeperAngles.RETRACTED, 0)
-                                )
-                        ))
-
-                        .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
+                        .afterTime(0, RobotActions.setExtendo(targetedExtendoAngle, 0))
                         .afterTime(A_A.sleepSecondsBeforeV4bDown, RobotActions.setV4B(Intake.V4BAngle.DOWN, 0))
-                        .stopAndAdd(RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected, offsetExtendoAngle))
-                        .stopAndAdd(this::setFullExtensionIfNotCollected)
+                        .afterTime(A_A.delayBeforeRollers, RobotActions.runRollersUntilCollected(0.8, targetColor, secondsUntilCollected, offsetExtendoAngle))
+                        .afterTime(A_A.delayBeforeFullExtension, RobotActions.setExtendo(Extendo.Extension.EXTENDED, 0))
+                        .strafeTo(new Vector2d(robot.drivetrain.pose.position.x + targetedPoseOffset.position.x, robot.drivetrain.pose.position.y + targetedPoseOffset.position.y))
+                        .waitSeconds(secondsUntilCollected)
 
                         .build();
             } else {

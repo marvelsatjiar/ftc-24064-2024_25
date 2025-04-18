@@ -63,10 +63,10 @@ public class Specimen5Plus0 extends AbstractAuto {
         outtakeSampleX = 52,
                 outtakeSampleY = -41.5,
                 sample1X = 48,
-                sample1Y = -4,
-                sample2X = 56,
-                sample2Y = -14,
-                sample3X = 62.5,
+                sample1Y = -9,
+                sample2X = 58,
+                sample2Y = -10,
+                sample3X = 60,
                 sample3Y = -14,
                 giveSampleY = -52,
 
@@ -75,7 +75,7 @@ public class Specimen5Plus0 extends AbstractAuto {
                 intermediaryTangent = 165,
 
         // Constraints
-        giveSampleVelocityConstraint = 50,
+                giveSampleVelocityConstraint = 30,
                 giveSampleMinAccelConstraint = -60,
                 giveSampleMaxAccelConstraint = 60,
                 goingToSampleVelocityConstraint = 50,
@@ -117,23 +117,21 @@ public class Specimen5Plus0 extends AbstractAuto {
                 intermediaryIntakeSpecimenY = -57,
                 intakeSixthSpecimenY = -61.5,
                 intakeSecondSpecimenY = -47,
-                intakeSecondBumpSpecimenY = -62.5,
-                specimen2ndOffsetX = -11,
-                specimen3rdOffsetX = -10,
-                specimen4thOffsetX = -9,
-                specimen5thOffsetX = -8,
-                specimen6thOffsetX = -15,
-                specimen7thOffsetX = -13,
-                secondSpecimenOffsetY = 2,
-                thirdSpecimenOffsetY = 2,
-                fourthSpecimenOffsetY = 4,
-                fifthSpecimenOffsetY = 2,
+                intakeSecondBumpSpecimenY = -62.5, //-53.5,
+                specimen2ndOffsetX = -14,
+                specimen3rdOffsetX = -13,
+                specimen4thOffsetX = -15,
+                specimen5thOffsetX = -12,
+                secondSpecimenOffsetY = 4,
+                thirdSpecimenOffsetY = 4,
+                fourthSpecimenOffsetY = 6,
+                fifthSpecimenOffsetY = 4,
                 sixthSpecimenOffsetY = 4,
                 seventhSpecimenOffsetY = 4,
                 firstWallOffsetY = 2,
                 secondWallOffsetY = 2,
                 thirdWallOffsetY = 2,
-                fourthWallOffsetY = 2,
+                fourthWallOffsetY = 5,
                 fifthWallOffsetY = 2,
 
         // Headings
@@ -141,24 +139,22 @@ public class Specimen5Plus0 extends AbstractAuto {
                 wallPickupTangent = 270,
 
         // Timings
-        waitBeforeDetection = 0.15,
                 goofyLoopTimes = 0.5,
-                waitUntilExtendoRetracted = 0.4,
-                retractAfterIntakeSub = 0,
-                secondsToExpire = 1.5,
                 timeBeforeWallPickup = 1,
                 timeBeforeWrist = 0.2,
                 timeBeforeMoving = 0.1,
                 lastFourSleepBeforeGrab = 0,
                 secondSleepBeforeSetup = 0.1,
                 sleepSecondsBeforeUnclampFirst = 1.3,
-                sleepSecondsBeforeUnclampSecond = 2,
-                sleepSecondsBeforeUnclampThird = 1.7,
-                sleepSecondsBeforeUnclampFourth = 1.7,
-                sleepSecondsBeforeUnclampFifth = 1.8,
+                sleepSecondsBeforeUnclampSecond = 2.3,
+                sleepSecondsBeforeUnclampThird = 2,
+                sleepSecondsBeforeUnclampFourth = 2,
+                sleepSecondsBeforeUnclampFifth = 2,
 
 
         //Constraints
+                wallpickup2ndMinAccelConstraint = -30,
+                wallpickup2ndMaxAccelConstraint = 30,
                 wallPickUp2ndVelocityConstraint = 30,
                 minWallPickupProfileAccel = -50,
                 maxWallPickupProfileAccel = 50,
@@ -309,7 +305,7 @@ public class Specimen5Plus0 extends AbstractAuto {
 
         builder = builder
                 .setTangent(Math.toRadians(270))
-                .lineToY(S_S.intakeSecondBumpSpecimenY, (pose2dDual, posePath, v) -> S_S.wallPickUp2ndVelocityConstraint)
+                .lineToY(S_S.intakeSecondBumpSpecimenY, (pose2dDual, posePath, v) -> S_S.wallPickUp2ndVelocityConstraint, new ProfileAccelConstraint(S_S.wallpickup2ndMinAccelConstraint, S_S.wallpickup2ndMaxAccelConstraint))
                 .stopAndAdd(new SequentialAction(
                         RobotActions.setClaw(Claw.ClawAngles.SPECIMEN_CLAMPED, S_S.timeBeforeWrist),
                         RobotActions.setWrist(Arm.WristAngle.GRAB_OFF_WALL, S_S.timeBeforeMoving)

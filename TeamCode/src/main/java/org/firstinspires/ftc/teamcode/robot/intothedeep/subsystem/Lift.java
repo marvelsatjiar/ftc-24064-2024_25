@@ -50,8 +50,9 @@ public final class Lift {
             HIGH_BASKET_TICKS = 1670,
             WALL_PICKUP_TICKS = 953,
             BEFORE_BACK_SPECIMEN_TICKS = 1043,
-            SPECIMEN_SETUP_TICKS = 1458,
+            SPECIMEN_SETUP_TICKS = 1438,
             AUTON_FIRST_SPECIMEN_TICKS = 1470,
+            INTERLEAVE_TICKS = 150,
             HANG_SETUP_TICKS = 2550,
             HANG_TICKS = 1400,
             UNSAFE_THRESHOLD_TICKS = 829,
@@ -83,6 +84,7 @@ public final class Lift {
         SETUP_SPECIMEN,
         AUTON_SETUP_FIRST_SPECIMEN,
         HANG_SETUP,
+        INTERLEAVE,
         HANG,
         CHAMBER_HANG_OVERRIDE,
         EXTENDED;
@@ -95,6 +97,7 @@ public final class Lift {
                 case BEFORE_BACK_SPECIMEN:      return BEFORE_BACK_SPECIMEN_TICKS;
                 case SETUP_SPECIMEN:            return SPECIMEN_SETUP_TICKS;
                 case AUTON_SETUP_FIRST_SPECIMEN: return AUTON_FIRST_SPECIMEN_TICKS;
+                case INTERLEAVE:                return INTERLEAVE_TICKS;
                 case HANG:                      return HANG_TICKS;
                 case HANG_SETUP:                return HANG_SETUP_TICKS;
                 case EXTENDED:                  return MAX_MOTOR_TICKS;

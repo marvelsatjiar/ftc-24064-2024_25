@@ -22,6 +22,7 @@ import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Arm;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Claw;
 import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.Common;
@@ -33,9 +34,9 @@ import org.firstinspires.ftc.teamcode.robot.intothedeep.subsystem.enhancement.Au
 import org.firstinspires.ftc.teamcode.sensor.ColorRangefinderEx;
 
 
-@Autonomous(name ="Sample 0+8")
+@Autonomous(name ="Sample 0+4")
 @Config
-public class Sample0plus8 extends AbstractAuto {
+public class Sample0plus4 extends AbstractAuto {
     private AutoAlignToSample autoAlignToSample;
 
     private Action currentTraj;
@@ -57,7 +58,7 @@ public class Sample0plus8 extends AbstractAuto {
                 midSubX = -40,
                 midSubY = -14,
                 yBasketSub = -60.5,
-                sample5thOffset = 5,
+                sample5thOffset = 0,
                 sample6thOffset = 5,
                 sample7thOffset = 10,
                 sample8thOffset = 15;
@@ -75,8 +76,6 @@ public class Sample0plus8 extends AbstractAuto {
 
     public static class Timings {
         public double
-                waitBeforeVision = 0.1,
-                waitBeforeDriveOffVison = 0.5,
                 sleepUntilLiftRetracted = 0.2,
                 waitBeforeUnclampSubBasket = 0.2,
                 secondsToExpire = 0.5,
@@ -139,7 +138,7 @@ public class Sample0plus8 extends AbstractAuto {
                 TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
 
                 builder = scoreFirstFourSamples(builder);
-                builder = scoreAllSubSamples(builder);
+//                builder = scoreAllSubSamples(builder);
 //                builder = park(builder);
 
                 currentTraj = builder.build();
@@ -152,7 +151,7 @@ public class Sample0plus8 extends AbstractAuto {
             TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
 
             builder = scoreFirstFourSamples(builder);
-            builder = scoreAllSubSamples(builder);
+//            builder = scoreAllSubSamples(builder);
 //                builder = park(builder);
 
             currentTraj = builder.build();
@@ -187,7 +186,7 @@ public class Sample0plus8 extends AbstractAuto {
     protected Action onRun() {
         TrajectoryActionBuilder builder = robot.drivetrain.actionBuilder(getStartPose());
         builder = scoreFirstFourSamples(builder);
-        builder = scoreAllSubSamples(builder);
+//        builder = scoreAllSubSamples(builder);
 
         return builder.build();
     }
@@ -281,7 +280,10 @@ public class Sample0plus8 extends AbstractAuto {
                 .strafeToLinearHeading(new Vector2d(POS.xBasket3, POS.yBasket3), Math.toRadians(HEAD.dropOff4thSample))
                 //Scoring 4th Sample Objectively
                 .waitSeconds(TIME.sleepBefore4thUnclamp)
-                .stopAndAdd(RobotActions.scoreBasket());
+                .stopAndAdd(new SequentialAction(
+                        RobotActions.scoreBasket(),
+                        RobotActions.autoRetractAfterScoreBasket()
+                ));
         return builder;
     }
 
@@ -305,18 +307,18 @@ public class Sample0plus8 extends AbstractAuto {
                 .lineToY(POS.midSubY, ((pose2dDual, posePath, v) -> MISC.subVelocityConstraint), new ProfileAccelConstraint(MISC.subMinAccelConstraint, MISC.subMaxAccelConstraint))
                 .splineToSplineHeading(new Pose2d(POS.subX, POS.subY + offsetY, Math.toRadians(0)), Math.toRadians(0), (pose2dDual, posePath, v) -> MISC.intakeSubVelocityConstraint)
                 // Sweeping + Intaking Sub Sample TODO vision + remove hardcoded waits
-                .waitSeconds(TIME.waitBeforeVision)
-                .stopAndAdd(autoAlignToSample.detectTarget(TIME.secondsToExpire, true))
-                .waitSeconds(TIME.waitBeforeDriveOffVison)
-                .stopAndAdd(
-                        new SequentialAction(
-                                new InstantAction(autoAlignToSample::generateTargetTrajectory),
-                                telemetryPacket -> {
-                                    robot.run();
-                                    return autoAlignToSample.getTargetSampleTrajectory().run(telemetryPacket);
-                                }
-                        )
-                )
+                .stopAndAdd(new SequentialAction(
+                        autoAlignToSample.detectTarget(TIME.secondsToExpire, false),
+                        new InstantAction(() -> robot.limelightEx.enableStagelite(false))
+                ))
+
+                .stopAndAdd(new SequentialAction(
+                        new InstantAction(autoAlignToSample::generateTargetTrajectory),
+                        telemetryPacket -> {
+                            robot.run();
+                            return autoAlignToSample.getTargetSampleTrajectory().run(telemetryPacket);
+                        }
+                ))
 
                 .setTangent(Math.toRadians(180))
                 // Score Sub Sample

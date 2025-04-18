@@ -64,7 +64,7 @@ public class RobotActions {
                 unclampClawForDropoffWait = 0.3,
                 setV4BWait = 0,
 
-                armTransferWait = 0.3,
+                armTransferWait = 0.15 ,
 
 
                 retractToNeutralDelay = 0.4;
@@ -73,7 +73,8 @@ public class RobotActions {
         public double
                 unclampClawForDropOffWait = 0.1,
                 setClawWait = 0.1,
-                setArmstendoWait = 0,
+                retractLiftWait = 0,
+                setArmstendoWait = 0.3,
                 retractArmstendoWait = 0,
                 setWristWait = 0.2,
                 setArmWait = 0.2;
@@ -427,7 +428,10 @@ public class RobotActions {
                 () -> robot.currentState != Robot.State.WALL_PICKUP,
                 new SequentialAction(
                         setV4B(Intake.V4BAngle.DOWN, DROP_SAMPLES.setV4BWait),
-                        setArm(Arm.ArmAngle.AUTON_TRANSFER, DROP_SAMPLES.armTransferWait),
+                        new ParallelAction(
+                                setLift(Lift.Ticks.INTERLEAVE, 0),
+                                setArm(Arm.ArmAngle.AUTON_TRANSFER, DROP_SAMPLES.armTransferWait)
+                        ),
                         setArmstendo(Arm.Extension.RETRACTED, INTERLEAVE_DROP.retractArmstendoWait),
                         setWrist(Arm.WristAngle.GRAB_OFF_WALL, INTERLEAVE_DROP.setWristWait),
                         setArm(Arm.ArmAngle.WALL_PICKUP, INTERLEAVE_DROP.setArmWait),
@@ -435,6 +439,7 @@ public class RobotActions {
                                 setWrist(Arm.WristAngle.WALL_PICKUP, 0),
                                 setArmstendo(Arm.Extension.WALL_PICKUP, INTERLEAVE_DROP.setArmstendoWait )
                         ),
+                        setLift(Lift.Ticks.RETRACTED, INTERLEAVE_DROP.retractLiftWait),
                         new SleepAction(sleepSecondsBeforeDrop),
                         setClaw(Claw.ClawAngles.WALL_PICKUP, INTERLEAVE_DROP.setClawWait),
 //                        setV4B(Intake.V4BAngle.UP, 0),
